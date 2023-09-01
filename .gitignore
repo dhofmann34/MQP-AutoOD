@@ -1,0 +1,7 @@
+database.ini
+data/
+domo_visualization_old/
+experiments/
+files/
+AutoOD_demo.code-workspace
+__pycache__/
