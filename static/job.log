@@ -1,0 +1,20 @@
+2022-06-09T11:26:36.001563-0400 - selected methods = ['lof', 'knn', 'if', 'mahala']
+2022-06-09T11:26:36.004561-0400 - Start calling autood with file PageBlocks_norm_10.csv...indexColName = id, labelColName = label
+2022-06-09T11:26:36.006561-0400 - Parameters: outlier_percentage_min = 8.0%, outlier_percentage_max = 12.0%
+2022-06-09T11:26:36.008565-0400 - Dataset Name = PageBlocks_norm_10
+2022-06-09T11:26:36.009561-0400 - Outlier Range defined as [8.0%, 12.0%]
+2023-08-31T11:02:10.672223-0400 - selected methods = ['lof', 'knn', 'if', 'mahala']
+2023-08-31T11:02:10.696023-0400 - Start calling autood with file pageblocks.csv...indexColName = id, labelColName = label
+2023-08-31T11:02:10.698019-0400 - Parameters: outlier_percentage_min = 5.0%, outlier_percentage_max = 15.0%
+2023-08-31T11:02:10.700020-0400 - Dataset Name = pageblocks
+2023-08-31T11:02:10.701018-0400 - Outlier Range defined as [5.0%, 15.0%]
+2023-08-31T11:03:34.376629-0400 - selected methods = ['lof', 'knn', 'if', 'mahala']
+2023-08-31T11:03:34.380629-0400 - Start calling autood with file pageblocks.csv...indexColName = id, labelColName = label
+2023-08-31T11:03:34.383914-0400 - Parameters: outlier_percentage_min = 5.0%, outlier_percentage_max = 15.0%
+2023-08-31T11:03:34.385916-0400 - Dataset Name = pageblocks
+2023-08-31T11:03:34.386917-0400 - Outlier Range defined as [5.0%, 15.0%]
+2023-08-31T11:07:48.133568-0400 - selected methods = ['lof', 'knn', 'if', 'mahala']
+2023-08-31T11:07:48.134568-0400 - Start calling autood with file thyroid.csv...indexColName = id, labelColName = label
+2023-08-31T11:07:48.136567-0400 - Parameters: outlier_percentage_min = 5.0%, outlier_percentage_max = 15.0%
+2023-08-31T11:07:48.137565-0400 - Dataset Name = thyroid
+2023-08-31T11:07:48.139567-0400 - Outlier Range defined as [5.0%, 15.0%]
