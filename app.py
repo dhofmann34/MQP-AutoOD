@@ -1,3 +1,4 @@
+import subprocess
 from cgi import test
 from flask import Flask
 from flask import Flask, request, render_template, flash, redirect, url_for, Response, send_file
@@ -14,6 +15,33 @@ from config import config
 import collections
 collections.MutableSequence = collections.abc.MutableSequence
 collections.Iterable = collections.abc.Iterable
+
+# List of required packages
+required_packages = [
+    'Flask==2.3.3',
+    'Flask_Navigation==0.2.0',
+    'loguru==0.7.2',
+    'numpy==1.25.2',
+    'pandas==2.1.0',
+    'psycopg2==2.9.7',
+    'scikit_learn==1.3.0',
+    'scipy==1.11.2',
+    'Werkzeug==2.3.7',
+]
+
+# Check if each package can be imported
+missing_packages = []
+for package in required_packages:
+    package_name = package.split('==')[0]  # Get the package name without version
+    try:
+        __import__(package_name)
+    except ImportError:
+        missing_packages.append(package)
+
+# If there are missing packages, install them silently
+if missing_packages:
+    print(f"Installing missing packages: {', '.join(missing_packages)}")
+    subprocess.run(['pip', 'install'] + missing_packages, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 results_global = None
 final_log_filename_global = None
