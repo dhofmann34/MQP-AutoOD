@@ -123,7 +123,46 @@ def load_dataset(filename, index_col_name = None, label_col_name=None):
             params = config()  # get DB info from config.py
             conn = psycopg2.connect(**params)
             cur = conn.cursor()
-            cur.execute(""" TRUNCATE TABLE input, tsne, detectors, predictions, reliable, temp_if, temp_knn, temp_lof, temp_mahalanobis; """)  # empty tables for demo
+            cur.execute("""
+                            DO $$ 
+                            BEGIN
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'input') THEN
+                                    EXECUTE 'TRUNCATE TABLE input';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tsne') THEN
+                                    EXECUTE 'TRUNCATE TABLE tsne';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'detectors') THEN
+                                    EXECUTE 'TRUNCATE TABLE detectors';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'predictions') THEN
+                                    EXECUTE 'TRUNCATE TABLE predictions';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'reliable') THEN
+                                    EXECUTE 'TRUNCATE TABLE reliable';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_if') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_if';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_knn') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_knn';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_lof') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_lof';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_mahalanobis') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_mahalanobis';
+                                END IF;
+                            END $$;
+                        """)  # empty tables for demo
             conn.commit()
             cur.close()
             conn.close()
@@ -155,7 +194,30 @@ def load_dataset(filename, index_col_name = None, label_col_name=None):
             params = config()  # get DB info from config.py
             conn = psycopg2.connect(**params)
             cur = conn.cursor()
-            cur.execute(""" TRUNCATE TABLE input, tsne, detectors, predictions, reliable; """)  # empty tables for demo
+            cur.execute("""
+                            DO $$ 
+                            BEGIN
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'input') THEN
+                                    EXECUTE 'TRUNCATE TABLE input';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tsne') THEN
+                                    EXECUTE 'TRUNCATE TABLE tsne';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'detectors') THEN
+                                    EXECUTE 'TRUNCATE TABLE detectors';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'predictions') THEN
+                                    EXECUTE 'TRUNCATE TABLE predictions';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'reliable') THEN
+                                    EXECUTE 'TRUNCATE TABLE reliable';
+                                END IF;
+                            END $$;
+                        """)  # empty tables for demo
             conn.commit()
             cur.close()
             conn.close()

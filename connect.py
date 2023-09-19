@@ -32,7 +32,7 @@ def create_input_table(data):
         cur = conn.cursor()  # create a cursor
 
         cur.execute("""
-            DROP TABLE
+            DROP TABLE IF EXISTS
             detectors,
             predictions,
             reliable,
