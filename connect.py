@@ -95,8 +95,8 @@ def insert_input(table, data):  # we can use this fucntion to add to our databse
 
 def insert_tsne(table, data, label_col_name, index_col_name):
     id = data[index_col_name]
-    data = data.drop(index_col_name, 1)
-    data = data.drop(label_col_name, 1)
+    data = data.drop(index_col_name, axis=1)
+    data = data.drop(label_col_name, axis=1)
     tsne = TSNE(n_components=2, learning_rate = "auto", perplexity = 5, verbose=1, early_exaggeration = 12, random_state=123)  # perplexity for pagblocks: 30
     fit = tsne.fit_transform(data)
     fit_df = pd.DataFrame()
