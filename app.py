@@ -11,6 +11,10 @@ import psycopg2
 from flask import jsonify
 from config import config
 
+import collections
+collections.MutableSequence = collections.abc.MutableSequence
+collections.Iterable = collections.abc.Iterable
+
 results_global = None
 final_log_filename_global = None
 
@@ -172,7 +176,7 @@ def send_data():
 
     #drop all tables on each run
     cur.execute("""
-    DROP TABLE
+    DROP TABLE IF EXISTS
     temp_lof,
     temp_knn,
     temp_if,
@@ -227,15 +231,15 @@ def send_data():
 
     # Join all tabels together
     SQL_statement = """  
-    SELECT *
-    FROM input 
-    FULL JOIN tsne using (id)
-    FULL JOIN temp_lof using (id)
-    FULL JOIN temp_knn using (id)
-    FULL JOIN temp_if using (id)
-    FULL JOIN temp_mahalanobis using (id)
-    FULL JOIN predictions using (id)
-    """
+        SELECT *
+        FROM input 
+        FULL JOIN tsne using (id)
+        FULL JOIN temp_lof using (id)
+        FULL JOIN temp_knn using (id)
+        FULL JOIN temp_if using (id)
+        FULL JOIN temp_mahalanobis using (id)
+        FULL JOIN predictions using (id)
+        """
     join_reliable = ""  # join relibale labels
     for i in range(iteration):
         join_reliable = f"{join_reliable} FULL JOIN reliable_{i} using (id)" 
