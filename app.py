@@ -1,4 +1,5 @@
 import subprocess
+import pkg_resources
 from cgi import test
 from flask import Flask
 from flask import Flask, request, render_template, flash, redirect, url_for, Response, send_file
@@ -29,19 +30,21 @@ required_packages = [
     'Werkzeug==2.3.7',
 ]
 
-# Check if each package can be imported
-missing_packages = []
+# Check and update packages
 for package in required_packages:
-    package_name = package.split('==')[0]  # Get the package name without version
+    package_name, package_version = package.split('==')
+    
+    # Check if the package is installed and get its version
     try:
-        __import__(package_name)
-    except ImportError:
-        missing_packages.append(package)
+        installed_version = pkg_resources.get_distribution(package_name).version
+    except pkg_resources.DistributionNotFound:
+        installed_version = None
 
-# If there are missing packages, install them silently
-if missing_packages:
-    print(f"Installing missing packages: {', '.join(missing_packages)}")
-    subprocess.run(['pip', 'install'] + missing_packages, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    # If the package is not installed or the installed version is older, update it
+    if installed_version is None or installed_version != package_version:
+        print(f"Updating {package_name} to version {package_version}")
+        subprocess.run(['pip', 'install', '--upgrade', package], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+print("All packages are up to date.")
 
 results_global = None
 final_log_filename_global = None
