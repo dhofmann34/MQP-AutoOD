@@ -123,7 +123,46 @@ def load_dataset(filename, index_col_name = None, label_col_name=None):
             params = config()  # get DB info from config.py
             conn = psycopg2.connect(**params)
             cur = conn.cursor()
-            cur.execute(""" TRUNCATE TABLE input, tsne, detectors, predictions, reliable, temp_if, temp_knn, temp_lof, temp_mahalanobis; """)  # empty tables for demo
+            cur.execute("""
+                            DO $$ 
+                            BEGIN
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'input') THEN
+                                    EXECUTE 'TRUNCATE TABLE input';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tsne') THEN
+                                    EXECUTE 'TRUNCATE TABLE tsne';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'detectors') THEN
+                                    EXECUTE 'TRUNCATE TABLE detectors';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'predictions') THEN
+                                    EXECUTE 'TRUNCATE TABLE predictions';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'reliable') THEN
+                                    EXECUTE 'TRUNCATE TABLE reliable';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_if') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_if';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_knn') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_knn';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_lof') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_lof';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_mahalanobis') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_mahalanobis';
+                                END IF;
+                            END $$;
+                        """)  # empty tables for demo
             conn.commit()
             cur.close()
             conn.close()
@@ -155,7 +194,30 @@ def load_dataset(filename, index_col_name = None, label_col_name=None):
             params = config()  # get DB info from config.py
             conn = psycopg2.connect(**params)
             cur = conn.cursor()
-            cur.execute(""" TRUNCATE TABLE input, tsne, detectors, predictions, reliable; """)  # empty tables for demo
+            cur.execute("""
+                            DO $$ 
+                            BEGIN
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'input') THEN
+                                    EXECUTE 'TRUNCATE TABLE input';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tsne') THEN
+                                    EXECUTE 'TRUNCATE TABLE tsne';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'detectors') THEN
+                                    EXECUTE 'TRUNCATE TABLE detectors';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'predictions') THEN
+                                    EXECUTE 'TRUNCATE TABLE predictions';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'reliable') THEN
+                                    EXECUTE 'TRUNCATE TABLE reliable';
+                                END IF;
+                            END $$;
+                        """)  # empty tables for demo
             conn.commit()
             cur.close()
             conn.close()
@@ -249,7 +311,7 @@ class AutoOD:
                     temp_lof_data["n"] = knn_N_range[i]
                     temp_lof_data["prediction"] = lof_predictions
                     temp_lof_data["score"] = lof_scores
-                    lof_df = lof_df.append(temp_lof_data)
+                    lof_df = pd.concat([lof_df, temp_lof_data]) #lof_df.append(temp_lof_data)
                 if y is not None:
                     f1 = get_f1_scores(predictions=lof_predictions,y = y)  # f1 score for each of the detectors? 
                     f1s.append(f1)
@@ -295,7 +357,7 @@ class AutoOD:
                     temp_knn_data["n"] = knn_N_range[i]
                     temp_knn_data["prediction"] = knn_predictions
                     temp_knn_data["score"] = knn_scores
-                    knn_df = knn_df.append(temp_knn_data)
+                    knn_df = pd.concat([knn_df, temp_knn_data]) # knn_df.append(temp_knn_data)
                 if y is not None:
                     f1 = get_f1_scores(predictions=knn_predictions,y = y)
                     f1s.append(f1)
@@ -342,7 +404,7 @@ class AutoOD:
                     temp_if_data["n"] = knn_N_range[i]
                     temp_if_data["prediction"] = if_predictions
                     temp_if_data["score"] = if_scores
-                    if_df = if_df.append(temp_if_data)
+                    if_df = pd.concat([if_df, temp_if_data]) # if_df.append(temp_if_data)
                 if y is not None:
                     f1 = get_f1_scores(predictions=if_predictions,y = y)
                     f1s.append(f1)
@@ -382,7 +444,7 @@ class AutoOD:
                     temp_mahala_data["n"] = N_range[i]
                     temp_mahala_data["prediction"] = mahalanobis_predictions
                     temp_mahala_data["score"] = mahalanobis_scores
-                    mahala_df = mahala_df.append(temp_mahala_data)
+                    mahala_df = pd.concat([mahala_df, temp_mahala_data]) # mahala_df.append(temp_mahala_data)
                 if y is not None:
                     f1 = get_f1_scores(mahalanobis_predictions, y)
                     best_mahala_f1 = max(best_mahala_f1, f1)
@@ -624,7 +686,7 @@ class AutoOD:
                 #temp_reliable_df = temp_reliable_df.sort_values(by=["id"])
                 temp_reliable_df["iteration"] = i_range
                 temp_reliable_df["reliable"] = full_data
-                reliable_df = reliable_df.append(temp_reliable_df)
+                reliable_df = pd.concat([reliable_df, temp_reliable_df]) # reliable_df.append(temp_reliable_df)
         if database == "y":  # DHDB
             #reliable_df = reliable_df.convert_dtypes()
             insert_input("reliable", reliable_df)
@@ -901,6 +963,9 @@ class AutoOD:
         return np.array([int(i) for i in clf_predict_proba_X > 0.5])
 
     def run_autood(self, dataset):
+
+        start_time = time.time()
+        
         data = self._load_dataset()
         if data is None:
             return AutoODResults(error_message=f"Cannot load data from file {self.params.filepath}")
@@ -920,6 +985,11 @@ class AutoOD:
         result_filename = f"results_{dataset}_{int(time.time())}.csv"
         pd.DataFrame(prediction_results).to_csv(f"results/{result_filename}")
         self.logger.info(f"Length of prediction results = {len(prediction_results)}")
+        
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print(f"Execution time: {execution_time} seconds")
+
         if y is not None:
             self.autood_f1_score = metrics.f1_score(y, prediction_results)
             self.logger.info(f"Final AutoOD F-1 Score= {self.autood_f1_score}")
