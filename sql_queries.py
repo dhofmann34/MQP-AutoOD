@@ -38,6 +38,8 @@ def INSERT_VALUES(table, data, cur):
     tuples = [tuple(x) for x in data.to_numpy()]
     extras.execute_values(cur, query, tuples)
 
+ITERATIONS_FROM_RELIABLE_TABLE = "SELECT max(iteration) FROM reliable"
+
 DROP_ALL_TEMP_TABLES = """
     DROP TABLE IF EXISTS
     temp_lof,
@@ -95,7 +97,7 @@ JOIN_ALL_TABLES = """
 def CREATE_REALIABLE_TABLES(iteration):
     createTableStatement = ""
     for i in range(iteration):
-        sql_statements += """
+        createTableStatement += """
             CREATE TABLE reliable_{} AS (
             SELECT id, reliable as reliable_{}
             FROM reliable 
@@ -109,3 +111,85 @@ def JOIN_RELIABLE_TABLES(iteration):
     for i in range(iteration):
         join_reliable = f"{join_reliable} FULL JOIN reliable_{i} using (id)" 
     return join_reliable
+
+TRUNCATE_ALL_TABLES = """
+                            DO $$ 
+                            BEGIN
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'input') THEN
+                                    EXECUTE 'TRUNCATE TABLE input';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tsne') THEN
+                                    EXECUTE 'TRUNCATE TABLE tsne';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'detectors') THEN
+                                    EXECUTE 'TRUNCATE TABLE detectors';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'predictions') THEN
+                                    EXECUTE 'TRUNCATE TABLE predictions';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'reliable') THEN
+                                    EXECUTE 'TRUNCATE TABLE reliable';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_if') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_if';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_knn') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_knn';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_lof') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_lof';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_mahalanobis') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_mahalanobis';
+                                END IF;
+                            END $$;
+                        """
+
+TRUNCATE_TEMP_TABLES = """
+                            DO $$ 
+                            BEGIN
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'input') THEN
+                                    EXECUTE 'TRUNCATE TABLE input';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tsne') THEN
+                                    EXECUTE 'TRUNCATE TABLE tsne';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'detectors') THEN
+                                    EXECUTE 'TRUNCATE TABLE detectors';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'predictions') THEN
+                                    EXECUTE 'TRUNCATE TABLE predictions';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'reliable') THEN
+                                    EXECUTE 'TRUNCATE TABLE reliable';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_if') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_if';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_knn') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_knn';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_lof') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_lof';
+                                END IF;
+                                
+                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_mahalanobis') THEN
+                                    EXECUTE 'TRUNCATE TABLE temp_mahalanobis';
+                                END IF;
+                            END $$;
+                        """

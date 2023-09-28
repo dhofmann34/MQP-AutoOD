@@ -4,6 +4,7 @@ from config import config
 import psycopg2.extras as extras
 import numpy as np
 from sklearn.manifold import TSNE
+import sql_queries as sql
 
 # get data types of our columns 
 def getColumnDtypes(dataTypes):
@@ -31,27 +32,17 @@ def create_input_table(data):
         conn = psycopg2.connect(**params)
         cur = conn.cursor()  # create a cursor
 
-        cur.execute("""
-            DROP TABLE IF EXISTS
-            detectors,
-            predictions,
-            reliable,
-            tsne,
-            input
-            """)
+        cur.execute(sql.DROP_ALL_TABLES)
 
-        cur.execute('CREATE TABLE detectors (id integer, detector text, k integer, n integer, prediction integer, score float);')
-        cur.execute('CREATE TABLE predictions (id integer, prediction integer, correct integer);')
-        cur.execute('CREATE TABLE reliable (id integer, iteration integer, reliable integer);')
-        cur.execute('CREATE TABLE tsne (id integer, tsne1 float, tsne2 float);')
+        cur.execute(sql.CREATE_DETECTORS_TABLE)
+        cur.execute(sql.CREATE_PREDICTIONS_TABLE)
+        cur.execute(sql.CREATE_RELIABLE_TABLE)
+        cur.execute(sql.CREATE_TSNE_TABLE)
 
 
         columnName = list(data.columns.values)
         columnDataType = getColumnDtypes(data.dtypes)
-        createTableStatement = 'CREATE TABLE IF NOT EXISTS input ('
-        for i in range(len(columnDataType)):
-            createTableStatement = createTableStatement + str(columnName[i]) + ' ' + columnDataType[i] + ','
-        createTableStatement = createTableStatement[:-1] + ' );'
+        createTableStatement = sql.CREATE_INPUT_TABLE(columnName, columnDataType)
         cur.execute(createTableStatement)
         conn.commit()
         cur.close()  # close the communication with the PostgreSQL
@@ -78,10 +69,8 @@ def insert_input(table, data):  # we can use this fucntion to add to our databse
 		
         cur = conn.cursor()  # create a cursor
 
-        cols = ','.join(list(data.columns))        
-        query = "INSERT INTO %s(%s) VALUES %%s" % (table, cols)
-        tuples = [tuple(x) for x in data.to_numpy()]
-        extras.execute_values(cur, query, tuples)
+        sql.INSERT_VALUES(table, data, cur)
+        
         conn.commit()
         cur.close()  # close the communication with the PostgreSQL
 
@@ -105,6 +94,23 @@ def insert_tsne(table, data, label_col_name, index_col_name):
     fit_df["tsne2"] = fit[:,1]
     insert_input(table, fit_df)
 
+def truncate_all_tables():
+    params = config()  # get DB info from config.py
+    conn = psycopg2.connect(**params)
+    cur = conn.cursor()
+    cur.execute(sql.TRUNCATE_ALL_TABLES)  # empty tables for demo
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def truncate_temp_tables():
+    params = config()  # get DB info from config.py
+    conn = psycopg2.connect(**params)
+    cur = conn.cursor()
+    cur.execute(sql.TRUNCATE_TEMP_TABLES)  # empty tables for demo
+    conn.commit()
+    cur.close()
+    conn.close()
 
 
 

@@ -38,6 +38,10 @@ if database == "y":
     from connect import insert_input  # DHDB
     from connect import insert_tsne
     from connect import create_input_table
+    from connect import truncate_all_tables
+    from connect import truncate_temp_tables
+ 
+ 
  
 simplefilter(action='ignore', category=FutureWarning)
 
@@ -118,55 +122,7 @@ def load_dataset(filename, index_col_name = None, label_col_name=None):
         label_col_name = 'label'
         data[label_col_name] = data[label_col_name].map(lambda x: 1 if x == b'yes' else 0).values if label_col_name else None
         if database == "y":
-            import psycopg2
-            from config import config
-            params = config()  # get DB info from config.py
-            conn = psycopg2.connect(**params)
-            cur = conn.cursor()
-            cur.execute("""
-                            DO $$ 
-                            BEGIN
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'input') THEN
-                                    EXECUTE 'TRUNCATE TABLE input';
-                                END IF;
-                                
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tsne') THEN
-                                    EXECUTE 'TRUNCATE TABLE tsne';
-                                END IF;
-                                
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'detectors') THEN
-                                    EXECUTE 'TRUNCATE TABLE detectors';
-                                END IF;
-                                
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'predictions') THEN
-                                    EXECUTE 'TRUNCATE TABLE predictions';
-                                END IF;
-                                
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'reliable') THEN
-                                    EXECUTE 'TRUNCATE TABLE reliable';
-                                END IF;
-                                
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_if') THEN
-                                    EXECUTE 'TRUNCATE TABLE temp_if';
-                                END IF;
-                                
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_knn') THEN
-                                    EXECUTE 'TRUNCATE TABLE temp_knn';
-                                END IF;
-                                
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_lof') THEN
-                                    EXECUTE 'TRUNCATE TABLE temp_lof';
-                                END IF;
-                                
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'temp_mahalanobis') THEN
-                                    EXECUTE 'TRUNCATE TABLE temp_mahalanobis';
-                                END IF;
-                            END $$;
-                        """)  # empty tables for demo
-            conn.commit()
-            cur.close()
-            conn.close()
-
+            truncate_all_tables
             # SQL does not allow numeric values to be column names
             columnNames = data.columns[pd.to_numeric(data.columns, errors='coerce').to_series().notnull()]
             for name in columnNames:
@@ -188,40 +144,7 @@ def load_dataset(filename, index_col_name = None, label_col_name=None):
         if debug_small_n == 'y':
             data = data.sample(n=500, random_state = 15)  # DH: added to debug code locally
         if database == "y":
-            
-            import psycopg2
-            from config import config
-            params = config()  # get DB info from config.py
-            conn = psycopg2.connect(**params)
-            cur = conn.cursor()
-            cur.execute("""
-                            DO $$ 
-                            BEGIN
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'input') THEN
-                                    EXECUTE 'TRUNCATE TABLE input';
-                                END IF;
-                                
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tsne') THEN
-                                    EXECUTE 'TRUNCATE TABLE tsne';
-                                END IF;
-                                
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'detectors') THEN
-                                    EXECUTE 'TRUNCATE TABLE detectors';
-                                END IF;
-                                
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'predictions') THEN
-                                    EXECUTE 'TRUNCATE TABLE predictions';
-                                END IF;
-                                
-                                IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'reliable') THEN
-                                    EXECUTE 'TRUNCATE TABLE reliable';
-                                END IF;
-                            END $$;
-                        """)  # empty tables for demo
-            conn.commit()
-            cur.close()
-            conn.close()
-
+            truncate_temp_tables
             # SQL does not allow numeric values to be column names
             columnNames = data.columns[pd.to_numeric(data.columns, errors='coerce').to_series().notnull()]
             for name in columnNames:
