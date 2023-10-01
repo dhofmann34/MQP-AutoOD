@@ -34,7 +34,7 @@ def CREATE_INPUT_TABLE(columnName, columnDataType):
 
 def INSERT_VALUES(table, data, cur):
     cols = ','.join(list(data.columns))
-    query = "INSERT INTO %s(%s) VALUES %%s" % (table, cols)
+    query = "INSERT INTO {}({}) VALUES %s".format(table, cols)
     tuples = [tuple(x) for x in data.to_numpy()]
     extras.execute_values(cur, query, tuples)
 
