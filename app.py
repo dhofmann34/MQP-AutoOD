@@ -142,7 +142,8 @@ def call_autood(filename, outlier_percentage_min, outlier_percentage_max, detect
     logger.info(f"Start calling autood with file {filename}...indexColName = {index_col_name}, labelColName = {label_col_name}")
     logger.info(
         f"Parameters: outlier_percentage_min = {outlier_percentage_min}%, outlier_percentage_max = {outlier_percentage_max}%")
-    return run_autood(filepath, logger, outlier_percentage_min, outlier_percentage_max, detection_methods, index_col_name, label_col_name)
+    return run_autood(filepath, logger, outlier_percentage_min, outlier_percentage_max, detection_methods,
+                      index_col_name, label_col_name, db_parameters)
 
 #### DH
 from flask_navigation import Navigation

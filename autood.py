@@ -27,6 +27,8 @@ database = "y"  # DHDB "y" if we want to connect to database for demo
 
 debug_small_n = 'n'  # "y" if we want smaller dataset for debugging
 
+db_parameters = None
+
 def addapt_numpy_float64(numpy_float64):
     return AsIs(numpy_float64)
 def addapt_numpy_int64(numpy_int64):
@@ -120,8 +122,8 @@ def load_dataset(filename, index_col_name = None, label_col_name=None):
         if database == "y":
             import psycopg2
             from config import db_config
-            params = db_config()  # get DB info from config.py
-            conn = psycopg2.connect(**params)
+            # params = db_config()  # get DB info from config.py
+            conn = psycopg2.connect(**db_parameters)
             cur = conn.cursor()
             cur.execute("""
                             DO $$ 
@@ -191,8 +193,8 @@ def load_dataset(filename, index_col_name = None, label_col_name=None):
             
             import psycopg2
             from config import db_config
-            params = db_config()  # get DB info from config.py
-            conn = psycopg2.connect(**params)
+            # params = db_config()  # get DB info from config.py
+            conn = psycopg2.connect(**db_parameters)
             cur = conn.cursor()
             cur.execute("""
                             DO $$ 
@@ -1005,10 +1007,13 @@ def get_default_detection_method_list():
             OutlierDetectionMethod.Manalanobis]
 
 
-def run_autood(filepath, logger, outlier_min, outlier_max, detection_methods, index_col_name, label_col_name):
+def run_autood(filepath, logger, outlier_min, outlier_max, detection_methods, index_col_name, label_col_name,
+               db_parameters_in):
     dataset = Path(filepath).stem
     logger.info(f"Dataset Name = {dataset}")
     default_parameters = get_default_parameters(dataset)
+    global db_parameters
+    db_parameters = db_parameters_in
     if outlier_min and outlier_max:
         logger.info(f"Outlier Range defined as [{outlier_min}%, {outlier_max}%]")
         outlier_min_percent = outlier_min * 0.01
