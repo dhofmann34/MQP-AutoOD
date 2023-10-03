@@ -119,8 +119,8 @@ def load_dataset(filename, index_col_name = None, label_col_name=None):
         data[label_col_name] = data[label_col_name].map(lambda x: 1 if x == b'yes' else 0).values if label_col_name else None
         if database == "y":
             import psycopg2
-            from config import config
-            params = config()  # get DB info from config.py
+            from config import db_config
+            params = db_config()  # get DB info from config.py
             conn = psycopg2.connect(**params)
             cur = conn.cursor()
             cur.execute("""
@@ -190,8 +190,8 @@ def load_dataset(filename, index_col_name = None, label_col_name=None):
         if database == "y":
             
             import psycopg2
-            from config import config
-            params = config()  # get DB info from config.py
+            from config import db_config
+            params = db_config()  # get DB info from config.py
             conn = psycopg2.connect(**params)
             cur = conn.cursor()
             cur.execute("""

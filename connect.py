@@ -1,6 +1,6 @@
 import pandas as pd
 import psycopg2
-from config import config
+from config import db_config
 import psycopg2.extras as extras
 import numpy as np
 from sklearn.manifold import TSNE
@@ -24,7 +24,7 @@ def create_input_table(data):
     conn = None
     try:
         # read connection parameters
-        params = config()  # get DB info from config.py
+        params = db_config()  # get DB info from config.py
 
         # connect to the PostgreSQL server
         print('Connecting to the PostgreSQL database...')
@@ -70,7 +70,7 @@ def insert_input(table, data):  # we can use this fucntion to add to our databse
     conn = None
     try:
         # read connection parameters
-        params = config()  # get DB info from config.py
+        params = db_config()  # get DB info from config.py
 
         # connect to the PostgreSQL server
         print('Connecting to the PostgreSQL database...')
