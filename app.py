@@ -8,6 +8,7 @@ from autood import run_autood, AutoODResults, get_default_detection_method_list,
 import psycopg2
 from flask import jsonify
 import config
+import sql_queries as sql
 
 import collections
 collections.MutableSequence = collections.abc.MutableSequence
@@ -170,80 +171,28 @@ def send_data():
     conn = psycopg2.connect(**db_parameters)
     cur = conn.cursor()
     # we can use multiple execute statements to get the data how we need it
-    cur.execute("SELECT max(iteration) FROM reliable")  # number of iterations for reliable labels
+    cur.execute(sql.ITERATIONS_FROM_RELIABLE_TABLE)  # number of iterations for reliable labels
     iteration = cur.fetchall()[0][0] + 1
     cur.close()
     cur = conn.cursor()
 
     #drop all tables on each run
-    cur.execute("""
-    DROP TABLE IF EXISTS
-    temp_lof,
-    temp_knn,
-    temp_if,
-    temp_mahalanobis;
-    """)
+    cur.execute(sql.DROP_ALL_TEMP_TABLES)
     
     # create temp tabels so that we can pass the data in a way that JS/D3 needs it
-    cur.execute("""
-    CREATE TABLE temp_lof AS (
-    SELECT id, ROUND(AVG(prediction)) AS Prediction_LOF, AVG(score) AS SCORE_LOF 
-    FROM detectors 
-    WHERE detector = 'LOF' 
-    GROUP BY id
-    )
-    """)
+    cur.execute(sql.CREATE_TEMP_LOF_TABLE)
     
-    cur.execute("""
-    CREATE TABLE temp_knn AS (
-    SELECT id, ROUND(AVG(prediction)) AS Prediction_KNN, AVG(score) AS SCORE_KNN 
-    FROM detectors 
-    WHERE detector = 'KNN' 
-    GROUP BY id
-    )
-    """)
+    cur.execute(sql.CREATE_TEMP_KNN_TABLE)
     
-    cur.execute("""
-    CREATE TABLE temp_if AS (
-    SELECT id, ROUND(AVG(prediction)) AS Prediction_if, AVG(score) AS SCORE_if
-    FROM detectors 
-    WHERE detector = 'IF' 
-    GROUP BY id
-    )
-    """)
+    cur.execute(sql.CREATE_TEMP_IF_TABLE)
     
-    cur.execute("""
-    CREATE TABLE temp_mahalanobis AS (
-    SELECT id, ROUND(AVG(prediction)) AS Prediction_mahalanobis, AVG(score) AS SCORE_mahalanobis
-    FROM detectors 
-    WHERE detector = 'mahalanobis' 
-    GROUP BY id
-    )
-    """)
+    cur.execute(sql.CREATE_TEMP_MAHALANOBIS_TABLE)
 
-    for i in range(iteration):  # one table for each iteration
-        cur.execute(f"""
-        CREATE TABLE reliable_{i} AS (
-        SELECT id, reliable as reliable_{i}
-        FROM reliable 
-        WHERE iteration = {i}
-        )
-    """)
+    cur.execute(sql.CREATE_REALIABLE_TABLES(iteration))
 
     # Join all tabels together
-    SQL_statement = """  
-        SELECT *
-        FROM input 
-        FULL JOIN tsne using (id)
-        FULL JOIN temp_lof using (id)
-        FULL JOIN temp_knn using (id)
-        FULL JOIN temp_if using (id)
-        FULL JOIN temp_mahalanobis using (id)
-        FULL JOIN predictions using (id)
-        """
-    join_reliable = ""  # join relibale labels
-    for i in range(iteration):
-        join_reliable = f"{join_reliable} FULL JOIN reliable_{i} using (id)" 
+    SQL_statement = sql.JOIN_ALL_TABLES
+    join_reliable = sql.JOIN_RELIABLE_TABLES(iteration)
 
     cur.execute(f"{SQL_statement}{join_reliable}")
 
