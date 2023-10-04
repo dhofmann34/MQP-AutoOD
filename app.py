@@ -19,17 +19,9 @@ final_log_filename_global = None
 
 config.configure_packages()
 app = Flask(__name__)
-app_parameters = config.app_config()
+app, LOGGING_PATH = config.app_config(app)
 db_parameters = config.db_config()
-
-LOGGING_PATH = app_parameters["logging-path"]
-
 logger.add(LOGGING_PATH, format="{time} - {message}")
-app.config['UPLOAD_FOLDER'] = app_parameters["upload-folder"]
-app.config['DOWNLOAD_FOLDER'] = app_parameters["download-folder"]
-app.config['DEBUG'] = app_parameters["debug-mode"] == 'True'  # start debugging
-app.config['ALLOWED_EXTENSIONS'] = app_parameters["allowed-extensions"].split(",")
-app.secret_key = "super secret key"
 
 
 @app.route('/', methods=['GET', 'POST'])
