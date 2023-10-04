@@ -1,10 +1,14 @@
 import pandas as pd
 import psycopg2
+
+import config
 from config import db_config
 import psycopg2.extras as extras
 import numpy as np
 from sklearn.manifold import TSNE
 import sql_queries as sql
+
+db_parameters = config.db_config()
 
 # get data types of our columns 
 def getColumnDtypes(dataTypes):
@@ -24,12 +28,9 @@ def getColumnDtypes(dataTypes):
 def create_input_table(data):
     conn = None
     try:
-        # read connection parameters
-        params = db_config()  # get DB info from config.py
-
         # connect to the PostgreSQL server
         print('Connecting to the PostgreSQL database...')
-        conn = psycopg2.connect(**params)
+        conn = psycopg2.connect(**db_parameters)
         cur = conn.cursor()  # create a cursor
 
         cur.execute(sql.DROP_ALL_TABLES)
@@ -60,13 +61,9 @@ def insert_input(table, data):  # we can use this fucntion to add to our databse
     """ Takes df, connects to the PostgreSQL database server, uploads to postgres """
     conn = None
     try:
-        # read connection parameters
-        params = db_config()  # get DB info from config.py
-
         # connect to the PostgreSQL server
         print('Connecting to the PostgreSQL database...')
-        conn = psycopg2.connect(**params)
-		
+        conn = psycopg2.connect(**db_parameters)
         cur = conn.cursor()  # create a cursor
 
         sql.INSERT_VALUES(table, data, cur)
@@ -94,18 +91,18 @@ def insert_tsne(table, data, label_col_name, index_col_name):
     fit_df["tsne2"] = fit[:,1]
     insert_input(table, fit_df)
 
+
 def truncate_all_tables():
-    params = config()  # get DB info from config.py
-    conn = psycopg2.connect(**params)
+    conn = psycopg2.connect(**db_parameters)
     cur = conn.cursor()
     cur.execute(sql.TRUNCATE_ALL_TABLES)  # empty tables for demo
     conn.commit()
     cur.close()
     conn.close()
 
+
 def truncate_temp_tables():
-    params = config()  # get DB info from config.py
-    conn = psycopg2.connect(**params)
+    conn = psycopg2.connect(**db_parameters)
     cur = conn.cursor()
     cur.execute(sql.TRUNCATE_TEMP_TABLES)  # empty tables for demo
     conn.commit()
