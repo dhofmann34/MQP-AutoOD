@@ -1,7 +1,3 @@
-import subprocess
-import pkg_resources
-from cgi import test
-from flask import Flask
 from flask import Flask, request, render_template, flash, redirect, url_for, Response, send_file
 from werkzeug.utils import secure_filename
 import os
@@ -11,61 +7,27 @@ from shutil import copyfile
 from autood import run_autood, AutoODResults, get_default_detection_method_list,OutlierDetectionMethod
 import psycopg2
 from flask import jsonify
-from config import config
+import config
 import sql_queries as sql
 
 import collections
 collections.MutableSequence = collections.abc.MutableSequence
 collections.Iterable = collections.abc.Iterable
 
-# List of required packages
-required_packages = [
-    'Flask==2.3.3',
-    'Flask_Navigation==0.2.0',
-    'loguru==0.7.2',
-    'numpy==1.25.2',
-    'pandas==2.1.0',
-    'psycopg2==2.9.7',
-    'scikit_learn==1.3.0',
-    'scipy==1.11.2',
-    'Werkzeug==2.3.7',
-]
-
-# Check and update packages
-for package in required_packages:
-    package_name, package_version = package.split('==')
-    
-    # Check if the package is installed and get its version
-    try:
-        installed_version = pkg_resources.get_distribution(package_name).version
-    except pkg_resources.DistributionNotFound:
-        installed_version = None
-
-    # If the package is not installed or the installed version is older, update it
-    if installed_version is None or installed_version != package_version:
-        print(f"Updating {package_name} to version {package_version}")
-        subprocess.run(['pip', 'install', '--upgrade', package], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-print("All packages are up to date.")
-
 results_global = None
 final_log_filename_global = None
 
-LOGGING_PATH = "static/job.log"
-# configure logger
+config.configure_packages()
+app = Flask(__name__)
+app, LOGGING_PATH = config.app_config(app)
+db_parameters = config.db_config()
 logger.add(LOGGING_PATH, format="{time} - {message}")
 
-UPLOAD_FOLDER = 'files'
-DOWNLOAD_FOLDER = 'results/'
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['DEBUG'] = True  # start debugging
-app.secret_key = "super secret key"
-
-ALLOWED_EXTENSIONS = {'arff', 'csv'}
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
     return redirect('/autood/index')
+
 
 @app.route('/autood/results_summary', methods=['GET']) #DH
 def results1():
@@ -90,7 +52,7 @@ def autood_form2():
 
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 
 def flask_logger():
@@ -148,7 +110,7 @@ def autood_input():
         else:
             # Create empty job.log, old logging will be deleted
             final_log_filename = f"log_{file.filename.replace('.', '_')}_{int(time.time())}"
-            copyfile(LOGGING_PATH, DOWNLOAD_FOLDER + final_log_filename)
+            copyfile(LOGGING_PATH, app.config['DOWNLOAD_FOLDER'] + final_log_filename)
             open(LOGGING_PATH, 'w').close()
             global results_global, final_log_filename_global
             results_global = results
@@ -164,16 +126,17 @@ def autood_input():
 
 @app.route('/return-files/<filename>')
 def return_files_tut(filename):
-    file_path = DOWNLOAD_FOLDER + filename
+    file_path = app.config['DOWNLOAD_FOLDER'] + filename
     return send_file(file_path, as_attachment=False, attachment_filename='')
 
 
 def call_autood(filename, outlier_percentage_min, outlier_percentage_max, detection_methods, index_col_name, label_col_name):
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     logger.info(f"Start calling autood with file {filename}...indexColName = {index_col_name}, labelColName = {label_col_name}")
     logger.info(
         f"Parameters: outlier_percentage_min = {outlier_percentage_min}%, outlier_percentage_max = {outlier_percentage_max}%")
-    return run_autood(filepath, logger, outlier_percentage_min, outlier_percentage_max, detection_methods, index_col_name, label_col_name)
+    return run_autood(filepath, logger, outlier_percentage_min, outlier_percentage_max, detection_methods,
+                      index_col_name, label_col_name, db_parameters)
 
 #### DH
 from flask_navigation import Navigation
@@ -197,8 +160,7 @@ def result_index():
 
 @app.route('/data')  # get data from DB as json
 def send_data():
-    params = config()  # get DB info from config.py
-    conn = psycopg2.connect(**params)
+    conn = psycopg2.connect(**db_parameters)
     cur = conn.cursor()
     # we can use multiple execute statements to get the data how we need it
     cur.execute(sql.ITERATIONS_FROM_RELIABLE_TABLE)  # number of iterations for reliable labels
@@ -222,7 +184,7 @@ def send_data():
 
     # Join all tabels together
     SQL_statement = sql.JOIN_ALL_TABLES
-    join_reliable = sql.JOIN_RELIABLE_TABLES(iteration) 
+    join_reliable = sql.JOIN_RELIABLE_TABLES(iteration)
 
     cur.execute(f"{SQL_statement}{join_reliable}")
 
