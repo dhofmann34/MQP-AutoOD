@@ -17,7 +17,6 @@ collections.Iterable = collections.abc.Iterable
 results_global = None
 final_log_filename_global = None
 
-config.configure_packages()
 app = Flask(__name__)
 app, LOGGING_PATH = config.app_config(app)
 db_parameters = config.db_config()
