@@ -80,7 +80,28 @@
             <table id="table2" class="display" style="width:10%"></table>
         </div>
     </div>
-        
+    
+    <div id="summary"> 
+        <form enctype=multipart/form-data>
+            <table>
+                <tr>
+                    <td><b>F-1 of AutoOD</b></td>
+                    <td>         </td>
+                    <td>{{ autood_f1 }}</td>
+                </tr>
+                <tr>
+                    <td><b>F-1 of Best Unsupervised Detector</b></td>
+                    <td>         </td>
+                    <td>{{ best_f1 }}</td>
+                </tr>
+                <tr>
+                    <td><b>Best Unsupervised Detector</b></td>
+                    <td>         </td>
+                    <td>{{best_method}}</td>
+                </tr>
+            </table>
+        </form>
+    </div>
 
 
 </html>
