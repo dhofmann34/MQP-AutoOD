@@ -1,0 +1,214 @@
+2023-11-07T15:11:07.365650+0000 - selected methods = ['lof']
+2023-11-07T15:11:07.365650+0000 - selected methods = ['lof']
+2023-11-07T15:11:07.365966+0000 - Start calling autood with file cardio.csv...indexColName = id, labelColName = label
+2023-11-07T15:11:07.365966+0000 - Start calling autood with file cardio.csv...indexColName = id, labelColName = label
+2023-11-07T15:11:07.366099+0000 - Parameters: outlier_percentage_min = 5.0%, outlier_percentage_max = 15.0%
+2023-11-07T15:11:07.366099+0000 - Parameters: outlier_percentage_min = 5.0%, outlier_percentage_max = 15.0%
+2023-11-07T15:11:07.366249+0000 - Dataset Name = cardio
+2023-11-07T15:11:07.366249+0000 - Dataset Name = cardio
+2023-11-07T15:11:07.366354+0000 - Outlier Range defined as [5.0%, 15.0%]
+2023-11-07T15:11:07.366354+0000 - Outlier Range defined as [5.0%, 15.0%]
+2023-11-07T15:11:07.377768+0000 - Connecting to the PostgreSQL database...
+2023-11-07T15:11:07.377768+0000 - Connecting to the PostgreSQL database...
+2023-11-07T15:11:07.400821+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:07.400821+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:07.401177+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:07.401177+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:07.401378+0000 - Connecting to the PostgreSQL database...
+2023-11-07T15:11:07.401378+0000 - Connecting to the PostgreSQL database...
+2023-11-07T15:11:07.538156+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:07.538156+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:10.419312+0000 - Connecting to the PostgreSQL database...
+2023-11-07T15:11:10.419312+0000 - Connecting to the PostgreSQL database...
+2023-11-07T15:11:10.449483+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:10.449483+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:10.450763+0000 - Dataset size = (1831, 21), dataset label size = (1831,)
+2023-11-07T15:11:10.450763+0000 - Dataset size = (1831, 21), dataset label size = (1831,)
+2023-11-07T15:11:10.451031+0000 - Start running LOF with k=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+2023-11-07T15:11:10.451031+0000 - Start running LOF with k=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+2023-11-07T15:11:10.990651+0000 - Connecting to the PostgreSQL database...
+2023-11-07T15:11:10.990651+0000 - Connecting to the PostgreSQL database...
+2023-11-07T15:11:12.215976+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:12.215976+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:12.216469+0000 - Best LOF F-1 = 0.3022222222222222
+2023-11-07T15:11:12.216469+0000 - Best LOF F-1 = 0.3022222222222222
+2023-11-07T15:11:12.216630+0000 - Best Unsupervised F-1 Score = 0.3022222222222222
+2023-11-07T15:11:12.216630+0000 - Best Unsupervised F-1 Score = 0.3022222222222222
+2023-11-07T15:11:12.216742+0000 - Best Unsupervised Outlier Detection Method = ['LOF']
+2023-11-07T15:11:12.216742+0000 - Best Unsupervised Outlier Detection Method = ['LOF']
+2023-11-07T15:11:12.217316+0000 - Instance Index Ranges: [[0, 60]]
+2023-11-07T15:11:12.217316+0000 - Instance Index Ranges: [[0, 60]]
+2023-11-07T15:11:12.217500+0000 - Detector Index Ranges: [[0, 10]]
+2023-11-07T15:11:12.217500+0000 - Detector Index Ranges: [[0, 10]]
+2023-11-07T15:11:12.221430+0000 - F1 for Majority Vote:0.18658892128279883
+2023-11-07T15:11:12.221430+0000 - F1 for Majority Vote:0.18658892128279883
+2023-11-07T15:11:12.221694+0000 - ##################################################################
+2023-11-07T15:11:12.221694+0000 - ##################################################################
+2023-11-07T15:11:12.221832+0000 - Start First-round AutoOD training...
+2023-11-07T15:11:12.221832+0000 - Start First-round AutoOD training...
+2023-11-07T15:11:12.302159+0000 - Iteration = 0, F-1 score = 0.2675585284280936
+2023-11-07T15:11:12.302159+0000 - Iteration = 0, F-1 score = 0.2675585284280936
+2023-11-07T15:11:12.393149+0000 - Iteration = 1, F-1 score = 0.27388535031847133
+2023-11-07T15:11:12.393149+0000 - Iteration = 1, F-1 score = 0.27388535031847133
+2023-11-07T15:11:12.486605+0000 - Iteration = 2, F-1 score = 0.27089337175792505
+2023-11-07T15:11:12.486605+0000 - Iteration = 2, F-1 score = 0.27089337175792505
+2023-11-07T15:11:12.581173+0000 - Iteration = 3, F-1 score = 0.27999999999999997
+2023-11-07T15:11:12.581173+0000 - Iteration = 3, F-1 score = 0.27999999999999997
+2023-11-07T15:11:12.675890+0000 - Iteration = 4, F-1 score = 0.2729805013927577
+2023-11-07T15:11:12.675890+0000 - Iteration = 4, F-1 score = 0.2729805013927577
+2023-11-07T15:11:12.769831+0000 - Iteration = 5, F-1 score = 0.27146814404432135
+2023-11-07T15:11:12.769831+0000 - Iteration = 5, F-1 score = 0.27146814404432135
+2023-11-07T15:11:12.864345+0000 - Iteration = 6, F-1 score = 0.2692307692307692
+2023-11-07T15:11:12.864345+0000 - Iteration = 6, F-1 score = 0.2692307692307692
+2023-11-07T15:11:12.960182+0000 - Iteration = 7, F-1 score = 0.26589595375722536
+2023-11-07T15:11:12.960182+0000 - Iteration = 7, F-1 score = 0.26589595375722536
+2023-11-07T15:11:13.056303+0000 - Iteration = 8, F-1 score = 0.26392961876832843
+2023-11-07T15:11:13.056303+0000 - Iteration = 8, F-1 score = 0.26392961876832843
+2023-11-07T15:11:13.146519+0000 - Iteration = 9, F-1 score = 0.28328611898017
+2023-11-07T15:11:13.146519+0000 - Iteration = 9, F-1 score = 0.28328611898017
+2023-11-07T15:11:13.237509+0000 - Iteration = 10, F-1 score = 0.2691292875989446
+2023-11-07T15:11:13.237509+0000 - Iteration = 10, F-1 score = 0.2691292875989446
+2023-11-07T15:11:13.330262+0000 - Iteration = 11, F-1 score = 0.26525198938992045
+2023-11-07T15:11:13.330262+0000 - Iteration = 11, F-1 score = 0.26525198938992045
+2023-11-07T15:11:13.413152+0000 - Iteration = 12, F-1 score = 0.2814070351758794
+2023-11-07T15:11:13.413152+0000 - Iteration = 12, F-1 score = 0.2814070351758794
+2023-11-07T15:11:13.484851+0000 - Iteration = 13, F-1 score = 0.29707112970711297
+2023-11-07T15:11:13.484851+0000 - Iteration = 13, F-1 score = 0.29707112970711297
+2023-11-07T15:11:13.555909+0000 - Iteration = 14, F-1 score = 0.2816326530612245
+2023-11-07T15:11:13.555909+0000 - Iteration = 14, F-1 score = 0.2816326530612245
+2023-11-07T15:11:13.627889+0000 - Iteration = 15, F-1 score = 0.28857715430861725
+2023-11-07T15:11:13.627889+0000 - Iteration = 15, F-1 score = 0.28857715430861725
+2023-11-07T15:11:13.697386+0000 - Iteration = 16, F-1 score = 0.3076923076923077
+2023-11-07T15:11:13.697386+0000 - Iteration = 16, F-1 score = 0.3076923076923077
+2023-11-07T15:11:13.764680+0000 - Iteration = 17, F-1 score = 0.32411067193675885
+2023-11-07T15:11:13.764680+0000 - Iteration = 17, F-1 score = 0.32411067193675885
+2023-11-07T15:11:13.834435+0000 - Iteration = 18, F-1 score = 0.3404255319148936
+2023-11-07T15:11:13.834435+0000 - Iteration = 18, F-1 score = 0.3404255319148936
+2023-11-07T15:11:13.904664+0000 - Iteration = 19, F-1 score = 0.33904761904761904
+2023-11-07T15:11:13.904664+0000 - Iteration = 19, F-1 score = 0.33904761904761904
+2023-11-07T15:11:13.973364+0000 - Iteration = 20, F-1 score = 0.3403441682600383
+2023-11-07T15:11:13.973364+0000 - Iteration = 20, F-1 score = 0.3403441682600383
+2023-11-07T15:11:14.042274+0000 - Iteration = 21, F-1 score = 0.3403441682600383
+2023-11-07T15:11:14.042274+0000 - Iteration = 21, F-1 score = 0.3403441682600383
+2023-11-07T15:11:14.111275+0000 - Iteration = 22, F-1 score = 0.3403441682600383
+2023-11-07T15:11:14.111275+0000 - Iteration = 22, F-1 score = 0.3403441682600383
+2023-11-07T15:11:14.180290+0000 - Iteration = 23, F-1 score = 0.3403441682600383
+2023-11-07T15:11:14.180290+0000 - Iteration = 23, F-1 score = 0.3403441682600383
+2023-11-07T15:11:14.249218+0000 - Iteration = 24, F-1 score = 0.3403441682600383
+2023-11-07T15:11:14.249218+0000 - Iteration = 24, F-1 score = 0.3403441682600383
+2023-11-07T15:11:14.251139+0000 - Connecting to the PostgreSQL database...
+2023-11-07T15:11:14.251139+0000 - Connecting to the PostgreSQL database...
+2023-11-07T15:11:14.551735+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:14.551735+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:14.624579+0000 - ##################################################################
+2023-11-07T15:11:14.624579+0000 - ##################################################################
+2023-11-07T15:11:14.624811+0000 - Start Second-round AutoOD training...
+2023-11-07T15:11:14.624811+0000 - Start Second-round AutoOD training...
+2023-11-07T15:11:14.690054+0000 - Iteration = 0, F-1 score = 0.3353535353535354
+2023-11-07T15:11:14.690054+0000 - Iteration = 0, F-1 score = 0.3353535353535354
+2023-11-07T15:11:14.759350+0000 - Iteration = 1, F-1 score = 0.3306451612903225
+2023-11-07T15:11:14.759350+0000 - Iteration = 1, F-1 score = 0.3306451612903225
+2023-11-07T15:11:14.832584+0000 - Iteration = 2, F-1 score = 0.3346774193548388
+2023-11-07T15:11:14.832584+0000 - Iteration = 2, F-1 score = 0.3346774193548388
+2023-11-07T15:11:14.904931+0000 - Iteration = 3, F-1 score = 0.3366733466933868
+2023-11-07T15:11:14.904931+0000 - Iteration = 3, F-1 score = 0.3366733466933868
+2023-11-07T15:11:14.977332+0000 - Iteration = 4, F-1 score = 0.3359683794466404
+2023-11-07T15:11:14.977332+0000 - Iteration = 4, F-1 score = 0.3359683794466404
+2023-11-07T15:11:15.049293+0000 - Iteration = 5, F-1 score = 0.332
+2023-11-07T15:11:15.049293+0000 - Iteration = 5, F-1 score = 0.332
+2023-11-07T15:11:15.122063+0000 - Iteration = 6, F-1 score = 0.3313373253493014
+2023-11-07T15:11:15.122063+0000 - Iteration = 6, F-1 score = 0.3313373253493014
+2023-11-07T15:11:15.194463+0000 - Iteration = 7, F-1 score = 0.332
+2023-11-07T15:11:15.194463+0000 - Iteration = 7, F-1 score = 0.332
+2023-11-07T15:11:15.267033+0000 - Iteration = 8, F-1 score = 0.332
+2023-11-07T15:11:15.267033+0000 - Iteration = 8, F-1 score = 0.332
+2023-11-07T15:11:15.339485+0000 - Iteration = 9, F-1 score = 0.332
+2023-11-07T15:11:15.339485+0000 - Iteration = 9, F-1 score = 0.332
+2023-11-07T15:11:15.411706+0000 - Iteration = 10, F-1 score = 0.332
+2023-11-07T15:11:15.411706+0000 - Iteration = 10, F-1 score = 0.332
+2023-11-07T15:11:15.484111+0000 - Iteration = 11, F-1 score = 0.332
+2023-11-07T15:11:15.484111+0000 - Iteration = 11, F-1 score = 0.332
+2023-11-07T15:11:15.556513+0000 - Iteration = 12, F-1 score = 0.332
+2023-11-07T15:11:15.556513+0000 - Iteration = 12, F-1 score = 0.332
+2023-11-07T15:11:15.629233+0000 - Iteration = 13, F-1 score = 0.332
+2023-11-07T15:11:15.629233+0000 - Iteration = 13, F-1 score = 0.332
+2023-11-07T15:11:15.701303+0000 - Iteration = 14, F-1 score = 0.332
+2023-11-07T15:11:15.701303+0000 - Iteration = 14, F-1 score = 0.332
+2023-11-07T15:11:15.773991+0000 - Iteration = 15, F-1 score = 0.332
+2023-11-07T15:11:15.773991+0000 - Iteration = 15, F-1 score = 0.332
+2023-11-07T15:11:15.846074+0000 - Iteration = 16, F-1 score = 0.332
+2023-11-07T15:11:15.846074+0000 - Iteration = 16, F-1 score = 0.332
+2023-11-07T15:11:15.918804+0000 - Iteration = 17, F-1 score = 0.332
+2023-11-07T15:11:15.918804+0000 - Iteration = 17, F-1 score = 0.332
+2023-11-07T15:11:15.990684+0000 - Iteration = 18, F-1 score = 0.332
+2023-11-07T15:11:15.990684+0000 - Iteration = 18, F-1 score = 0.332
+2023-11-07T15:11:16.065508+0000 - Iteration = 19, F-1 score = 0.332
+2023-11-07T15:11:16.065508+0000 - Iteration = 19, F-1 score = 0.332
+2023-11-07T15:11:16.138245+0000 - Iteration = 20, F-1 score = 0.332
+2023-11-07T15:11:16.138245+0000 - Iteration = 20, F-1 score = 0.332
+2023-11-07T15:11:16.210545+0000 - Iteration = 21, F-1 score = 0.332
+2023-11-07T15:11:16.210545+0000 - Iteration = 21, F-1 score = 0.332
+2023-11-07T15:11:16.282708+0000 - Iteration = 22, F-1 score = 0.332
+2023-11-07T15:11:16.282708+0000 - Iteration = 22, F-1 score = 0.332
+2023-11-07T15:11:16.355208+0000 - Iteration = 23, F-1 score = 0.332
+2023-11-07T15:11:16.355208+0000 - Iteration = 23, F-1 score = 0.332
+2023-11-07T15:11:16.428416+0000 - Iteration = 24, F-1 score = 0.332
+2023-11-07T15:11:16.428416+0000 - Iteration = 24, F-1 score = 0.332
+2023-11-07T15:11:16.500571+0000 - Iteration = 25, F-1 score = 0.332
+2023-11-07T15:11:16.500571+0000 - Iteration = 25, F-1 score = 0.332
+2023-11-07T15:11:16.573262+0000 - Iteration = 26, F-1 score = 0.332
+2023-11-07T15:11:16.573262+0000 - Iteration = 26, F-1 score = 0.332
+2023-11-07T15:11:16.646334+0000 - Iteration = 27, F-1 score = 0.332
+2023-11-07T15:11:16.646334+0000 - Iteration = 27, F-1 score = 0.332
+2023-11-07T15:11:16.719572+0000 - Iteration = 28, F-1 score = 0.332
+2023-11-07T15:11:16.719572+0000 - Iteration = 28, F-1 score = 0.332
+2023-11-07T15:11:16.793138+0000 - Iteration = 29, F-1 score = 0.332
+2023-11-07T15:11:16.793138+0000 - Iteration = 29, F-1 score = 0.332
+2023-11-07T15:11:16.866547+0000 - Iteration = 30, F-1 score = 0.332
+2023-11-07T15:11:16.866547+0000 - Iteration = 30, F-1 score = 0.332
+2023-11-07T15:11:16.939540+0000 - Iteration = 31, F-1 score = 0.332
+2023-11-07T15:11:16.939540+0000 - Iteration = 31, F-1 score = 0.332
+2023-11-07T15:11:17.012125+0000 - Iteration = 32, F-1 score = 0.332
+2023-11-07T15:11:17.012125+0000 - Iteration = 32, F-1 score = 0.332
+2023-11-07T15:11:17.084425+0000 - Iteration = 33, F-1 score = 0.332
+2023-11-07T15:11:17.084425+0000 - Iteration = 33, F-1 score = 0.332
+2023-11-07T15:11:17.156894+0000 - Iteration = 34, F-1 score = 0.332
+2023-11-07T15:11:17.156894+0000 - Iteration = 34, F-1 score = 0.332
+2023-11-07T15:11:17.229292+0000 - Iteration = 35, F-1 score = 0.332
+2023-11-07T15:11:17.229292+0000 - Iteration = 35, F-1 score = 0.332
+2023-11-07T15:11:17.301138+0000 - Iteration = 36, F-1 score = 0.332
+2023-11-07T15:11:17.301138+0000 - Iteration = 36, F-1 score = 0.332
+2023-11-07T15:11:17.373182+0000 - Iteration = 37, F-1 score = 0.332
+2023-11-07T15:11:17.373182+0000 - Iteration = 37, F-1 score = 0.332
+2023-11-07T15:11:17.445915+0000 - Iteration = 38, F-1 score = 0.332
+2023-11-07T15:11:17.445915+0000 - Iteration = 38, F-1 score = 0.332
+2023-11-07T15:11:17.518288+0000 - Iteration = 39, F-1 score = 0.332
+2023-11-07T15:11:17.518288+0000 - Iteration = 39, F-1 score = 0.332
+2023-11-07T15:11:17.591123+0000 - Iteration = 40, F-1 score = 0.332
+2023-11-07T15:11:17.591123+0000 - Iteration = 40, F-1 score = 0.332
+2023-11-07T15:11:17.663395+0000 - Iteration = 41, F-1 score = 0.332
+2023-11-07T15:11:17.663395+0000 - Iteration = 41, F-1 score = 0.332
+2023-11-07T15:11:17.735421+0000 - Iteration = 42, F-1 score = 0.332
+2023-11-07T15:11:17.735421+0000 - Iteration = 42, F-1 score = 0.332
+2023-11-07T15:11:17.807336+0000 - Iteration = 43, F-1 score = 0.332
+2023-11-07T15:11:17.807336+0000 - Iteration = 43, F-1 score = 0.332
+2023-11-07T15:11:17.880093+0000 - Iteration = 44, F-1 score = 0.332
+2023-11-07T15:11:17.880093+0000 - Iteration = 44, F-1 score = 0.332
+2023-11-07T15:11:17.952805+0000 - Iteration = 45, F-1 score = 0.332
+2023-11-07T15:11:17.952805+0000 - Iteration = 45, F-1 score = 0.332
+2023-11-07T15:11:18.025900+0000 - Iteration = 46, F-1 score = 0.332
+2023-11-07T15:11:18.025900+0000 - Iteration = 46, F-1 score = 0.332
+2023-11-07T15:11:18.098912+0000 - Iteration = 47, F-1 score = 0.332
+2023-11-07T15:11:18.098912+0000 - Iteration = 47, F-1 score = 0.332
+2023-11-07T15:11:18.170993+0000 - Iteration = 48, F-1 score = 0.332
+2023-11-07T15:11:18.170993+0000 - Iteration = 48, F-1 score = 0.332
+2023-11-07T15:11:18.243268+0000 - Iteration = 49, F-1 score = 0.332
+2023-11-07T15:11:18.243268+0000 - Iteration = 49, F-1 score = 0.332
+2023-11-07T15:11:18.253086+0000 - Connecting to the PostgreSQL database...
+2023-11-07T15:11:18.253086+0000 - Connecting to the PostgreSQL database...
+2023-11-07T15:11:18.274695+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:18.274695+0000 - Database connection closed, inserted successfully.
+2023-11-07T15:11:18.277012+0000 - Length of prediction results = 1831
+2023-11-07T15:11:18.277012+0000 - Length of prediction results = 1831
+2023-11-07T15:11:18.279198+0000 - Final AutoOD F-1 Score= 0.332
+2023-11-07T15:11:18.279198+0000 - Final AutoOD F-1 Score= 0.332
