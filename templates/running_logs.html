@@ -14,8 +14,25 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/d3_visualization.css') }}"> 
     <script
 	    src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js">
-    </script>
-    <title>AutoOD: Automatic Outlier Detection</title>
+
+      function readTextFile(file) { 
+        var rawFile = new XMLHttpRequest(); 
+        rawFile.open("GET", file, false); 
+        rawFile.onreadystatechange = function () { 
+          if (rawFile.readyState === 4) { 
+            if (rawFile.status === 200 || rawFile.status == 0) { 
+              var allText = rawFile.responseText; 
+              document.getElementById("text-container").innerHTML = allText; 
+            } 
+          } 
+        } 
+        rawFile.send(null); 
+      } 
+      readTextFile("results\log_cardio_csv_1699362342"); //TODO: Make filename a variable -- latest made non csv file in /results
+    </script> 
+
+  <title>AutoOD: Automatic Outlier Detection</title>
+
   </head>
   <body id="main">
     <div class="row">
