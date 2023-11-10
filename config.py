@@ -35,46 +35,34 @@ def configure_packages():
     print("All packages are up to date.")
 
 
-def db_config(filename='database.ini', section='postgresql'):
-    # create a parser
-    parser = ConfigParser()
-    # read config file
-    parser.read(filename)
-
-    # get section, default to postgresql
-    db = {}
-    if parser.has_section(section):
-        params = parser.items(section)
-        for param in params:
-            db[param[0]] = param[1]
-    else:
-        raise Exception('Section {0} not found in the {1} file'.format(section, filename))
-
-    return db
-
-
-def app_config(app, filename='configurations.ini', section='application'):
-    parser = ConfigParser()
-    parser.read(filename)
+def app_config(app, filename='configurations.ini'):
+    # Read and store application and DB configurations
     app_configs = {}
-    if parser.has_section(section):
-        fields = parser.items(section)
+    db_configs = {}
+
+    parser = ConfigParser()
+    parser.read(filename)
+    if parser.has_section('application'):
+        fields = parser.items('application')
         for field in fields:
             app_configs[field[0]] = field[1]
     else:
-        raise Exception('Section {0} not found in the {1} file'.format(section, filename))
+        raise Exception('Section application not found in the {0} file'.format(filename))
 
     if parser.has_section('postgresql'):
-        host_field = parser.items('postgresql')[0]
-        app_configs[host_field[0]] = host_field[1]
+        db_params = parser.items('postgresql')
+        for param in db_params:
+            db_configs[param[0]] = param[1]
+        app_configs['HOST'] = db_params['HOST']
     else:
-        raise Exception('Section {0} not found in the {1} file'.format(section, filename))
+        raise Exception('Section postgresql not found in the {0} file'.format(filename))
 
+    # Set up add configs
     app.config['UPLOAD_FOLDER'] = app_configs["upload-folder"]
     app.config['DOWNLOAD_FOLDER'] = app_configs["download-folder"]
     app.config['DEBUG'] = app_configs["debug-mode"] == 'True'  # start debugging
     app.config['ALLOWED_EXTENSIONS'] = app_configs["allowed-extensions"].split(",")
     app.config['HOST'] = app_configs["host"]
     app.secret_key = "super secret key"
-    return app, app_configs["logging-path"]
 
+    return app, db_configs, app_configs["logging-path"]
