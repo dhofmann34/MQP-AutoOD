@@ -2,6 +2,8 @@ from configparser import ConfigParser
 import subprocess
 import pkg_resources
 
+db_configs = None
+
 
 def configure_packages():
     # List of required packages
@@ -35,9 +37,14 @@ def configure_packages():
     print("All packages are up to date.")
 
 
+def get_db_config():
+    return db_configs
+
+
 def app_config(app, filename='configurations.ini'):
     # Read and store application and DB configurations
     app_configs = {}
+    global db_configs
     db_configs = {}
 
     parser = ConfigParser()
@@ -53,7 +60,6 @@ def app_config(app, filename='configurations.ini'):
         db_params = parser.items('postgresql')
         for param in db_params:
             db_configs[param[0]] = param[1]
-        app_configs['HOST'] = db_params['HOST']
     else:
         raise Exception('Section postgresql not found in the {0} file'.format(filename))
 
@@ -62,7 +68,7 @@ def app_config(app, filename='configurations.ini'):
     app.config['DOWNLOAD_FOLDER'] = app_configs["download-folder"]
     app.config['DEBUG'] = app_configs["debug-mode"] == 'True'  # start debugging
     app.config['ALLOWED_EXTENSIONS'] = app_configs["allowed-extensions"].split(",")
-    app.config['HOST'] = app_configs["host"]
+    app.config['HOST'] = db_configs['host']
     app.secret_key = "super secret key"
 
-    return app, db_configs, app_configs["logging-path"]
+    return app, app_configs["logging-path"]

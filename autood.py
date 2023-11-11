@@ -1,4 +1,4 @@
-from typing import NamedTuple, List, Optional, final
+from typing import List, Optional
 from enum import Enum, auto
 import numpy as np
 from scipy.io import arff
@@ -17,17 +17,15 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.preprocessing import RobustScaler
 import time
-from loguru import logger
 from psycopg2.extensions import register_adapter, AsIs
 import scipy.linalg
 import sys
-import csv
+
+db_parameters = None
 
 database = "y"  # DHDB "y" if we want to connect to database for demo
 
 debug_small_n = 'n'  # "y" if we want smaller dataset for debugging
-
-db_parameters = None
 
 
 def addapt_numpy_float64(numpy_float64):
@@ -131,7 +129,7 @@ def load_dataset(filename, index_col_name=None, label_col_name=None):
         data[label_col_name] = data[label_col_name].map(
             lambda x: 1 if x == b'yes' else 0).values if label_col_name else None
         if database == "y":
-            truncate_all_tables
+            truncate_all_tables()
             # SQL does not allow numeric values to be column names
             columnNames = data.columns[pd.to_numeric(data.columns, errors='coerce').to_series().notnull()]
             for name in columnNames:
@@ -154,7 +152,7 @@ def load_dataset(filename, index_col_name=None, label_col_name=None):
         if debug_small_n == 'y':
             data = data.sample(n=500, random_state=15)  # DH: added to debug code locally
         if database == "y":
-            truncate_temp_tables
+            truncate_temp_tables()
             # SQL does not allow numeric values to be column names
             columnNames = data.columns[pd.to_numeric(data.columns, errors='coerce').to_series().notnull()]
             for name in columnNames:
@@ -252,7 +250,7 @@ class AutoOD:
                 if y is not None:
                     f1 = get_f1_scores(predictions=lof_predictions, y=y)  # f1 score for each of the detectors?
                     f1s.append(f1)
-
+            print("here?")
             if database == "y":  # DHDB
                 insert_input("detectors", lof_df)
             f1_list_end_index = len(f1s)

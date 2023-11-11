@@ -4,25 +4,23 @@ import os
 from loguru import logger
 import time
 from shutil import copyfile
-from autood import run_autood, OutlierDetectionMethod
 import psycopg2
 from flask import jsonify
 import config
 import sql_queries as sql
-from flask_navigation import Navigation
+from autood import run_autood, OutlierDetectionMethod
+from config import get_db_config
 import collections
-
 collections.MutableSequence = collections.abc.MutableSequence
 collections.Iterable = collections.abc.Iterable
 
 results_global = None
 final_log_filename_global = None
 
-global db_configs
 
 config.configure_packages()  # not needed when using virtual env
 app = Flask(__name__)
-app, db_configs, LOGGING_PATH = config.app_config(app)
+app, LOGGING_PATH = config.app_config(app)
 logger.add(LOGGING_PATH, format="{time} - {message}")
 
 
@@ -76,13 +74,13 @@ def running_logs():
 
 def get_detection_methods(methods):
     logger.info(f"selected methods = {methods}")
-    name_to_method_map = {
+    outlier_detection_methods = {
         "lof": OutlierDetectionMethod.LOF,
         "knn": OutlierDetectionMethod.KNN,
         "if": OutlierDetectionMethod.IsolationForest,
         "mahala": OutlierDetectionMethod.Manalanobis
     }
-    selected_methods = [name_to_method_map[method] for method in methods]
+    selected_methods = [outlier_detection_methods[method] for method in methods]
     return selected_methods
 
 
@@ -145,10 +143,11 @@ def call_autood(filename, outlier_percentage_min, outlier_percentage_max, detect
     logger.info(
         f"Parameters: outlier_percentage_min = {outlier_percentage_min}%, outlier_percentage_max = {outlier_percentage_max}%")
     return run_autood(filepath, logger, outlier_percentage_min, outlier_percentage_max, detection_methods,
-                      index_col_name, label_col_name, db_configs)
+                      index_col_name, label_col_name, get_db_config())
 
 
 #### DH
+from flask_navigation import Navigation
 
 nav = Navigation(app)
 
@@ -173,7 +172,7 @@ def result_index():
 
 @app.route('/data')  # get data from DB as json
 def send_data():
-    conn = psycopg2.connect(**db_configs)
+    conn = psycopg2.connect(**get_db_config())
     cur = conn.cursor()
     # we can use multiple execute statements to get the data how we need it
     cur.execute(sql.ITERATIONS_FROM_RELIABLE_TABLE)  # number of iterations for reliable labels
@@ -207,6 +206,7 @@ def send_data():
     # conn.commit()
     cur.close()
     conn.close()
+    logger.info("Database connection closed successfully.")
     return jsonify(result)
 
 
@@ -214,4 +214,4 @@ def send_data():
 
 
 if __name__ == '__main__':
-    app.run(host=app.config['HOST'], port=app.config['PORT'])  # 5000 for VM, 8080 for local machine
+    app.run(host=app.config['HOST'], port=8080)  # 5000 for VM, 8080 for local machine
