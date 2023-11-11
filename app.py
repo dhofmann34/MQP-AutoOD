@@ -74,13 +74,13 @@ def running_logs():
 
 def get_detection_methods(methods):
     logger.info(f"selected methods = {methods}")
-    outlier_detection_methods = {
+    name_to_method_map = {
         "lof": OutlierDetectionMethod.LOF,
         "knn": OutlierDetectionMethod.KNN,
         "if": OutlierDetectionMethod.IsolationForest,
         "mahala": OutlierDetectionMethod.Manalanobis
     }
-    selected_methods = [outlier_detection_methods[method] for method in methods]
+    selected_methods = [name_to_method_map[method] for method in methods]
     return selected_methods
 
 
