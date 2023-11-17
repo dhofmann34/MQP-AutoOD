@@ -199,56 +199,6 @@ center{
 
 }
 
-#resetButton{
-    position: absolute;
-    left:15px;
-    top:1040px;
-    background-color: white;
-    width:175px;
-    height: 30px;
-    padding-left: .5%;
-    padding-top: .2%;
-    padding-bottom: .2%;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 15px;
-    vertical-align: baseline;
-    margin-bottom: 20px;
-}
-
-#resetButton:hover { background-color: lightgray;}
-
-#resetButton:active {
-    background-color: #800000;
-    color: rgb(255, 255, 255);
-  }
-
-  /* Loader animation - START*/
-
-  #loader {
-    border: 16px solid transparent;
-    border-radius: 50%;
-    border-top: 16px solid #800000;
-    position: absolute;
-    left:900px;
-    top:6%;
-    width: 300;
-    height: 300;
-    }
-    .animate {
-    -webkit-animation: spin 2s linear infinite;
-    animation: spin 2s linear infinite;
-    }
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-        }
-    @-webkit-keyframes spin {
-        0% { -webkit-transform: rotate(0deg); }
-        100% { -webkit-transform: rotate(360deg); }
-        }
-    
-    /* Loader animation - END*/
-
 #reliable_inout_div{
     font-family: 'Open Sans', sans-serif;
     
@@ -403,3 +353,5 @@ li a {
 #body_results{
     z-index: 100;
 }
+
+ 
