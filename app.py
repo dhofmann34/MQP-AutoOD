@@ -46,10 +46,6 @@ def results1():
 def autood_form():
     return render_template('form.html')
 
-@app.route('/autood/index', methods=['GET'])
-def autood_form2():
-    return render_template('form.html')
-
 @app.route('/autood/logs', methods=['GET'])
 def autood_logs():
     return render_template('running_logs.html')
@@ -155,9 +151,7 @@ nav = Navigation(app)
 
 nav.Bar('top', [
     nav.Item('Input Page', 'autood_form'),
-    # nav.Item('Results Summary', 'results1'),
     nav.Item('Result Page', 'result_index'),
-    # nav.Item('Rerun', 'autood_form2'),
     nav.Item('About', 'about_form'),
     nav.Item('Logs', 'autood_logs')
 ])

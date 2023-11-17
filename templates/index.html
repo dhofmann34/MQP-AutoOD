@@ -23,6 +23,24 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap" rel="stylesheet">
+        <script>
+            // Loader animation
+            $(function(){
+                $('#resetButton').click(function(){
+                    e1 = $('#loader');
+                    e1.addClass('animate');
+                    e1.one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
+                    function (e) {
+                        e1.removeClass('animate');
+                    });
+                });
+            });
+
+            function refreshPage(){
+                window.location.reload();
+            } 
+            // setTimeout(refreshPage,3000);
+        </script>
     </head>
 
     <div id="dataviz_axisZoom"></div>
@@ -103,6 +121,10 @@
         </form>
     </div>
 
+    <div id="resetButtonHolder">
+        <button id="resetButton" ><b>Reset</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
+    </div>
+    <div id="loader"></div>
 
 </html>
 
