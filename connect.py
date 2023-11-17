@@ -1,36 +1,32 @@
 import pandas as pd
 import psycopg2
-
-import config
-from config import db_config
-import psycopg2.extras as extras
-import numpy as np
+from loguru import logger
+from config import get_db_config
 from sklearn.manifold import TSNE
 import sql_queries as sql
 
-db_parameters = config.db_config()
 
-# get data types of our columns 
-def getColumnDtypes(dataTypes):
+# get data types of our columns
+def get_column_dtypes(dataTypes):
     dataList = []
     for x in dataTypes:
-        if(x == 'int64'):
+        if x == 'int64':
             dataList.append('int')
-        elif (x == 'float64'):
+        elif x == 'float64':
             dataList.append('float')
-        elif (x == 'bool'):
+        elif x == 'bool':
             dataList.append('boolean')
         else:
             dataList.append('varchar')
     return dataList
 
+
 # create input table in DB
 def create_input_table(data):
     conn = None
     try:
-        # connect to the PostgreSQL server
-        print('Connecting to the PostgreSQL database...')
-        conn = psycopg2.connect(**db_parameters)
+        logger.info('Connecting to the PostgresSQL database...')
+        conn = psycopg2.connect(**get_db_config())
         cur = conn.cursor()  # create a cursor
 
         cur.execute(sql.DROP_ALL_TABLES)
@@ -40,21 +36,21 @@ def create_input_table(data):
         cur.execute(sql.CREATE_RELIABLE_TABLE)
         cur.execute(sql.CREATE_TSNE_TABLE)
 
-
         columnName = list(data.columns.values)
-        columnDataType = getColumnDtypes(data.dtypes)
+        columnDataType = get_column_dtypes(data.dtypes)
         createTableStatement = sql.CREATE_INPUT_TABLE(columnName, columnDataType)
         cur.execute(createTableStatement)
         conn.commit()
         cur.close()  # close the communication with the PostgreSQL
 
     except (Exception, psycopg2.DatabaseError) as error:
+        logger.error("Error connecting to the database or executing query.")
         print(error)
-        
+
     finally:
         if conn is not None:
             conn.close()
-            print('Database connection closed, inserted successfully.')
+            logger.info('Database connection closed, inserted successfully.')
 
 
 def insert_input(table, data):  # we can use this fucntion to add to our databse. params: table name and values. THen call this functions from autood
@@ -62,56 +58,74 @@ def insert_input(table, data):  # we can use this fucntion to add to our databse
     conn = None
     try:
         # connect to the PostgreSQL server
-        print('Connecting to the PostgreSQL database...')
-        conn = psycopg2.connect(**db_parameters)
+        logger.info('Connecting to the PostgreSQL database...')
+        conn = psycopg2.connect(**get_db_config())
         cur = conn.cursor()  # create a cursor
 
         sql.INSERT_VALUES(table, data, cur)
-        
+
         conn.commit()
         cur.close()  # close the communication with the PostgreSQL
 
     except (Exception, psycopg2.DatabaseError) as error:
+        logger.error("Error connecting to the database or executing query.")
         print(error)
-        
+
     finally:
         if conn is not None:
             conn.close()
-            print('Database connection closed, inserted successfully.')
+            logger.info('Database connection closed, inserted successfully.')
+
 
 def insert_tsne(table, data, label_col_name, index_col_name):
     id = data[index_col_name]
     data = data.drop(index_col_name, axis=1)
     data = data.drop(label_col_name, axis=1)
-    tsne = TSNE(n_components=2, learning_rate = "auto", perplexity = 5, verbose=1, early_exaggeration = 12, random_state=123)  # perplexity for pagblocks: 30
+    tsne = TSNE(n_components=2, learning_rate="auto", perplexity=5, verbose=1, early_exaggeration=12,
+                random_state=123)  # perplexity for pagblocks: 30
     fit = tsne.fit_transform(data)
     fit_df = pd.DataFrame()
     fit_df["id"] = id
-    fit_df["tsne1"] = fit[:,0]
-    fit_df["tsne2"] = fit[:,1]
+    fit_df["tsne1"] = fit[:, 0]
+    fit_df["tsne2"] = fit[:, 1]
     insert_input(table, fit_df)
 
 
 def truncate_all_tables():
-    conn = psycopg2.connect(**db_parameters)
-    cur = conn.cursor()
-    cur.execute(sql.TRUNCATE_ALL_TABLES)  # empty tables for demo
-    conn.commit()
-    cur.close()
-    conn.close()
+    conn = None
+    try:
+        conn = psycopg2.connect(**get_db_config())
+        cur = conn.cursor()
+        cur.execute(sql.TRUNCATE_ALL_TABLES)
+        conn.commit()
+        cur.close()
+        conn.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logger.error("Error connecting to the database or executing query.")
+        print(error)
+
+    finally:
+        if conn is not None:
+            conn.close()
+            logger.info('Database connection closed, inserted successfully.')
 
 
 def truncate_temp_tables():
-    conn = psycopg2.connect(**db_parameters)
-    cur = conn.cursor()
-    cur.execute(sql.TRUNCATE_TEMP_TABLES)  # empty tables for demo
-    conn.commit()
-    cur.close()
-    conn.close()
+    conn = None
+    try:
+        conn = psycopg2.connect(**get_db_config())
+        cur = conn.cursor()
+        cur.execute(sql.TRUNCATE_TEMP_TABLES)
+        conn.commit()
+        cur.close()
+        conn.close()
 
+    except (Exception, psycopg2.DatabaseError) as error:
+        logger.error("Error connecting to the database or executing query.")
+        print(error)
 
-
-
-
-# if __name__ == '__main__':
-#     connect()
+    finally:
+        if conn is not None:
+            conn.close()
+            logger.info('Database connection closed, inserted successfully.')

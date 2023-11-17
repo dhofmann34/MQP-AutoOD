@@ -5,3 +5,4 @@ experiments/
 files/
 AutoOD_demo.code-workspace
 __pycache__/
+/results/
