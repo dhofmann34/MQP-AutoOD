@@ -59,6 +59,56 @@
             includeSelectAllOption: true,
         });
     });
+
+    // Disable inputs - START
+    // const form = document.querySelector('form');
+
+    // function disableInputs(exception) {
+    //     for (const input of form.elements) {
+    //         if (input !== exception) {
+    //         input.disabled = true;
+    //         }
+    //     }
+    // }
+
+    // function enableInputs() {
+    //     for (const input of form.elements) {
+    //         input.disabled = false;
+    //     }
+    // }
+
+    // form.addEventListener('input', event => {
+    //     const { target } = event;
+
+    //     if (
+    //         (target.type === 'file' && target.value !== '') ||
+    //         (target.type === 'radio' && target.checked === true)
+    //     ) {
+    //         disableInputs(target);
+    //     } else {
+    //         enableInputs();
+    //     }
+    // });
+    // Disable inputs - END
+
+    // Clear button for file - START
+    function clearInputFile(){
+        const file =
+            document.querySelector('.file');
+            file.value = '';
+    }
+    // Clear button for file - END
+
+    function sendRadioValue(target) {
+        var ele = document.getElementsByName('dataset');
+
+        for (i = 0; i < ele.length; i++) {
+                if (ele[i].checked)
+                    document.getElementById("file-name").innerHTML
+                        = ele[i].value;
+            }
+    }
+
 </script>
 <body>
 <div class="header" style="text-align:center">
@@ -67,12 +117,14 @@
 <center>
     <h3>Enter Input File and Parameters</h3>
     <form action="/autood/index" method="post" enctype=multipart/form-data>
-        <table>
+        <table border="0">
             <tr>
                 <td>Input File</td>
                 <td>
+                    <form action="/action_page.php">
+                    <p>Enter your own:</p>
                     <div class="inputfile-box">
-                        <input type="file" id="file" name="file" class="inputfile" onchange='uploadFile()'>
+                        <input class = "button" type="file" id="file" name="file" class="inputfile" onchange='uploadFile()'>
                         <label for="file" value="{{file}}">
                             <span id="file-name" value="{{file}}" class="file-box"></span>
                             <span class="file-button">
@@ -80,6 +132,17 @@
 						    </span>
                         </label>
                     </div>
+                    <div>
+                        <p>Or select one of ours:</p>
+                        <input type="radio" id="radioButton1" name="dataset" value="pima.csv">
+                        <label for="pima">Pima</label><br>
+                        <input type="radio" id="radioButton2" name="dataset" value="cardio.csv">
+                        <label for="cardio">Cardio</label><br>
+                        <input type="radio" id="radioButton3" name="dataset" value="shuttle.csv">
+                        <label for="shuttle">Shuttle</label>
+                    </div>
+                    <input type="reset" id="ClearButtonRadio" value = "Clear" onchange="clearInputFile()">
+                </form>
                 </td>
             </tr>
             <!-- <tr>  THIS PART WAS USED TO CREATE THE CUSTOM DETECTOR FILE INPUT
@@ -125,7 +188,7 @@
                 <td></td>
                 <td>
                     <div>
-                        <input class="button" type="submit" value="Submit" id="SubmitButton" style="float: left;"/>
+                        <input class="button" type="submit" value="Submit" id="SubmitButton" style="float: left;" onclick="sendRadioValue()"/>
                         <div class="loader" id="loadingImg" style="float: left;"></div>
                     </div>
                 </td>

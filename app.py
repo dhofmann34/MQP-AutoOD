@@ -46,11 +46,9 @@ def results1():
 def autood_form():
     return render_template('form.html')
 
-
-@app.route('/autood/index', methods=['GET'])
-def autood_form2():
-    return render_template('form.html')
-
+@app.route('/autood/logs', methods=['GET'])
+def autood_logs():
+    return render_template('running_logs.html')
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -120,7 +118,7 @@ def autood_input():
             global results_global, final_log_filename_global
             results_global = results
             final_log_filename_global = final_log_filename
-            return render_template('result_summary.html', best_f1=results.best_unsupervised_f1_score,
+            return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
                                    autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
                                    best_method=",".join(results.best_unsupervised_methods),
                                    final_results=results.results_file_name, training_log=final_log_filename)
@@ -153,10 +151,9 @@ nav = Navigation(app)
 
 nav.Bar('top', [
     nav.Item('Input Page', 'autood_form'),
-    nav.Item('Results Summary', 'results1'),
     nav.Item('Result Page', 'result_index'),
-    nav.Item('Rerun', 'autood_form2'),
-    nav.Item('About', 'about_form')
+    nav.Item('About', 'about_form'),
+    nav.Item('Logs', 'autood_logs')
 ])
 
 
