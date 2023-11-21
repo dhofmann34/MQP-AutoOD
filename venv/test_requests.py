@@ -1,11 +1,18 @@
 import unittest
 import subprocess
 from html.parser import HTMLParser
+import pandas as pd
 
-absolute_path = 'C:\\Users\\tgand\\OneDrive\\Desktop\\WPI Classes\\MQP\\MQP-AutoOD\\results\\'
+# Absolute path to results folder
+absolute_path = "C:\\Users\\tgand\\OneDrive\\Desktop\\WPI Classes\\MQP\\MQP-AutoOD\\results\\"
 knn_log_file = absolute_path
-all_log_file = absolute_path
+filepaths = {'knn_logs': absolute_path,
+             'all_logs': absolute_path,
+             'knn_results': absolute_path,
+             'all_results': absolute_path,
+             'all_results_standard': absolute_path+"all_methods_cardio_standard.csv"}
 
+# Links required in every results summary page
 knn_links_required = {'/autood/index' : 0, '/autood/results_summary' : 0, '/autood/result': 0, '/autood/about' : 0,
                   '/return-files/*.csv' : 0, '/return-files/log*' : 0}
 all_links_required = {'/autood/index' : 0, '/autood/results_summary' : 0, '/autood/result': 0, '/autood/about' : 0,
@@ -28,20 +35,23 @@ def process_logs(logs):
 # Test suite of post request tests
 def post_suite():
     post_suite = unittest.TestSuite()
-    post_suite.addTest(KNNTestCase('test_response'))
-    post_suite.addTest(KNNTestCase('test_logs'))
+    # post_suite.addTest(KNNTestCase('test_response'))
+    # post_suite.addTest(KNNTestCase('test_logs'))
     post_suite.addTest(AllMethodsTestCase('test_response'))
     post_suite.addTest(AllMethodsTestCase('test_logs'))
+    post_suite.addTest(AllMethodsTestCase('test_results'))
     return post_suite
 
 class KNNTestCase(unittest.TestCase):
     parser = None
     parsed_response = None
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
         try:
+            file_path = "@" + absolute_path + "cardio.csv"
             self.response = subprocess.check_output(
-                'curl -F file="@C:\\Users\\tgand\\OneDrive\\Desktop\\WPI Classes\\MQP\\MQP-AutoOD\\files\\cardio.csv" -F indexColName=id -F labelColName=label -F outlierRangeMin=5 -F outlierRangeMax=15 -F detectionMethods=knn -v "http://localhost:8080/autood/index"',
+                'curl -F file=' + file_path  + ' -F indexColName=id -F labelColName=label -F outlierRangeMin=5 -F outlierRangeMax=15 -F detectionMethods=knn -v "http://localhost:8080/autood/index"',
                 timeout=200,
                 stderr=subprocess.STDOUT,
                 shell=True)
@@ -100,14 +110,13 @@ class KNNTestCase(unittest.TestCase):
         self.assertFalse(['Error connecting to the database or executing query.'] in knn_log_statements)
         print("LOGS - KNN | All tests passed.")
 
-
 class AllMethodsTestCase(unittest.TestCase):
     parser = None
     parsed_response = None
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
         try:
-            methods = ['knn', 'lof', 'if', 'mahala']
             self.response = subprocess.check_output(
                 'curl -F file="@C:\\Users\\tgand\\OneDrive\\Desktop\\WPI Classes\\MQP\\MQP-AutoOD\\files\\cardio.csv" -F indexColName=id -F labelColName=label -F outlierRangeMin=5 -F outlierRangeMax=15 -F detectionMethods=knn -F detectionMethods=lof -F detectionMethods=if -F detectionMethods=mahala -v "http://localhost:8080/autood/index"',
                 timeout=200,
@@ -124,11 +133,11 @@ class AllMethodsTestCase(unittest.TestCase):
         # Parses response HTML
         self.parser.feed(str(self.response))
         self.assertIsNotNone(self.parser.parsed_response)
-        print("POST - KNN, LOF, IF, MAHALA | Response recieved, verifying correctness")
+        print("POST - KNN, LOF, IF, MAHALA | Response recieved, verifying correctness.")
 
         i = 0
         num_stylesheets = 0
-        global all_links_required, all_log_file
+        global all_links_required, filepaths
         for link_batch in self.parser.parsed_response:
             for link in link_batch:
                 if link[1] == 'stylesheet':
@@ -137,31 +146,39 @@ class AllMethodsTestCase(unittest.TestCase):
                     results_file = '/return-files/results'
                     log_file = '/return-files/log'
                     css_file = '/static/'
-                    if link[1][:len(results_file)] == results_file and link[1][:len(css_file)] != css_file:
+                    # If the link is for the results csv, add the file path and mark it seen (1)
+                    if link[1][:len(results_file)] == results_file:
                         all_links_required['/return-files/*.csv'] = 1
-                    elif link[1][:len(log_file)] == log_file and link[1][:len(css_file)] != css_file:
+                        filepaths['all_results'] += link[1][len(results_file)-7:]
+                    # If the link is for the logs, add the file path and mark it seen
+                    elif link[1][:len(log_file)] == log_file:
                         all_links_required['/return-files/log*'] = 1
-                        all_log_file += link[1][len(log_file)-3:]
+                        filepaths['all_logs'] += link[1][len(log_file)-3:]
+                    # If the link is anything else, and not a css file, mark it as seen (1)
                     elif link[1][:len(css_file)] != css_file:
                         all_links_required[link[1]] = 1
+
         # Check that all required links are provided in the response
         self.assertListEqual(list(all_links_required.values()), [1, 1, 1, 1, 1, 1])
         # Check that the correct number of stylesheets is being used
         self.assertEqual(num_stylesheets, 3)
-        print("POST - KNN, LOF, IF, MAHALA | All response tests passed")
+        print("POST - KNN, LOF, IF, MAHALA | All response tests passed.")
 
     def test_logs(self):
-        all_logs = open(all_log_file, 'r').readlines()
+        global filepaths
+        all_logs = open(filepaths['all_logs'], 'r').readlines()
         all_logs_dict, all_log_statements = process_logs(all_logs)
         self.assertIsNotNone(all_logs_dict)
         self.assertIsNotNone(all_log_statements)
+
         # Check correct inputs and detection method running
         self.assertEqual(all_logs_dict['selected methods'], "['knn', 'lof', 'if', 'mahala']")
         self.assertEqual(all_logs_dict['Dataset Name'], 'cardio')
         self.assertEqual(all_logs_dict['Dataset size'], '(1831, 21), dataset label size')
+        self.assertEqual(all_logs_dict['Start running Isolation Forest with max feature'], "[0.5, 0.6, 0.7, 0.8, 0.9]")
+
         # Check DB connection, no errors with DB, and two rounds of training
         self.assertTrue(['Start running KNN with k=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]'] in all_log_statements)
-        self.assertTrue(['Start running Isolation Forest with max feature = [0.5, 0.6, 0.7, 0.8, 0.9]'] in all_log_statements)
         self.assertTrue(['Start running Mahalanobis..'] in all_log_statements)
         self.assertTrue(['Start running LOF with k=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]'] in all_log_statements)
         self.assertTrue(['Connecting to the PostgreSQL database...'] in all_log_statements)
@@ -170,6 +187,17 @@ class AllMethodsTestCase(unittest.TestCase):
         self.assertTrue(['Database connection closed, inserted successfully.'] in all_log_statements)
         self.assertFalse(['Error connecting to the database or executing query.'] in all_log_statements)
         print("LOGS - KNN, LOF, IF, MAHALA | All tests passed.")
+
+    # Compares response predictions with correct predictions
+    def test_results(self):
+        all_df = pd.read_csv(filepaths['all_results_standard'])
+        all_response_df = pd.read_csv(filepaths['all_results'])
+        diff_df = all_df.compare(all_response_df, result_names=("Correct Result", "Test Result"))
+        if not diff_df.empty:
+            print("PREDICTIONS - KNN, LOF, IF, MAHALA | Outlier predictions are not correct. Review results.")
+            print(diff_df)
+        self.assertTrue(diff_df.empty)
+        print("PREDICTIONS - KNN, LOF, IF, MAHALA | Outlier predictions are correct.")
 
 # Parses HTML response
 class ResponseParser(HTMLParser):
