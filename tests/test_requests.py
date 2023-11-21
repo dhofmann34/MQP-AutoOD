@@ -4,30 +4,31 @@ from html.parser import HTMLParser
 import pandas as pd
 
 # Absolute path to results folder
-absolute_path = "C:\\Users\\tgand\\OneDrive\\Desktop\\WPI Classes\\MQP\\MQP-AutoOD\\results\\"
+absolute_path = "..\\results\\"
 filepaths = {'knn_logs': absolute_path,
              'all_logs': absolute_path,
              'knn_results': absolute_path,
              'all_results': absolute_path,
-             'all_results_standard': absolute_path+"all_methods_cardio_standard.csv",
-             'knn_results_standard': absolute_path+"knn_cardio_standard.csv"}
+             'all_results_standard': absolute_path + "all_methods_cardio_standard.csv",
+             'knn_results_standard': absolute_path + "knn_cardio_standard.csv"}
 
 # Links required in every results summary page
-knn_links_required = {'/autood/index' : 0, '/autood/results_summary' : 0, '/autood/result': 0, '/autood/about' : 0,
-                  '/return-files/*.csv' : 0, '/return-files/log*' : 0}
-all_links_required = {'/autood/index' : 0, '/autood/results_summary' : 0, '/autood/result': 0, '/autood/about' : 0,
-                  '/return-files/*.csv' : 0, '/return-files/log*' : 0}
+knn_links_required = {'/autood/index': 0, '/autood/results_summary': 0, '/autood/result': 0, '/autood/about': 0,
+                      '/return-files/*.csv': 0, '/return-files/log*': 0}
+all_links_required = {'/autood/index': 0, '/autood/results_summary': 0, '/autood/result': 0, '/autood/about': 0,
+                      '/return-files/*.csv': 0, '/return-files/log*': 0}
+
 
 # Process logs into a dict (for key/value pairs) and a list (for regular messages)
 def process_logs(logs):
     logs_dict = {}
     log_statements = []
     for log in logs:
-        log_data = log[33:].strip().split(" = ")   # Ignore timestamp info at start of log entry
+        log_data = log[33:].strip().split(" = ")  # Ignore timestamp info at start of log entry
         # Handle regular log message (DB connection, training start, error statements)
         if len(log_data) == 1:
             log_statements.append(log_data)
-        else: # For logs with format 'key = value', put log values into dict
+        else:  # For logs with format 'key = value', put log values into dict
             logs_dict[log_data[0]] = log_data[1]
     return logs_dict, log_statements
 
@@ -42,10 +43,10 @@ def process_parsed_response(parsed_response, all_methods=False):
         for link in link_batch:
             if link[1] == 'stylesheet':
                 num_stylesheets += 1
-            if link[0] == 'href':    # Links
+            if link[0] == 'href':  # Links
                 results_file = '/return-files/results'
                 log_file = '/return-files/log'
-                css_file = '/static/'
+                css_file = '../static/'
                 # If the link is for the results csv, add the file path and mark it seen (1)
                 if link[1][:len(results_file)] == results_file:
                     if all_methods:
@@ -72,7 +73,7 @@ def process_parsed_response(parsed_response, all_methods=False):
 
 
 # Test suite of post request tests
-def post_suite():
+def post_suite_setup():
     post_suite = unittest.TestSuite()
     post_suite.addTest(KNNTestCase('test_response'))
     post_suite.addTest(KNNTestCase('test_logs'))
@@ -82,22 +83,25 @@ def post_suite():
     post_suite.addTest(AllMethodsTestCase('test_results'))
     return post_suite
 
+
 class KNNTestCase(unittest.TestCase):
     parser = None
     parsed_response = None
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         try:
-            self.response = subprocess.check_output(
-                'curl -F file="@C:\\Users\\tgand\\OneDrive\\Desktop\\WPI Classes\\MQP\\MQP-AutoOD\\files\\cardio.csv" -F indexColName=id -F labelColName=label -F outlierRangeMin=5 -F outlierRangeMax=15 -F detectionMethods=knn -v "http://localhost:8080/autood/index"',
+            cls.response = subprocess.check_output(
+                'curl -F file="@C:\\Users\\tgand\\OneDrive\\Desktop\\WPI Classes\\MQP\\MQP-AutoOD\\files\\cardio.csv" '
+                '-F indexColName=id -F labelColName=label -F outlierRangeMin=5 -F outlierRangeMax=15 -F '
+                'detectionMethods=knn -v "http://localhost:8080/autood/index"',
                 timeout=200,
                 stderr=subprocess.STDOUT,
                 shell=True)
         except subprocess.CalledProcessError:
-            self.response = None
+            cls.response = None
             print("POST - KNN | Failed to get a response.")
-        self.parser = ResponseParser()
+        cls.parser = ResponseParser()
 
     def test_response(self):
         self.assertIsNotNone(self.response)
@@ -111,7 +115,7 @@ class KNNTestCase(unittest.TestCase):
 
         global knn_links_required
         # Check that all required links are provided in the response
-        self.assertListEqual(list(knn_links_required.values()), [1, 1, 1, 1, 1, 1])
+        self.assertListEqual(list(knn_links_required.values()), [1, 1, 1, 1, 1, 1, 1, 1, 1])
         # Check that the correct number of stylesheets is being used
         self.assertEqual(num_stylesheets, 3)
         print("POST - KNN | All response tests passed.")
@@ -148,22 +152,26 @@ class KNNTestCase(unittest.TestCase):
         self.assertTrue(diff_df.empty)
         print("PREDICTIONS - KNN | Outlier predictions are correct.")
 
+
 class AllMethodsTestCase(unittest.TestCase):
     parser = None
     parsed_response = None
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         try:
-            self.response = subprocess.check_output(
-                'curl -F file="@C:\\Users\\tgand\\OneDrive\\Desktop\\WPI Classes\\MQP\\MQP-AutoOD\\files\\cardio.csv" -F indexColName=id -F labelColName=label -F outlierRangeMin=5 -F outlierRangeMax=15 -F detectionMethods=knn -F detectionMethods=lof -F detectionMethods=if -F detectionMethods=mahala -v "http://localhost:8080/autood/index"',
+            cls.response = subprocess.check_output(
+                'curl -F file="@C:\\Users\\tgand\\OneDrive\\Desktop\\WPI Classes\\MQP\\MQP-AutoOD\\files\\cardio.csv" '
+                '-F indexColName=id -F labelColName=label -F outlierRangeMin=5 -F outlierRangeMax=15 -F '
+                'detectionMethods=knn -F detectionMethods=lof -F detectionMethods=if -F detectionMethods=mahala -v '
+                '"http://localhost:8080/autood/index"',
                 timeout=200,
                 stderr=subprocess.STDOUT,
                 shell=True)
         except subprocess.CalledProcessError:
-            self.response = None
+            cls.response = None
             print("POST - KNN, LOF, IF, MAHALA | Failed to get a response.")
-        self.parser = ResponseParser()
+        cls.parser = ResponseParser()
 
     def test_response(self):
         self.assertIsNotNone(self.response)
@@ -177,7 +185,7 @@ class AllMethodsTestCase(unittest.TestCase):
 
         global all_links_required
         # Check that all required links are provided in the response
-        self.assertListEqual(list(all_links_required.values()), [1, 1, 1, 1, 1, 1])
+        self.assertListEqual(list(all_links_required.values()), [1, 1, 1, 1, 1, 1, 1, 1, 1])
         # Check that the correct number of stylesheets is being used
         self.assertEqual(num_stylesheets, 3)
         print("POST - KNN, LOF, IF, MAHALA | All response tests passed.")
@@ -217,9 +225,11 @@ class AllMethodsTestCase(unittest.TestCase):
         self.assertTrue(diff_df.empty)
         print("PREDICTIONS - KNN, LOF, IF, MAHALA | Outlier predictions are correct.")
 
+
 # Parses HTML response
 class ResponseParser(HTMLParser):
     parsed_response = []
+
     def __init__(self):
         HTMLParser.__init__(self)
         self.parsed_response = []
@@ -233,4 +243,4 @@ class ResponseParser(HTMLParser):
 # Runs the test suites
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
-    runner.run(post_suite())
+    runner.run(post_suite_setup())
