@@ -32,15 +32,54 @@ def process_logs(logs):
     return logs_dict, log_statements
 
 
+# Process parsed responses, return the number of style sheets and set global variables
+def process_parsed_response(parsed_response, all_methods=False):
+    global knn_links_required, all_links_required, filepaths
+    prefix = 'all' if all_methods else 'knn'
+    num_stylesheets = 0
+
+    for link_batch in parsed_response:
+        for link in link_batch:
+            if link[1] == 'stylesheet':
+                num_stylesheets += 1
+            if link[0] == 'href':    # Links
+                results_file = '/return-files/results'
+                log_file = '/return-files/log'
+                css_file = '/static/'
+                # If the link is for the results csv, add the file path and mark it seen (1)
+                if link[1][:len(results_file)] == results_file:
+                    if all_methods:
+                        all_links_required['/return-files/*.csv'] = 1
+                    else:
+                        knn_links_required['/return-files/*.csv'] = 1
+                    filepaths[prefix + '_results'] += link[1][len(results_file) - 7:]
+
+                # If the link is for the logs, add the file path and mark it seen
+                elif link[1][:len(log_file)] == log_file:
+                    if all_methods:
+                        all_links_required['/return-files/log*'] = 1
+                    else:
+                        knn_links_required['/return-files/log*'] = 1
+                    filepaths[prefix + '_logs'] += link[1][len(log_file) - 3:]
+
+                # If the link is anything else, and not a css file, mark it as seen (1)
+                elif link[1][:len(css_file)] != css_file:
+                    if all_methods:
+                        all_links_required[link[1]] = 1
+                    else:
+                        knn_links_required[link[1]] = 1
+    return num_stylesheets
+
+
 # Test suite of post request tests
 def post_suite():
     post_suite = unittest.TestSuite()
     post_suite.addTest(KNNTestCase('test_response'))
     post_suite.addTest(KNNTestCase('test_logs'))
     post_suite.addTest(KNNTestCase('test_results'))
-    # post_suite.addTest(AllMethodsTestCase('test_response'))
-    # post_suite.addTest(AllMethodsTestCase('test_logs'))
-    # post_suite.addTest(AllMethodsTestCase('test_results'))
+    post_suite.addTest(AllMethodsTestCase('test_response'))
+    post_suite.addTest(AllMethodsTestCase('test_logs'))
+    post_suite.addTest(AllMethodsTestCase('test_results'))
     return post_suite
 
 class KNNTestCase(unittest.TestCase):
@@ -68,29 +107,9 @@ class KNNTestCase(unittest.TestCase):
         self.assertIsNotNone(self.parser.parsed_response)
         print("POST - KNN | Response recieved, verifying correctness.")
 
-        i = 0
-        num_stylesheets = 0
-        global knn_links_required, filepaths
-        for link_batch in self.parser.parsed_response:
-            for link in link_batch:
-                if link[1] == 'stylesheet':
-                    num_stylesheets += 1
-                if link[0] == 'href':
-                    results_file = '/return-files/results'
-                    log_file = '/return-files/log'
-                    css_file = '/static/'
-                    # If the link is for the results csv, add the file path and mark it seen (1)
-                    if link[1][:len(results_file)] == results_file:
-                        knn_links_required['/return-files/*.csv'] = 1
-                        filepaths['knn_results'] += link[1][len(results_file)-7:]
-                    elif link[1][:len(log_file)] == log_file:
-                        # If the link is for the logs, add the file path and mark it seen
-                        knn_links_required['/return-files/log*'] = 1
-                        filepaths['knn_logs'] += link[1][len(log_file)-3:]
-                    # If the link is anything else, and not a css file, mark it as seen (1)
-                    elif link[1][:len(css_file)] != css_file:
-                        knn_links_required[link[1]] = 1
+        num_stylesheets = process_parsed_response(self.parser.parsed_response, all_methods=False)
 
+        global knn_links_required
         # Check that all required links are provided in the response
         self.assertListEqual(list(knn_links_required.values()), [1, 1, 1, 1, 1, 1])
         # Check that the correct number of stylesheets is being used
@@ -154,29 +173,9 @@ class AllMethodsTestCase(unittest.TestCase):
         self.assertIsNotNone(self.parser.parsed_response)
         print("POST - KNN, LOF, IF, MAHALA | Response recieved, verifying correctness.")
 
-        i = 0
-        num_stylesheets = 0
-        global all_links_required, filepaths
-        for link_batch in self.parser.parsed_response:
-            for link in link_batch:
-                if link[1] == 'stylesheet':
-                    num_stylesheets += 1
-                if link[0] == 'href':
-                    results_file = '/return-files/results'
-                    log_file = '/return-files/log'
-                    css_file = '/static/'
-                    # If the link is for the results csv, add the file path and mark it seen (1)
-                    if link[1][:len(results_file)] == results_file:
-                        all_links_required['/return-files/*.csv'] = 1
-                        filepaths['all_results'] += link[1][len(results_file)-7:]
-                    # If the link is for the logs, add the file path and mark it seen (1)
-                    elif link[1][:len(log_file)] == log_file:
-                        all_links_required['/return-files/log*'] = 1
-                        filepaths['all_logs'] += link[1][len(log_file)-3:]
-                    # If the link is anything else, and not a css file, mark it as seen (1)
-                    elif link[1][:len(css_file)] != css_file:
-                        all_links_required[link[1]] = 1
+        num_stylesheets = process_parsed_response(self.parser.parsed_response, all_methods=True)
 
+        global all_links_required
         # Check that all required links are provided in the response
         self.assertListEqual(list(all_links_required.values()), [1, 1, 1, 1, 1, 1])
         # Check that the correct number of stylesheets is being used
@@ -229,7 +228,6 @@ class ResponseParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == 'link' or tag == 'a':
             self.parsed_response.append(attrs)
-
 
 
 # Runs the test suites
