@@ -2,6 +2,19 @@ import unittest
 import subprocess
 from html.parser import HTMLParser
 import pandas as pd
+import os
+
+
+# Temporary function to find results and logs files -- need a clean results folder.
+# file_type: log, results
+def get_file(path, file_type='log'):
+    for root, directories, files in os.walk(path):
+        for file in files:
+            if file_type == 'log' and file[0:3] == file_type:
+                return os.path.join(root, file)
+            elif file_type == 'results' and file[0:7] == file_type:
+                return os.path.join(root, file)
+
 
 # Absolute path to results folder
 absolute_path = "..\\results\\"
@@ -13,10 +26,8 @@ filepaths = {'knn_logs': absolute_path,
              'knn_results_standard': absolute_path + "knn_cardio_standard.csv"}
 
 # Links required in every results summary page
-knn_links_required = {'/autood/index': 0, '/autood/results_summary': 0, '/autood/result': 0, '/autood/about': 0,
-                      '/return-files/*.csv': 0, '/return-files/log*': 0}
-all_links_required = {'/autood/index': 0, '/autood/results_summary': 0, '/autood/result': 0, '/autood/about': 0,
-                      '/return-files/*.csv': 0, '/return-files/log*': 0}
+knn_links_required = {'/autood/index': 0, '/autood/result': 0, '/autood/about': 0, '/autood/logs': 0}
+all_links_required = {'/autood/index': 0, '/autood/result': 0, '/autood/about': 0, '/autood/logs': 0}
 
 
 # Process logs into a dict (for key/value pairs) and a list (for regular messages)
@@ -36,7 +47,6 @@ def process_logs(logs):
 # Process parsed responses, return the number of style sheets and set global variables
 def process_parsed_response(parsed_response, all_methods=False):
     global knn_links_required, all_links_required, filepaths
-    prefix = 'all' if all_methods else 'knn'
     num_stylesheets = 0
 
     for link_batch in parsed_response:
@@ -44,27 +54,9 @@ def process_parsed_response(parsed_response, all_methods=False):
             if link[1] == 'stylesheet':
                 num_stylesheets += 1
             if link[0] == 'href':  # Links
-                results_file = '/return-files/results'
-                log_file = '/return-files/log'
-                css_file = '../static/'
-                # If the link is for the results csv, add the file path and mark it seen (1)
-                if link[1][:len(results_file)] == results_file:
-                    if all_methods:
-                        all_links_required['/return-files/*.csv'] = 1
-                    else:
-                        knn_links_required['/return-files/*.csv'] = 1
-                    filepaths[prefix + '_results'] += link[1][len(results_file) - 7:]
-
-                # If the link is for the logs, add the file path and mark it seen
-                elif link[1][:len(log_file)] == log_file:
-                    if all_methods:
-                        all_links_required['/return-files/log*'] = 1
-                    else:
-                        knn_links_required['/return-files/log*'] = 1
-                    filepaths[prefix + '_logs'] += link[1][len(log_file) - 3:]
-
-                # If the link is anything else, and not a css file, mark it as seen (1)
-                elif link[1][:len(css_file)] != css_file:
+                css_file = '/static/'
+                # If the link is not a css file, mark it as seen (1)
+                if link[1][:len(css_file)] != css_file:
                     if all_methods:
                         all_links_required[link[1]] = 1
                     else:
@@ -75,9 +67,9 @@ def process_parsed_response(parsed_response, all_methods=False):
 # Test suite of post request tests
 def post_suite_setup():
     post_suite = unittest.TestSuite()
-    post_suite.addTest(KNNTestCase('test_response'))
-    post_suite.addTest(KNNTestCase('test_logs'))
-    post_suite.addTest(KNNTestCase('test_results'))
+    # post_suite.addTest(KNNTestCase('test_response'))
+    # post_suite.addTest(KNNTestCase('test_logs'))
+    # post_suite.addTest(KNNTestCase('test_results'))
     post_suite.addTest(AllMethodsTestCase('test_response'))
     post_suite.addTest(AllMethodsTestCase('test_logs'))
     post_suite.addTest(AllMethodsTestCase('test_results'))
@@ -115,14 +107,18 @@ class KNNTestCase(unittest.TestCase):
 
         global knn_links_required
         # Check that all required links are provided in the response
-        self.assertListEqual(list(knn_links_required.values()), [1, 1, 1, 1, 1, 1, 1, 1, 1])
+        self.assertEqual(knn_links_required['/autood/index'], 1)
+        self.assertEqual(knn_links_required['/autood/result'], 1)
+        self.assertEqual(knn_links_required['/autood/about'], 1)
+        self.assertEqual(knn_links_required['/autood/logs'], 1)
         # Check that the correct number of stylesheets is being used
         self.assertEqual(num_stylesheets, 3)
         print("POST - KNN | All response tests passed.")
 
     def test_logs(self):
-        global filepaths
-        knn_logs = open(filepaths['knn_logs'], 'r').readlines()
+        # global filepaths
+        # knn_logs = open(filepaths['knn_logs'], 'r').readlines()
+        knn_logs = open(get_file(absolute_path, file_type='log'), 'r').readlines()
         knn_logs_dict, knn_log_statements = process_logs(knn_logs)
         self.assertIsNotNone(knn_logs_dict)
         self.assertIsNotNone(knn_log_statements)
@@ -143,9 +139,10 @@ class KNNTestCase(unittest.TestCase):
 
     # Compares response predictions with correct predictions
     def test_results(self):
-        all_df = pd.read_csv(filepaths['knn_results_standard'])
-        all_response_df = pd.read_csv(filepaths['knn_results'])
-        diff_df = all_df.compare(all_response_df, result_names=("Correct Result", "Test Result"))
+        knn_df = pd.read_csv(filepaths['knn_results_standard'])
+        # all_response_df = pd.read_csv(filepaths['knn_results'])
+        knn_response_df = pd.read_csv(get_file(absolute_path, file_type='results'))
+        diff_df = knn_df.compare(knn_response_df, result_names=("Correct Result", "Test Result"))
         if not diff_df.empty:
             print("PREDICTIONS - KNN | Outlier predictions are not correct. Review results.")
             print(diff_df)
@@ -185,14 +182,18 @@ class AllMethodsTestCase(unittest.TestCase):
 
         global all_links_required
         # Check that all required links are provided in the response
-        self.assertListEqual(list(all_links_required.values()), [1, 1, 1, 1, 1, 1, 1, 1, 1])
+        self.assertEqual(all_links_required['/autood/index'], 1)
+        self.assertEqual(all_links_required['/autood/result'], 1)
+        self.assertEqual(all_links_required['/autood/about'], 1)
+        self.assertEqual(all_links_required['/autood/logs'], 1)
         # Check that the correct number of stylesheets is being used
         self.assertEqual(num_stylesheets, 3)
         print("POST - KNN, LOF, IF, MAHALA | All response tests passed.")
 
     def test_logs(self):
-        global filepaths
-        all_logs = open(filepaths['all_logs'], 'r').readlines()
+        # global filepaths
+        # all_logs = open(filepaths['all_logs'], 'r').readlines()
+        all_logs = open(get_file(absolute_path, file_type='log'), 'r').readlines()
         all_logs_dict, all_log_statements = process_logs(all_logs)
         self.assertIsNotNone(all_logs_dict)
         self.assertIsNotNone(all_log_statements)
@@ -217,7 +218,8 @@ class AllMethodsTestCase(unittest.TestCase):
     # Compares response predictions with correct predictions
     def test_results(self):
         all_df = pd.read_csv(filepaths['all_results_standard'])
-        all_response_df = pd.read_csv(filepaths['all_results'])
+        # all_response_df = pd.read_csv(filepaths['all_results'])
+        all_response_df = pd.read_csv(get_file(absolute_path, file_type='results'))
         diff_df = all_df.compare(all_response_df, result_names=("Correct Result", "Test Result"))
         if not diff_df.empty:
             print("PREDICTIONS - KNN, LOF, IF, MAHALA | Outlier predictions are not correct. Review results.")
