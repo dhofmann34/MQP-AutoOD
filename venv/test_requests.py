@@ -5,12 +5,12 @@ import pandas as pd
 
 # Absolute path to results folder
 absolute_path = "C:\\Users\\tgand\\OneDrive\\Desktop\\WPI Classes\\MQP\\MQP-AutoOD\\results\\"
-knn_log_file = absolute_path
 filepaths = {'knn_logs': absolute_path,
              'all_logs': absolute_path,
              'knn_results': absolute_path,
              'all_results': absolute_path,
-             'all_results_standard': absolute_path+"all_methods_cardio_standard.csv"}
+             'all_results_standard': absolute_path+"all_methods_cardio_standard.csv",
+             'knn_results_standard': absolute_path+"knn_cardio_standard.csv"}
 
 # Links required in every results summary page
 knn_links_required = {'/autood/index' : 0, '/autood/results_summary' : 0, '/autood/result': 0, '/autood/about' : 0,
@@ -23,7 +23,7 @@ def process_logs(logs):
     logs_dict = {}
     log_statements = []
     for log in logs:
-        log_data = log[33:].strip().split(" = ")  # Ignore timestamp info at start of log entry
+        log_data = log[33:].strip().split(" = ")   # Ignore timestamp info at start of log entry
         # Handle regular log message (DB connection, training start, error statements)
         if len(log_data) == 1:
             log_statements.append(log_data)
@@ -35,11 +35,12 @@ def process_logs(logs):
 # Test suite of post request tests
 def post_suite():
     post_suite = unittest.TestSuite()
-    # post_suite.addTest(KNNTestCase('test_response'))
-    # post_suite.addTest(KNNTestCase('test_logs'))
-    post_suite.addTest(AllMethodsTestCase('test_response'))
-    post_suite.addTest(AllMethodsTestCase('test_logs'))
-    post_suite.addTest(AllMethodsTestCase('test_results'))
+    post_suite.addTest(KNNTestCase('test_response'))
+    post_suite.addTest(KNNTestCase('test_logs'))
+    post_suite.addTest(KNNTestCase('test_results'))
+    # post_suite.addTest(AllMethodsTestCase('test_response'))
+    # post_suite.addTest(AllMethodsTestCase('test_logs'))
+    # post_suite.addTest(AllMethodsTestCase('test_results'))
     return post_suite
 
 class KNNTestCase(unittest.TestCase):
@@ -49,9 +50,8 @@ class KNNTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         try:
-            file_path = "@" + absolute_path + "cardio.csv"
             self.response = subprocess.check_output(
-                'curl -F file=' + file_path  + ' -F indexColName=id -F labelColName=label -F outlierRangeMin=5 -F outlierRangeMax=15 -F detectionMethods=knn -v "http://localhost:8080/autood/index"',
+                'curl -F file="@C:\\Users\\tgand\\OneDrive\\Desktop\\WPI Classes\\MQP\\MQP-AutoOD\\files\\cardio.csv" -F indexColName=id -F labelColName=label -F outlierRangeMin=5 -F outlierRangeMax=15 -F detectionMethods=knn -v "http://localhost:8080/autood/index"',
                 timeout=200,
                 stderr=subprocess.STDOUT,
                 shell=True)
@@ -66,11 +66,11 @@ class KNNTestCase(unittest.TestCase):
         # Parses response HTML
         self.parser.feed(str(self.response))
         self.assertIsNotNone(self.parser.parsed_response)
-        print("POST - KNN | Response recieved, verifying correctness")
+        print("POST - KNN | Response recieved, verifying correctness.")
 
         i = 0
         num_stylesheets = 0
-        global knn_links_required, knn_log_file
+        global knn_links_required, filepaths
         for link_batch in self.parser.parsed_response:
             for link in link_batch:
                 if link[1] == 'stylesheet':
@@ -79,28 +79,36 @@ class KNNTestCase(unittest.TestCase):
                     results_file = '/return-files/results'
                     log_file = '/return-files/log'
                     css_file = '/static/'
-                    if link[1][:len(results_file)] == results_file and link[1][:len(css_file)] != css_file:
+                    # If the link is for the results csv, add the file path and mark it seen (1)
+                    if link[1][:len(results_file)] == results_file:
                         knn_links_required['/return-files/*.csv'] = 1
-                    elif link[1][:len(log_file)] == log_file and link[1][:len(css_file)] != css_file:
+                        filepaths['knn_results'] += link[1][len(results_file)-7:]
+                    elif link[1][:len(log_file)] == log_file:
+                        # If the link is for the logs, add the file path and mark it seen
                         knn_links_required['/return-files/log*'] = 1
-                        knn_log_file += link[1][len(log_file)-3:]
+                        filepaths['knn_logs'] += link[1][len(log_file)-3:]
+                    # If the link is anything else, and not a css file, mark it as seen (1)
                     elif link[1][:len(css_file)] != css_file:
                         knn_links_required[link[1]] = 1
+
         # Check that all required links are provided in the response
         self.assertListEqual(list(knn_links_required.values()), [1, 1, 1, 1, 1, 1])
         # Check that the correct number of stylesheets is being used
         self.assertEqual(num_stylesheets, 3)
-        print("POST - KNN | All response tests passed")
+        print("POST - KNN | All response tests passed.")
 
     def test_logs(self):
-        knn_logs = open(knn_log_file, 'r').readlines()
+        global filepaths
+        knn_logs = open(filepaths['knn_logs'], 'r').readlines()
         knn_logs_dict, knn_log_statements = process_logs(knn_logs)
         self.assertIsNotNone(knn_logs_dict)
         self.assertIsNotNone(knn_log_statements)
+
         # Check correct inputs and detection method running
         self.assertEqual(knn_logs_dict['selected methods'], "['knn']")
         self.assertEqual(knn_logs_dict['Dataset Name'], 'cardio')
         self.assertEqual(knn_logs_dict['Dataset size'], '(1831, 21), dataset label size')
+
         # Check DB connection, no errors with DB, and two rounds of training
         self.assertTrue(['Start running KNN with k=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]'] in knn_log_statements)
         self.assertTrue(['Connecting to the PostgreSQL database...'] in knn_log_statements)
@@ -109,6 +117,17 @@ class KNNTestCase(unittest.TestCase):
         self.assertTrue(['Database connection closed, inserted successfully.'] in knn_log_statements)
         self.assertFalse(['Error connecting to the database or executing query.'] in knn_log_statements)
         print("LOGS - KNN | All tests passed.")
+
+    # Compares response predictions with correct predictions
+    def test_results(self):
+        all_df = pd.read_csv(filepaths['knn_results_standard'])
+        all_response_df = pd.read_csv(filepaths['knn_results'])
+        diff_df = all_df.compare(all_response_df, result_names=("Correct Result", "Test Result"))
+        if not diff_df.empty:
+            print("PREDICTIONS - KNN | Outlier predictions are not correct. Review results.")
+            print(diff_df)
+        self.assertTrue(diff_df.empty)
+        print("PREDICTIONS - KNN | Outlier predictions are correct.")
 
 class AllMethodsTestCase(unittest.TestCase):
     parser = None
@@ -150,7 +169,7 @@ class AllMethodsTestCase(unittest.TestCase):
                     if link[1][:len(results_file)] == results_file:
                         all_links_required['/return-files/*.csv'] = 1
                         filepaths['all_results'] += link[1][len(results_file)-7:]
-                    # If the link is for the logs, add the file path and mark it seen
+                    # If the link is for the logs, add the file path and mark it seen (1)
                     elif link[1][:len(log_file)] == log_file:
                         all_links_required['/return-files/log*'] = 1
                         filepaths['all_logs'] += link[1][len(log_file)-3:]
