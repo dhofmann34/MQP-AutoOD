@@ -109,6 +109,27 @@
             }
     }
 
+    var progressBarCount = 0;
+    function updateProgressBar(){
+        if (progressBarCount == 0) {
+            progressBarCount = 1;
+            var elem = document.getElementById("myBar");
+            var width = 1;
+            var id = setInterval(frame, 10);
+            function frame() {
+            if (width >= 100) {
+                clearInterval(id);
+                i = 0;
+            } else {
+                width++;
+                elem.style.width = width + "%";
+            }
+            }
+        }
+
+        setTimeout(sendRadioValue, 10000);
+    }
+
 </script>
 <body>
 <div class="header" style="text-align:center">
@@ -188,7 +209,7 @@
                 <td></td>
                 <td>
                     <div>
-                        <input class="button" type="submit" value="Submit" id="SubmitButton" style="float: left;" onclick="sendRadioValue()"/>
+                        <input class="button" type="submit" value="Submit" id="SubmitButton" style="float: left;" onclick="updateProgressBar()"/>
                         <div class="loader" id="loadingImg" style="float: left;"></div>
                     </div>
                 </td>
@@ -204,6 +225,11 @@
     </ul>
     {% endif %}
     {% endwith %}
+    <!-- Progress Bar -->
+    <div id="myProgress">
+        <div id="myBar"></div >
+    </div>
+    <!-- Progress Bar -->
     <div class="row">
         <h3 align="center">Log Messages:</h3>
         <div class="logging_window">

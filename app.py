@@ -10,6 +10,7 @@ import config
 import sql_queries as sql
 from autood import run_autood, OutlierDetectionMethod
 from config import get_db_config
+from tqdm import tqdm
 import collections
 collections.MutableSequence = collections.abc.MutableSequence
 collections.Iterable = collections.abc.Iterable
