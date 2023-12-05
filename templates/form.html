@@ -1,18 +1,20 @@
 <!doctype html>
+
 <head>
     <title>AutoOD: Automatic Outlier Detection</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/multiselect.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/multiselect.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome-4.7.0/css/font-awesome.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/d3_visualization.css') }}"> 
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/d3_visualization.css') }}">
 </head>
 
 <!-- DH -->
-<body> 
+
+<body>
     <ul>
         {% for item in nav.top %}
-        <li id = "nav" class="{{ 'active' if item.is_active else '' }}">
+        <li id="nav" class="{{ 'active' if item.is_active else '' }}">
             <a href="{{ item.url }}">{{ item.label }}</a>
         </li>
         {% endfor %}
@@ -20,8 +22,7 @@
 </body>
 <!-- DH -->
 
-<script
-        src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
 <script type="text/javascript">
@@ -92,10 +93,10 @@
     // Disable inputs - END
 
     // Clear button for file - START
-    function clearInputFile(){
+    function clearInputFile() {
         const file =
             document.querySelector('.file');
-            file.value = '';
+        file.value = '';
     }
     // Clear button for file - END
 
@@ -103,14 +104,14 @@
         var ele = document.getElementsByName('dataset');
 
         for (i = 0; i < ele.length; i++) {
-                if (ele[i].checked)
-                    document.getElementById("file-name").innerHTML
-                        = ele[i].value;
-            }
+            if (ele[i].checked)
+                document.getElementById("file-name").innerHTML
+                    = ele[i].value;
+        }
     }
 
     var progressBarCount = 0;
-    function updateProgressBar(){
+    function updateProgressBar() {
         if (progressBarCount == 0) {
             progressBarCount = 1;
             var elem = document.getElementById("myBar");
@@ -131,42 +132,44 @@
     }
 
 </script>
+
 <body>
-<div class="header" style="text-align:center">
-    <h1>AutoOD: Automatic Outlier Detection</h1>
-</div>
-<center>
-    <h3>Enter Input File and Parameters</h3>
-    <form action="/autood/index" method="post" enctype=multipart/form-data>
-        <table border="0">
-            <tr>
-                <td>Input File</td>
-                <td>
-                    <form action="/action_page.php">
-                    <p>Enter your own:</p>
-                    <div class="inputfile-box">
-                        <input class = "button" type="file" id="file" name="file" class="inputfile" onchange='uploadFile()'>
-                        <label for="file" value="{{file}}">
-                            <span id="file-name" value="{{file}}" class="file-box"></span>
-                            <span class="file-button">
-								<i class="fa fa-upload" aria-hidden="true"></i> Select File
-						    </span>
-                        </label>
-                    </div>
-                    <div>
-                        <p>Or select one of ours:</p>
-                        <input type="radio" id="radioButton1" name="dataset" value="pima.csv">
-                        <label for="pima">Pima</label><br>
-                        <input type="radio" id="radioButton2" name="dataset" value="cardio.csv">
-                        <label for="cardio">Cardio</label><br>
-                        <input type="radio" id="radioButton3" name="dataset" value="shuttle.csv">
-                        <label for="shuttle">Shuttle</label>
-                    </div>
-                    <input type="reset" id="ClearButtonRadio" value = "Clear" onchange="clearInputFile()">
-                </form>
-                </td>
-            </tr>
-            <!-- <tr>  THIS PART WAS USED TO CREATE THE CUSTOM DETECTOR FILE INPUT
+    <div class="header" style="text-align:center">
+        <h1>AutoOD: Automatic Outlier Detection</h1>
+    </div>
+    <center>
+        <h3>Enter Input File and Parameters</h3>
+        <form action="/autood/index" method="post" enctype=multipart/form-data>
+            <table border="0">
+                <tr>
+                    <td>Input File</td>
+                    <td>
+                        <form action="/action_page.php">
+                            <p>Enter your own:</p>
+                            <div class="inputfile-box">
+                                <input class="button" type="file" id="file" name="file" class="inputfile"
+                                    onchange='uploadFile()'>
+                                <label for="file" value="{{file}}">
+                                    <span id="file-name" value="{{file}}" class="file-box"></span>
+                                    <span class="file-button">
+                                        <i class="fa fa-upload" aria-hidden="true"></i> Select File
+                                    </span>
+                                </label>
+                            </div>
+                            <div>
+                                <p>Or select one of ours:</p>
+                                <input type="radio" id="radioButton1" name="dataset" value="pima.csv">
+                                <label for="pima">Pima</label><br>
+                                <input type="radio" id="radioButton2" name="dataset" value="cardio.csv">
+                                <label for="cardio">Cardio</label><br>
+                                <input type="radio" id="radioButton3" name="dataset" value="shuttle.csv">
+                                <label for="shuttle">Shuttle</label>
+                            </div>
+                            <input type="reset" id="ClearButtonRadio" value="Clear" onchange="clearInputFile()">
+                        </form>
+                    </td>
+                </tr>
+                <!-- <tr>  THIS PART WAS USED TO CREATE THE CUSTOM DETECTOR FILE INPUT
                 <td>Custom Detector File</td>
                 <td>
                     <div class="inputfile-box">
@@ -180,61 +183,62 @@
                     </div>
                 </td>
             </tr> -->
-            <tr>
-                <td>Detection Methods</td>
-                <td><select id="multiple-checkboxes" name="detectionMethods" multiple="multiple">
-                    <option value="lof" selected>LOF</option>
-                    <option value="knn" selected>KNN</option>
-                    <option value="if" selected>Isolation Forest</option>
-                    <option value="mahala" selected>Mahalanobis</option>
-                </select></td>
-            </tr>
-            <tr>
-                <td>Index Column Name</td>
-                <td><input name="indexColName" value="id" type="text"/></td>
-            </tr>
-            <tr>
-                <td>Label Column Name</td>
-                <td><input name="labelColName" value="label" type="text"/></td>
-            </tr>
-            <tr>
-                <td>Percentage of Outliers: Min (%)</td>
-                <td><input name="outlierRangeMin" value="5" type="number"/></td>
-            </tr>
-            <tr>
-                <td>Percentage of Outliers: Max (%)</td>
-                <td><input name="outlierRangeMax" value="15" type="number"/></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <div>
-                        <input class="button" type="submit" value="Submit" id="SubmitButton" style="float: left;" onclick="updateProgressBar()"/>
-                        <div class="loader" id="loadingImg" style="float: left;"></div>
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </form>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul class=flashes>
-        {% for message in messages %}
-        <h4 style="color:#990000">{{ message }}</h4>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
-    <!-- Progress Bar -->
-    <div id="myProgress">
-        <div id="myBar"></div >
-    </div>
-    <!-- Progress Bar -->
-    <div class="row">
-        <h3 align="center">Log Messages:</h3>
-        <div class="logging_window">
-            <pre id="output" align="left" width="50%"></pre>
+                <tr>
+                    <td>Detection Methods</td>
+                    <td><select id="multiple-checkboxes" name="detectionMethods" multiple="multiple">
+                            <option value="lof" selected>LOF</option>
+                            <option value="knn" selected>KNN</option>
+                            <option value="if" selected>Isolation Forest</option>
+                            <option value="mahala" selected>Mahalanobis</option>
+                        </select></td>
+                </tr>
+                <tr>
+                    <td>Index Column Name</td>
+                    <td><input name="indexColName" value="id" type="text" /></td>
+                </tr>
+                <tr>
+                    <td>Label Column Name</td>
+                    <td><input name="labelColName" value="label" type="text" /></td>
+                </tr>
+                <tr>
+                    <td>Percentage of Outliers: Min (%)</td>
+                    <td><input name="outlierRangeMin" value="5" type="number" /></td>
+                </tr>
+                <tr>
+                    <td>Percentage of Outliers: Max (%)</td>
+                    <td><input name="outlierRangeMax" value="15" type="number" /></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div>
+                            <input class="button" type="submit" value="Submit" id="SubmitButton" style="float: left;"
+                                onclick="updateProgressBar()" />
+                            <div class="loader" id="loadingImg" style="float: left;"></div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class=flashes>
+            {% for message in messages %}
+            <h4 style="color:#990000">{{ message }}</h4>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        <!-- Progress Bar -->
+        <div id="myProgress">
+            <div id="myBar"></div>
         </div>
-    </div>
-</center>
+        <!-- Progress Bar -->
+        <div class="row">
+            <h3 align="center">Log Messages:</h3>
+            <div class="logging_window">
+                <pre id="output" align="left" width="50%"></pre>
+            </div>
+        </div>
+    </center>
 </body>

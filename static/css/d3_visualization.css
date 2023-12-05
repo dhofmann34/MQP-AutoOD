@@ -44,7 +44,6 @@ center {
     border-radius: 12px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     height: 550px;
-    background-color: blue;
 }
 
 #pred_but {
@@ -126,9 +125,6 @@ center {
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-    /* Temp */
-    background-color: blue;
-    width: 300px;
 }
 
 #barplot2 {
@@ -137,9 +133,6 @@ center {
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-    /* Temp */
-    background-color: blue;
-    width: 300px;
 }
 
 #temp {
@@ -152,16 +145,18 @@ center {
 /* table for each data point att. */
 #table_wrapper {
     position: absolute;
-    left: 1300px;
+    left: 1500px;
     bottom: -790px;
     width: 15%;
+    z-index: 10;
 }
 
 #table2_wrapper {
     position: absolute;
-    left: 950px;
+    left: 1100px;
     bottom: -790px;
     width: 15%;
+    z-index: 10;
 }
 
 /* Control panel (filter dropdowns) */

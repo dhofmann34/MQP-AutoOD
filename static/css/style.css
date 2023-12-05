@@ -421,7 +421,7 @@ p.copyright {
 
 #myBar {
     height: 100%;
-    width: 1%;
+    width: 0%;
     background-color: #990000;
     float: left;
 }
