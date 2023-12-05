@@ -32,12 +32,10 @@ center {
 
 /* Main tsne chart */
 #dataviz_axisZoom {
-    position: absolute;
-    left: 15px;
-    top: 190px;
     height: 500px;
     width: 700px;
     z-index: 1;
+    background-color: gray;
 }
 
 #dataviz_axisZoom svg {
@@ -45,7 +43,8 @@ center {
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-    height: 550px
+    height: 550px;
+    background-color: blue;
 }
 
 #pred_but {
@@ -106,12 +105,17 @@ center {
 #selectButton_round {
     width: 75px;
     border-radius: 5px;
-
-
 }
 
 /* Slider for reliable labels */
 #slider-step {}
+
+#popup_chart {
+    position: relative;
+    left: 1040px;
+    bottom: -145px;
+    width: 760px;
+}
 
 /* barplot for param. */
 #barplot {
@@ -122,6 +126,9 @@ center {
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    /* Temp */
+    background-color: blue;
+    width: 300px;
 }
 
 #barplot2 {
@@ -130,6 +137,9 @@ center {
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    /* Temp */
+    background-color: blue;
+    width: 300px;
 }
 
 #temp {
@@ -149,16 +159,9 @@ center {
 
 #table2_wrapper {
     position: absolute;
-    left: 900px;
+    left: 950px;
     bottom: -790px;
     width: 15%;
-}
-
-#popup_chart {
-    position: relative;
-    left: 840px;
-    bottom: -145px;
-    width: 760px;
 }
 
 /* Control panel (filter dropdowns) */
@@ -182,7 +185,7 @@ center {
 #summary {
     position: absolute;
     left: 15px;
-    top: 940px;
+    top: 1040px;
     background-color: white;
     width: 760px;
     height: 80px;
@@ -199,7 +202,7 @@ center {
 #resetButton {
     position: absolute;
     left: 15px;
-    top: 1040px;
+    top: 1140px;
     background-color: white;
     width: 175px;
     height: 30px;
@@ -288,7 +291,7 @@ center {
     position: absolute;
     left: 15px;
     /* top: 85%; */
-    top: 770px;
+    top: 870px;
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
@@ -318,8 +321,8 @@ select {
 .legend {
     list-style: none;
     position: absolute;
-    left: 664px;
-    top: 193px;
+    left: 804px;
+    top: 263px;
     font-family: 'Open Sans', sans-serif;
     font-size: 15px;
     background-color: white;
@@ -419,11 +422,10 @@ li a:hover {
 .tab_holder {
     position: absolute;
     left: 15px;
-    top: 1140px;
+    top: 190px;
     width: 1000px;
     background-color: white;
     border-radius: 12px;
-    margin-bottom: 100px;
 }
 
 .tab{
@@ -469,5 +471,5 @@ li a:hover {
     border-radius: 12px;
     border: 1px black;
     width: 700px;
-    height: 500px;
+    height: 650px;
 }

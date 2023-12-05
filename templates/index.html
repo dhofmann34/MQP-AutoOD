@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<body id=body_results>
+<body id=body_results onload="defaultClick();">
     <ul>
         {% for item in nav.top %}
         <li id="nav" class="{{ 'active' if item.is_active else '' }}">
@@ -43,6 +43,7 @@
         }
 
         // Tabs switcher
+
         function openHistory(evt, runHistory) {
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("tabcontent");
@@ -58,11 +59,13 @@
         }
 
         // Get the element with id="defaultOpen" and click on it
-        document.getElementById("defaultOpen").click();
+        function defaultClick(){
+            document.getElementById("defaultOpen").click();
+        }
     </script>
 </head>
 
-<div id="dataviz_axisZoom"></div>
+<!-- <div id="dataviz_axisZoom"></div> -->
 
 <div id="reliable_labels">
     <div id="reliable_inout_div">
@@ -107,11 +110,6 @@
 
 <div class="vl"></div>
 
-<div id=popup_chart>
-    <div id="barplot"></div>
-    <div id="barplot2"></div>
-</div>
-
 <div id=temp>
     <div id=test_tabel></div>
     <div id=table_div>
@@ -154,6 +152,7 @@
         <button class="tablinks" onclick="openHistory(event, 'Run1')" id="defaultOpen">Run1</button>
         <button class="tablinks" onclick="openHistory(event, 'Run2')">Run2</button>
         <button class="tablinks" onclick="openHistory(event, 'Run3')">Run3</button>
+        <button class="tablinks" onclick="openHistory(event, 'Run4')">Run4</button>
     </div>
     <div class="tabcontent_holder">
         <div id="Run1" class="tabcontent">
@@ -164,12 +163,20 @@
             <h3>Run2</h3>
             <div id="dataviz_axisZoom"></div>
         </div>
-        
         <div id="Run3" class="tabcontent">
             <h3>Run3</h3>
             <div id="dataviz_axisZoom"></div>
         </div>
+        <div id="Run4" class="tabcontent">
+            <h3>Run4</h3>
+            <div id="dataviz_axisZoom"></div>
+        </div>
     </div>
+</div>
+
+<div id=popup_chart>
+    <div id="barplot"></div>
+    <div id="barplot2"></div>
 </div>
 
 </html>
