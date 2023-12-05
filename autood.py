@@ -60,6 +60,7 @@ class OutlierDetectionMethod(Enum):
 class AutoODParameters:
     filepath: str
     detection_methods: List[OutlierDetectionMethod]
+    detection_method_parameters: dict
     k_range: List[int]
     if_range: List[float]
     N_range: List[int]
@@ -964,10 +965,12 @@ def get_default_detection_method_list():
             OutlierDetectionMethod.Manalanobis]
 
 
-def run_autood(filepath, logger, outlier_min, outlier_max, detection_methods, index_col_name, label_col_name,
-               db_parameters_in):
+def prepare_autood_run(filepath, logger, outlier_min, outlier_max, detection_methods, index_col_name, label_col_name,
+                       db_parameters_in):
     dataset = Path(filepath).stem
     logger.info(f"Dataset Name = {dataset}")
+
+    # from dict input (
     default_parameters = get_default_parameters(dataset)
     global db_parameters
     db_parameters = db_parameters_in
