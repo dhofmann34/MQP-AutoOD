@@ -250,6 +250,7 @@ class AutoOD:
                 if y is not None:
                     f1 = get_f1_scores(predictions=lof_predictions, y=y)  # f1 score for each of the detectors?
                     f1s.append(f1)
+            print("here?")
             if database == "y":  # DHDB
                 insert_input("detectors", lof_df)
             f1_list_end_index = len(f1s)
