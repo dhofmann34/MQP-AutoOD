@@ -1,4 +1,5 @@
-from flask import Flask, request, render_template, flash, redirect, Response, send_file
+from flask import Flask, request, render_template, flash, redirect, Response, send_file, session, url_for
+import uuid
 from werkzeug.utils import secure_filename
 import os
 from loguru import logger
@@ -10,6 +11,7 @@ import config
 import sql_queries as sql
 from autood import run_autood, OutlierDetectionMethod
 from config import get_db_config
+from connect import new_session, new_run
 import collections
 collections.MutableSequence = collections.abc.MutableSequence
 collections.Iterable = collections.abc.Iterable
@@ -20,13 +22,25 @@ final_log_filename_global = None
 
 config.configure_packages()  # not needed when using virtual env
 app = Flask(__name__)
+app.secret_key = 'secret_key'
 app, LOGGING_PATH = config.app_config(app)
 logger.add(LOGGING_PATH, format="{time} - {message}")
 
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    return redirect('/autood/index')
+    if 'user_id' in session:
+        user_id = session['user_id']
+        new_session(user_id)
+        return redirect('/autood/index')
+        # return f'Hello returning user! Your user ID is {user_id}'
+    else:
+        # If 'user_id' is not in the session, generate a new ID and store it
+        user_id = str(uuid.uuid4())
+        session['user_id'] = user_id
+        new_session(user_id)
+        return redirect('/autood/index')
+        # return f'Hello new user! Your user ID is {user_id}'
 
 
 @app.route('/autood/results_summary', methods=['GET'])  # DH
@@ -105,8 +119,10 @@ def autood_input():
         if not detection_methods:
             flash('Please choose at least one detection method.')
             return redirect(request.url)
+        user_id = session.get('user_id')
+        run_id = new_run(user_id)
         results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name,
-                              label_col_name)
+                              label_col_name, run_id)
         if results.error_message:
             flash(results.error_message)
             return redirect(request.url)
@@ -134,14 +150,14 @@ def return_files_tut(filename):
 
 
 def call_autood(filename, outlier_percentage_min, outlier_percentage_max, detection_methods, index_col_name,
-                label_col_name):
+                label_col_name, run_id):
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     logger.info(
         f"Start calling autood with file {filename}...indexColName = {index_col_name}, labelColName = {label_col_name}")
     logger.info(
         f"Parameters: outlier_percentage_min = {outlier_percentage_min}%, outlier_percentage_max = {outlier_percentage_max}%")
     return run_autood(filepath, logger, outlier_percentage_min, outlier_percentage_max, detection_methods,
-                      index_col_name, label_col_name, get_db_config())
+                      index_col_name, label_col_name, get_db_config(), run_id)
 
 
 #### DH

@@ -9,20 +9,45 @@ DROP_ALL_TABLES = """
     input
     """
 
+CREATE_SESSION_TABLE = """
+    CREATE TABLE session (
+        id uuid PRIMARY KEY
+    );
+    """
+
+def NEW_SESSION(id):
+    query = f"INSERT INTO session (id) VALUES ('{id}') ON CONFLICT (id) DO NOTHING;"
+    return query
+
+CREATE_RUN_TABLE = """
+    CREATE TABLE run (
+        id SERIAL PRIMARY KEY,
+        session_id uuid NOT NULL REFERENCES session(id) ON UPDATE CASCADE
+    );
+    """
+
+def NEW_RUN(session_id):
+    query = f"INSERT INTO run VALUES (DEFAULT, '{session_id}') RETURNING id;"
+    return query
+
 CREATE_DETECTORS_TABLE = """
-    CREATE TABLE detectors (id integer, detector text, k integer, n integer, prediction integer, score float);
+    CREATE TABLE detectors (id integer, detector text, k integer, n integer, prediction integer, score float, 
+    run_id integer NOT NULL REFERENCES run(id) ON UPDATE CASCADE);
     """
 
 CREATE_PREDICTIONS_TABLE = """
-    CREATE TABLE predictions (id integer, prediction integer, correct integer);
+    CREATE TABLE predictions (id integer, prediction integer, correct integer,
+    run_id integer NOT NULL REFERENCES run(id) ON UPDATE CASCADE);
     """
 
 CREATE_RELIABLE_TABLE = """
-    CREATE TABLE reliable (id integer, iteration integer, reliable integer);
+    CREATE TABLE reliable (id integer, iteration integer, reliable integer,
+    run_id integer NOT NULL REFERENCES run(id) ON UPDATE CASCADE);
     """
 
 CREATE_TSNE_TABLE = """
-    CREATE TABLE tsne (id integer, tsne1 float, tsne2 float);
+    CREATE TABLE tsne (id integer, tsne1 float, tsne2 float,
+    run_id integer NOT NULL REFERENCES run(id) ON UPDATE CASCADE);
     """
 
 def CREATE_INPUT_TABLE(columnName, columnDataType):

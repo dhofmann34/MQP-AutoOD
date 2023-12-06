@@ -29,7 +29,7 @@ def create_input_table(data):
         conn = psycopg2.connect(**get_db_config())
         cur = conn.cursor()  # create a cursor
 
-        cur.execute(sql.DROP_ALL_TABLES)
+        #cur.execute(sql.DROP_ALL_TABLES)
 
         cur.execute(sql.CREATE_DETECTORS_TABLE)
         cur.execute(sql.CREATE_PREDICTIONS_TABLE)
@@ -77,7 +77,7 @@ def insert_input(table, data):  # we can use this fucntion to add to our databse
             logger.info('Database connection closed, inserted successfully.')
 
 
-def insert_tsne(table, data, label_col_name, index_col_name):
+def insert_tsne(table, data, label_col_name, index_col_name, run_id):
     id = data[index_col_name]
     data = data.drop(index_col_name, axis=1)
     data = data.drop(label_col_name, axis=1)
@@ -88,6 +88,7 @@ def insert_tsne(table, data, label_col_name, index_col_name):
     fit_df["id"] = id
     fit_df["tsne1"] = fit[:, 0]
     fit_df["tsne2"] = fit[:, 1]
+    fit_df["run_id"] = run_id
     insert_input(table, fit_df)
 
 
@@ -96,7 +97,7 @@ def truncate_all_tables():
     try:
         conn = psycopg2.connect(**get_db_config())
         cur = conn.cursor()
-        cur.execute(sql.TRUNCATE_ALL_TABLES)
+        # cur.execute(sql.TRUNCATE_ALL_TABLES)
         conn.commit()
         cur.close()
         conn.close()
@@ -120,6 +121,47 @@ def truncate_temp_tables():
         conn.commit()
         cur.close()
         conn.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logger.error("Error connecting to the database or executing query.")
+        print(error)
+
+    finally:
+        if conn is not None:
+            conn.close()
+            logger.info('Database connection closed, inserted successfully.')
+
+def new_session(id):
+    conn = None
+    try:
+        conn = psycopg2.connect(**get_db_config())
+        cur = conn.cursor()
+        cur.execute(sql.NEW_SESSION(id))
+        conn.commit()
+        cur.close()
+        conn.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logger.error("Error connecting to the database or executing query.")
+        print(error)
+
+    finally:
+        if conn is not None:
+            conn.close()
+            logger.info('Database connection closed, inserted successfully.')
+
+def new_run(id):
+    conn = None
+    try:
+        conn = psycopg2.connect(**get_db_config())
+        cur = conn.cursor()
+        sql_query= sql.NEW_RUN(id)
+        cur.execute(sql_query)
+        run_id = cur.fetchone()[0]
+        conn.commit()
+        cur.close()
+        conn.close()
+        return run_id
 
     except (Exception, psycopg2.DatabaseError) as error:
         logger.error("Error connecting to the database or executing query.")

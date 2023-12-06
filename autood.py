@@ -115,7 +115,7 @@ def run_mahalanobis(X):
     return dist
 
 
-def load_dataset(filename, index_col_name=None, label_col_name=None):
+def load_dataset(filename, run_id, index_col_name=None, label_col_name=None):
     if filename.endswith('arff'):
         with open(filename, 'r') as f:
             data, meta = arff.loadarff(f)
@@ -129,15 +129,15 @@ def load_dataset(filename, index_col_name=None, label_col_name=None):
         data[label_col_name] = data[label_col_name].map(
             lambda x: 1 if x == b'yes' else 0).values if label_col_name else None
         if database == "y":
-            truncate_all_tables()
+            # truncate_all_tables()
             # SQL does not allow numeric values to be column names
             columnNames = data.columns[pd.to_numeric(data.columns, errors='coerce').to_series().notnull()]
             for name in columnNames:
                 data.rename(columns={name: f'_{name}_'}, inplace=True)
 
-            create_input_table(data)
+            #create_input_table(data)
             insert_input("input", data)  # DHDB
-            insert_tsne("tsne", data, label_col_name, index_col_name)
+            insert_tsne("tsne", data, label_col_name, index_col_name, run_id)
         data = data.set_index(index_col_name)
         X = data.drop(columns=[label_col_name])
         y = data[label_col_name].values
@@ -152,15 +152,15 @@ def load_dataset(filename, index_col_name=None, label_col_name=None):
         if debug_small_n == 'y':
             data = data.sample(n=500, random_state=15)  # DH: added to debug code locally
         if database == "y":
-            truncate_temp_tables()
+            # truncate_temp_tables()
             # SQL does not allow numeric values to be column names
             columnNames = data.columns[pd.to_numeric(data.columns, errors='coerce').to_series().notnull()]
             for name in columnNames:
                 data.rename(columns={name: f'_{name}_'}, inplace=True)
 
-            create_input_table(data)
+            #create_input_table(data)
             insert_input("input", data)  # DHDB
-            insert_tsne("tsne", data, label_col_name, index_col_name)
+            insert_tsne("tsne", data, label_col_name, index_col_name, run_id)
         data = data.set_index(index_col_name)
         X = data.drop(columns=[label_col_name]) if label_col_name else data
         y = data[label_col_name].values if label_col_name else None
@@ -203,12 +203,12 @@ class AutoOD:
         self.mv_f1_score = 0
         self.autood_f1_score = 0
 
-    def _load_dataset(self):
+    def _load_dataset(self, run_id):
         file_name = self.params.filepath
-        data = load_dataset(file_name, self.params.index_col_name, self.params.label_col_name)
+        data = load_dataset(file_name, run_id, self.params.index_col_name, self.params.label_col_name)
         return data
 
-    def _run_unsupervised_outlier_detection_methods(self, X, y):
+    def _run_unsupervised_outlier_detection_methods(self, X, y, run_id):
         all_results = []
         all_scores = []
         methods_to_best_f1 = {}
@@ -230,7 +230,7 @@ class AutoOD:
                 lof_scores = run_lof(X, k=k)
                 temp_lof_results[k] = lof_scores
             if database == "y":  # DHDB
-                col_names = ["id", "detector", "k", "n", "prediction", "score"]
+                col_names = ["id", "detector", "k", "n", "prediction", "score", "run_id"]
                 lof_df = pd.DataFrame(columns=col_names)
             for i in range(len(krange_list)):
                 lof_predictions, lof_scores = get_predictions(temp_lof_results[krange_list[i]],
@@ -246,11 +246,11 @@ class AutoOD:
                     temp_lof_data["n"] = knn_N_range[i]
                     temp_lof_data["prediction"] = lof_predictions
                     temp_lof_data["score"] = lof_scores
+                    temp_lof_data["run_id"] = run_id
                     lof_df = pd.concat([lof_df, temp_lof_data])  # lof_df.append(temp_lof_data)
                 if y is not None:
                     f1 = get_f1_scores(predictions=lof_predictions, y=y)  # f1 score for each of the detectors?
                     f1s.append(f1)
-            print("here?")
             if database == "y":  # DHDB
                 insert_input("detectors", lof_df)
             f1_list_end_index = len(f1s)
@@ -281,7 +281,7 @@ class AutoOD:
                 knn_scores = run_knn(X, k=k)
                 temp_knn_results[k] = knn_scores
             if database == "y":  # DHDB
-                col_names = ["id", "detector", "k", "n", "prediction", "score"]
+                col_names = ["id", "detector", "k", "n", "prediction", "score", "run_id"]
                 knn_df = pd.DataFrame(columns=col_names)
             for i in range(len(krange_list)):
                 knn_predictions, knn_scores = get_predictions(temp_knn_results[krange_list[i]],
@@ -296,6 +296,7 @@ class AutoOD:
                     temp_knn_data["n"] = knn_N_range[i]
                     temp_knn_data["prediction"] = knn_predictions
                     temp_knn_data["score"] = knn_scores
+                    temp_knn_data["run_id"] = run_id
                     knn_df = pd.concat([knn_df, temp_knn_data])  # knn_df.append(temp_knn_data)
                 if y is not None:
                     f1 = get_f1_scores(predictions=knn_predictions, y=y)
@@ -330,7 +331,7 @@ class AutoOD:
             if_range_list = self.params.if_range * N_size
             if_N_range = np.sort(self.params.N_range * len(self.params.if_range))
             if database == "y":  # DHDB
-                col_names = ["id", "detector", "k", "n", "prediction", "score"]
+                col_names = ["id", "detector", "k", "n", "prediction", "score", "run_id"]
                 if_df = pd.DataFrame(columns=col_names)
             for i in range(len(if_range_list)):
                 if_predictions, if_scores = get_predictions(temp_if_results[if_range_list[i]],
@@ -345,6 +346,7 @@ class AutoOD:
                     temp_if_data["n"] = knn_N_range[i]
                     temp_if_data["prediction"] = if_predictions
                     temp_if_data["score"] = if_scores
+                    temp_if_data["run_id"] = run_id
                     if_df = pd.concat([if_df, temp_if_data])  # if_df.append(temp_if_data)
                 if y is not None:
                     f1 = get_f1_scores(predictions=if_predictions, y=y)
@@ -372,7 +374,7 @@ class AutoOD:
             mahalanobis_scores = run_mahalanobis(X)
             best_mahala_f1 = 0
             if database == "y":  # DHDB
-                col_names = ["id", "detector", "n", "prediction", "score"]  # no k
+                col_names = ["id", "detector", "n", "prediction", "score", "run_id"]  # no k
                 mahala_df = pd.DataFrame(columns=col_names)
             for i in range(len(N_range)):
                 mahalanobis_predictions, mahalanobis_scores = get_predictions(mahalanobis_scores,
@@ -387,6 +389,7 @@ class AutoOD:
                     temp_mahala_data["n"] = N_range[i]
                     temp_mahala_data["prediction"] = mahalanobis_predictions
                     temp_mahala_data["score"] = mahalanobis_scores
+                    temp_mahala_data["run_id"] = run_id
                     mahala_df = pd.concat([mahala_df, temp_mahala_data])  # mahala_df.append(temp_mahala_data)
                 if y is not None:
                     f1 = get_f1_scores(mahalanobis_predictions, y)
@@ -422,7 +425,7 @@ class AutoOD:
         self.logger.info(f'F1 for Majority Vote:{self.mv_f1_score}')
 
     def autood_training(self, L, scores, X, y, instance_index_ranges,
-                        detector_index_ranges):  # add param here that is none on defult: takes in human labels
+                        detector_index_ranges, run_id):  # add param here that is none on defult: takes in human labels
         L_prev = L
         scores_prev = scores
         prediction_result_list = []
@@ -457,7 +460,7 @@ class AutoOD:
         self.logger.info("Start First-round AutoOD training...")
 
         if database == "y":  # DHDB
-            col_names = ["id", "iteration", "reliable"]
+            col_names = ["id", "iteration", "reliable", "run_id"]
             reliable_df = pd.DataFrame(columns=col_names)
         for i_range in range(0, 50):
             num_methods = np.shape(L)[
@@ -642,6 +645,7 @@ class AutoOD:
                 # temp_reliable_df = temp_reliable_df.sort_values(by=["id"])
                 temp_reliable_df["iteration"] = i_range
                 temp_reliable_df["reliable"] = full_data
+                temp_reliable_df["run_id"] = run_id
                 reliable_df = pd.concat([reliable_df, temp_reliable_df])  # reliable_df.append(temp_reliable_df)
         if database == "y":  # DHDB
             # reliable_df = reliable_df.convert_dtypes()
@@ -921,24 +925,25 @@ class AutoOD:
             last_training_data_indexes = data_indexes
         return np.array([int(i) for i in clf_predict_proba_X > 0.5])
 
-    def run_autood(self, dataset):
+    def run_autood(self, dataset, run_id):
 
         start_time = time.time()
 
-        data = self._load_dataset()
+        data = self._load_dataset(run_id)
         if data is None:
             return AutoODResults(error_message=f"Cannot load data from file {self.params.filepath}")
         X, y = data
         self.logger.info(f"Dataset size = {np.shape(X)}, dataset label size = {np.shape(y) if y is not None else None}")
-        L, scores, instance_index_ranges, detector_index_ranges = self._run_unsupervised_outlier_detection_methods(X, y)
+        L, scores, instance_index_ranges, detector_index_ranges = self._run_unsupervised_outlier_detection_methods(X, y, run_id)
         if y is not None:
             self.run_mv(L, y)
-        prediction_results = self.autood_training(L, scores, X, y, instance_index_ranges, detector_index_ranges)
+        prediction_results = self.autood_training(L, scores, X, y, instance_index_ranges, detector_index_ranges, run_id)
         if database == "y":  # # DHDB
             final_df = pd.DataFrame()
             final_df["id"] = X.index
             final_df["prediction"] = prediction_results
             final_df["correct"] = np.where(prediction_results == y, 1, 0)
+            final_df["run_id"] = run_id
             final_df = final_df.convert_dtypes()
             insert_input("predictions", final_df)
         result_filename = f"results_{dataset}_{int(time.time())}.csv"
@@ -965,7 +970,7 @@ def get_default_detection_method_list():
 
 
 def run_autood(filepath, logger, outlier_min, outlier_max, detection_methods, index_col_name, label_col_name,
-               db_parameters_in):
+               db_parameters_in, run_id):
     dataset = Path(filepath).stem
     logger.info(f"Dataset Name = {dataset}")
     default_parameters = get_default_parameters(dataset)
@@ -986,4 +991,4 @@ def run_autood(filepath, logger, outlier_min, outlier_max, detection_methods, in
         N_range=default_parameters.N_range,
         index_col_name=index_col_name,
         label_col_name=label_col_name
-    ), logger).run_autood(dataset)
+    ), logger).run_autood(dataset, run_id)
