@@ -93,11 +93,9 @@
 
     // Clear button for file - START
     function clearInputFile(){
-        //const file =
-        //    document.querySelector('.file');
-        //    file.value = '';
-
-        document.getElementById('selectedDataset').value = '';
+        const file =
+            document.querySelector('.file');
+            file.value = '';
     }
     // Clear button for file - END
 
@@ -111,19 +109,6 @@
             }
     }
 
-    window.addEventListener("DOMContentLoaded", (event) => {
-        document.getElementById('radioButton1').addEventListener('click', function () {
-            document.getElementById('selectedDataset').value = 'thyroid.csv';
-        });
-
-        document.getElementById('radioButton2').addEventListener('click', function () {
-            document.getElementById('selectedDataset').value = 'cardio.csv';
-        });
-
-        document.getElementById('radioButton3').addEventListener('click', function () {
-            document.getElementById('selectedDataset').value = 'musk.csv';
-        });
-    });
 </script>
 <body>
 <div class="header" style="text-align:center">
@@ -149,16 +134,14 @@
                     </div>
                     <div>
                         <p>Or select one of ours:</p>
-                        <input type="radio" id="radioButton1" name="dataset" value="thyroid.csv">
-                        <label for="thyroid">Thyroid</label><br>
+                        <input type="radio" id="radioButton1" name="dataset" value="pima.csv">
+                        <label for="pima">Pima</label><br>
                         <input type="radio" id="radioButton2" name="dataset" value="cardio.csv">
                         <label for="cardio">Cardio</label><br>
-                        <input type="radio" id="radioButton3" name="dataset" value="musk.csv">
-                        <label for="musk">Musk</label>
-
-                        <input type="hidden" id="selectedDataset" name="selectedDataset" value="">
+                        <input type="radio" id="radioButton3" name="dataset" value="shuttle.csv">
+                        <label for="shuttle">Shuttle</label>
                     </div>
-                    <input type="reset" id="ClearButtonRadio" value = "Clear" onclick="clearInputFile()">
+                    <input type="reset" id="ClearButtonRadio" value = "Clear" onchange="clearInputFile()">
                 </form>
                 </td>
             </tr>
