@@ -47,9 +47,11 @@ def results1():
 def autood_form():
     return render_template('form.html')
 
-@app.route('/autood/logs', methods=['GET'])
-def autood_logs():
-    return render_template('running_logs.html')
+
+@app.route('/autood/index', methods=['GET'])
+def autood_form2():
+    return render_template('form.html')
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -85,47 +87,51 @@ def get_detection_methods(methods):
 
 @app.route('/autood/index', methods=['POST'])
 def autood_input():
-    if 'file' not in request.files:
-        flash('Please provide an input file or select a dataset.')
-        return redirect(request.url)
-    file = request.files['file']
-    # If the user does not select a file, the browser submits an
-    # empty file without a filename.
-    if file.filename == '':
-        flash('Please provide an input file or select a dataset.')
-        return redirect(request.url)
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        # start autoOD computation
-        index_col_name = request.form['indexColName']
-        label_col_name = request.form['labelColName']
-        outlier_range_min = float(request.form['outlierRangeMin'])
-        outlier_range_max = float(request.form['outlierRangeMax'])
-        detection_methods = get_detection_methods(request.form.getlist('detectionMethods'))
-        if not detection_methods:
-            flash('Please choose at least one detection method.')
+    sample_file = request.form['selectedDataset']
+    if not sample_file:
+        if 'file' not in request.files:
+            flash('Please provide an input file or select a dataset.')
             return redirect(request.url)
-        results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name,
-                              label_col_name)
-        if results.error_message:
-            flash(results.error_message)
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            flash('Please provide an input file or select a dataset.')
             return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
         else:
-            # Create empty job.log, old logging will be deleted
-            final_log_filename = f"log_{file.filename.replace('.', '_')}_{int(time.time())}"
-            copyfile(LOGGING_PATH, app.config['DOWNLOAD_FOLDER'] + final_log_filename)
-            open(LOGGING_PATH, 'w').close()
-            global results_global, final_log_filename_global
-            results_global = results
-            final_log_filename_global = final_log_filename
-            return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
-                                   autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
-                                   best_method=",".join(results.best_unsupervised_methods),
-                                   final_results=results.results_file_name, training_log=final_log_filename)
+            flash('File type is not supported.')
+            return redirect(request.url)
+        # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        # start autoOD computation
     else:
-        flash('File type is not supported.')
+        filename = sample_file
+    index_col_name = request.form['indexColName']
+    label_col_name = request.form['labelColName']
+    outlier_range_min = float(request.form['outlierRangeMin'])
+    outlier_range_max = float(request.form['outlierRangeMax'])
+    detection_methods = get_detection_methods(request.form.getlist('detectionMethods'))
+    if not detection_methods:
+        flash('Please choose at least one detection method.')
         return redirect(request.url)
+    results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name,
+                            label_col_name)
+    if results.error_message:
+        flash(results.error_message)
+        return redirect(request.url)
+    else:
+        # Create empty job.log, old logging will be deleted
+        final_log_filename = f"log_{filename.replace('.', '_')}_{int(time.time())}"
+        copyfile(LOGGING_PATH, app.config['DOWNLOAD_FOLDER'] + final_log_filename)
+        open(LOGGING_PATH, 'w').close()
+        global results_global, final_log_filename_global
+        results_global = results
+        final_log_filename_global = final_log_filename
+        return render_template('result_summary.html', best_f1=results.best_unsupervised_f1_score,
+                                autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
+                                best_method=",".join(results.best_unsupervised_methods),
+                                final_results=results.results_file_name, training_log=final_log_filename)
 
 
 @app.route('/return-files/<filename>')
@@ -152,9 +158,10 @@ nav = Navigation(app)
 
 nav.Bar('top', [
     nav.Item('Input Page', 'autood_form'),
+    nav.Item('Results Summary', 'results1'),
     nav.Item('Result Page', 'result_index'),
-    nav.Item('About', 'about_form'),
-    nav.Item('Logs', 'autood_logs')
+    nav.Item('Rerun', 'autood_form2'),
+    nav.Item('About', 'about_form')
 ])
 
 
