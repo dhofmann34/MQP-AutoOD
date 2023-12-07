@@ -970,7 +970,6 @@ def prepare_autood_run(filepath, logger, outlier_min, outlier_max, detection_met
     dataset = Path(filepath).stem
     logger.info(f"Dataset Name = {dataset}")
 
-    # from dict input (
     default_parameters = get_default_parameters(dataset)
     global db_parameters
     db_parameters = db_parameters_in
