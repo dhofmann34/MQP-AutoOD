@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<body id=body_results onload="defaultClick();">
+<body id=body_results>
     <ul>
         {% for item in nav.top %}
         <li id="nav" class="{{ 'active' if item.is_active else '' }}">
@@ -26,6 +26,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap" rel="stylesheet">
     <script>
+        // Functions that need to be run when the page loads
+        window.onload = function () {
+            defaultClick();
+            updateRunHistoryTabs();
+        }
+
+        // Get the element with id="defaultOpen" and click on it
+        function defaultClick() {
+            document.getElementById("defaultOpen").click();
+        }
+
         // Loader animation
         $(function () {
             $('#resetButton').click(function () {
@@ -38,29 +49,35 @@
             });
         });
 
-        function refreshPage() {
-            window.location.reload();
+        // Dynamically add tabs to the run history
+        function updateRunHistoryTabs() {
+
+            for (let i = 0; i < (runNumber - 1); i++) {
+                const text = "Run" + (i + 2);
+                var node_list = document.createElement("li");
+                var node_button = document.createElement("button");
+
+                node_button.append(text);
+                node_button.classList.add("tablinks");
+                node_button.addEventListener('click', function (event) {
+                    updateTabContent(event, text);
+                });
+                node_list.appendChild(node_button)
+
+                document.getElementById("tab").appendChild(node_list);
+            }
         }
 
-        // Tabs switcher
+        // Updates button activation and tabcontent header
+        function updateTabContent(evt, runHistory) {
+            var i, tablinks;
 
-        function openHistory(evt, runHistory) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
             tablinks = document.getElementsByClassName("tablinks");
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
-            document.getElementById(runHistory).style.display = "block";
             evt.currentTarget.className += " active";
-        }
-
-        // Get the element with id="defaultOpen" and click on it
-        function defaultClick(){
-            document.getElementById("defaultOpen").click();
+            document.getElementById("history_header").innerHTML = runHistory;
         }
     </script>
 </head>
@@ -142,35 +159,20 @@
     </form>
 </div>
 
-<div id="resetButtonHolder">
-    <button id="resetButton"><b>Reset</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
-</div>
 <div id="loader"></div>
 
 <div class="tab_holder">
-    <div class="tab">
-        <button class="tablinks" onclick="openHistory(event, 'Run1')" id="defaultOpen">Run1</button>
-        <button class="tablinks" onclick="openHistory(event, 'Run2')">Run2</button>
-        <button class="tablinks" onclick="openHistory(event, 'Run3')">Run3</button>
-        <button class="tablinks" onclick="openHistory(event, 'Run4')">Run4</button>
-    </div>
+    <ul class="tab" id="tab">
+        <li><button class="tablinks" onclick="updateTabContent(event, 'Run1')" id="defaultOpen">Run1</button></li>
+    </ul>
     <div class="tabcontent_holder">
         <div id="Run1" class="tabcontent">
-            <h3>Run1</h3>
+            <h3 id="history_header">Run1</h3>
             <div id="dataviz_axisZoom"></div>
         </div>
-        <div id="Run2" class="tabcontent">
-            <h3>Run2</h3>
-            <div id="dataviz_axisZoom"></div>
-        </div>
-        <div id="Run3" class="tabcontent">
-            <h3>Run3</h3>
-            <div id="dataviz_axisZoom"></div>
-        </div>
-        <div id="Run4" class="tabcontent">
-            <h3>Run4</h3>
-            <div id="dataviz_axisZoom"></div>
-        </div>
+    </div>
+    <div>
+        <button id="resetButton"><b>Reset</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
     </div>
 </div>
 
