@@ -93,23 +93,27 @@ def autood_input():
     if file.filename == '':
         flash('Please provide an input file or select a dataset.')
         return redirect(request.url)
-    # TODO: check request run params not empty here
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         # Retrieve parameters from input page
-        index_col_name = request.form['indexColName']
-        label_col_name = request.form['labelColName']
-        outlier_range_min = float(request.form['outlierRangeMin'])
-        outlier_range_max = float(request.form['outlierRangeMax'])
+        # index_col_name = request.form['indexColName']
+        # label_col_name = request.form['labelColName']
+        parameters = request.get_json()
+        parameters['index_col_name'] = request.form['indexColName']
+        parameters['label_col_name'] = request.form['labelColName']
+        # outlier_range_min = float(request.form['outlierRangeMin'])
+        # outlier_range_max = float(request.form['outlierRangeMax'])
+        # check for detection methods in parameters
         # TODO: get run param inputs here, pass in as json?
         detection_methods = get_detection_methods(request.form.getlist('detectionMethods'))
         if not detection_methods:
             flash('Please choose at least one detection method.')
             return redirect(request.url)
-        results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name,
-                              label_col_name)
+        results = call_autood(filename, parameters)
+        # results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name,
+        #                       label_col_name)
         if results.error_message:
             flash(results.error_message)
             return redirect(request.url)
@@ -145,6 +149,15 @@ def call_autood(filename, outlier_percentage_min, outlier_percentage_max, detect
         f"Parameters: outlier_percentage_min = {outlier_percentage_min}%, outlier_percentage_max = {outlier_percentage_max}%")
     return prepare_autood_run(filepath, logger, outlier_percentage_min, outlier_percentage_max, detection_methods,
                               index_col_name, label_col_name, get_db_config())
+
+def call_autood(filename, parameters):
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    # logger.info(
+    #     f"Start calling autood with file {filename}...indexColName = {index_col_name}, labelColName = {label_col_name}")
+    # logger.info(
+    #     f"Parameters: outlier_percentage_min = {outlier_percentage_min}%, outlier_percentage_max = {outlier_percentage_max}%")
+    return prepare_autood_run(filepath, logger, parameters, get_db_config())
+
 
 
 #### DH

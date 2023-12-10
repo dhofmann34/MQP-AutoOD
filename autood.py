@@ -321,7 +321,7 @@ class AutoOD:
             f1_list_start_index = len(f1s)
             N_size = len(self.params.N_range)
             N_range = [int(np.shape(X)[0] * percent) for percent in self.params.N_range]
-            knn_N_range = np.sort(N_range * len(self.params.k_range))
+            knn_N_range = np.sort(N_range * len(self.params.k_range)) # TODO: change this
 
             self.logger.info(f'Start running Isolation Forest with max feature = {self.params.if_range}')
             temp_if_results = dict()
@@ -965,8 +965,9 @@ def get_default_detection_method_list():
             OutlierDetectionMethod.Manalanobis]
 
 
-def prepare_autood_run(filepath, logger, outlier_min, outlier_max, detection_methods, index_col_name, label_col_name,
-                       db_parameters_in):
+#def prepare_autood_run(filepath, logger, outlier_min, outlier_max, detection_methods, index_col_name, label_col_name,
+#                       db_parameters_in):
+def prepare_autood_run(filepath, logger, parameters, db_parameters_in):
     dataset = Path(filepath).stem
     logger.info(f"Dataset Name = {dataset}")
 
@@ -980,6 +981,7 @@ def prepare_autood_run(filepath, logger, outlier_min, outlier_max, detection_met
         interval = (outlier_max_percent - outlier_min_percent) / 5
         new_N_range = [round(x, 5) for x in np.arange(outlier_min_percent, outlier_max_percent + interval, interval)]
         default_parameters.N_range = new_N_range
+    # Put all run configs into DB here, then run autood
     return AutoOD(AutoODParameters(
         filepath,
         detection_methods,
