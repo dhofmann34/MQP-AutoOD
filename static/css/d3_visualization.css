@@ -1,5 +1,6 @@
 #body_results {
     background-color: #EFEEF1;
+    z-index: 100;
 }
 
 html {
@@ -409,9 +410,6 @@ li a:hover {
     padding-top: .5%;
 }
 
-#body_results {
-    z-index: 100;
-}
 
 .tab_holder {
     position: absolute;
