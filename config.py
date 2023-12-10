@@ -63,12 +63,14 @@ def app_config(app, filename='configurations.ini'):
     else:
         raise Exception('Section postgresql not found in the {0} file'.format(filename))
 
-    # Set up add configs
+    # Set up app configs
     app.config['UPLOAD_FOLDER'] = app_configs["upload-folder"]
     app.config['DOWNLOAD_FOLDER'] = app_configs["download-folder"]
-    app.config['DEBUG'] = app_configs["debug-mode"] == 'True'  # start debugging
+    app.config['DEBUG'] = app_configs["debug-mode"] == 'True'
     app.config['ALLOWED_EXTENSIONS'] = app_configs["allowed-extensions"].split(",")
     app.config['HOST'] = db_configs['host']
+    # feature flag for additional user inputs
+    app.config['ADDITIONAL_INPUTS'] = app_configs["additional-inputs"] == 'True'
     app.secret_key = "super secret key"
 
     return app, app_configs["logging-path"]

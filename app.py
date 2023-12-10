@@ -12,12 +12,12 @@ from autood import prepare_autood_run, OutlierDetectionMethod
 from config import get_db_config
 from tqdm import tqdm
 import collections
+
 collections.MutableSequence = collections.abc.MutableSequence
 collections.Iterable = collections.abc.Iterable
 
 results_global = None
 final_log_filename_global = None
-
 
 config.configure_packages()  # not needed when using virtual env
 app = Flask(__name__)
@@ -29,13 +29,16 @@ logger.add(LOGGING_PATH, format="{time} - {message}")
 def home():
     return redirect('/autood/index')
 
+
 @app.route('/autood/index', methods=['GET'])
 def autood_form():
     return render_template('form.html')
 
+
 @app.route('/autood/logs', methods=['GET'])
 def autood_logs():
     return render_template('running_logs.html')
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -57,7 +60,7 @@ def running_logs():
     return Response(flask_logger(), mimetype="text/plain", content_type="text/event-stream")
 
 
-def get_detection_methods(methods):
+def get_detection_methods(methods: list):
     logger.info(f"selected methods = {methods}")
     name_to_method_map = {
         "lof": OutlierDetectionMethod.LOF,
@@ -66,6 +69,21 @@ def get_detection_methods(methods):
         "mahala": OutlierDetectionMethod.Manalanobis
     }
     selected_methods = [name_to_method_map[method] for method in methods]
+    return selected_methods
+
+
+def get_detection_methods(parameters: dict):
+    selected_methods = []
+    name_to_method_map = {
+        "lofKRange": OutlierDetectionMethod.LOF,
+        "knnKRange": OutlierDetectionMethod.KNN,
+        "ifKRange": OutlierDetectionMethod.IsolationForest
+        # "mahala": OutlierDetectionMethod.Manalanobis # TODO: figure out mahalanobis
+    }
+    for name in name_to_method_map:
+        if parameters[name] != "":
+            selected_methods.append(name_to_method_map[name])
+    logger.info(f"selected methods = {selected_methods}")
     return selected_methods
 
 
@@ -83,24 +101,32 @@ def autood_input():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        detection_methods = []
 
-        # Retrieve parameters from input page
-        # index_col_name = request.form['indexColName']
-        # label_col_name = request.form['labelColName']
-        parameters = request.get_json()
-        parameters['index_col_name'] = request.form['indexColName']
-        parameters['label_col_name'] = request.form['labelColName']
-        # outlier_range_min = float(request.form['outlierRangeMin'])
-        # outlier_range_max = float(request.form['outlierRangeMax'])
-        # check for detection methods in parameters
-        # TODO: get run param inputs here, pass in as json?
-        detection_methods = get_detection_methods(request.form.getlist('detectionMethods'))
+        # Additional input parameters flow if flag set to True
+        if app.config['ADDITIONAL_INPUTS']:
+            # Retrieve parameters from input page
+            parameters = request.get_json()
+            parameters['index_col_name'] = request.form['indexColName']
+            parameters['label_col_name'] = request.form['labelColName']
+            # check for detection methods in parameters
+            detection_methods = get_detection_methods(parameters)
+        else: # Normal flow
+            # Retrieve parameters from input page
+            index_col_name = request.form['indexColName']
+            label_col_name = request.form['labelColName']
+            outlier_range_min = float(request.form['outlierRangeMin'])
+            outlier_range_max = float(request.form['outlierRangeMax'])
+            detection_methods = get_detection_methods(request.form.getlist('detectionMethods'))
+
         if not detection_methods:
             flash('Please choose at least one detection method.')
             return redirect(request.url)
-        results = call_autood(filename, parameters)
-        # results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name,
-        #                       label_col_name)
+
+        if app.config['ADDITIONAL_INPUTS']:
+            results = call_autood(filename, parameters, detection_methods)
+        else:
+            results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name, label_col_name)
         if results.error_message:
             flash(results.error_message)
             return redirect(request.url)
@@ -137,14 +163,15 @@ def call_autood(filename, outlier_percentage_min, outlier_percentage_max, detect
     return prepare_autood_run(filepath, logger, outlier_percentage_min, outlier_percentage_max, detection_methods,
                               index_col_name, label_col_name, get_db_config())
 
-def call_autood(filename, parameters):
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    # logger.info(
-    #     f"Start calling autood with file {filename}...indexColName = {index_col_name}, labelColName = {label_col_name}")
-    # logger.info(
-    #     f"Parameters: outlier_percentage_min = {outlier_percentage_min}%, outlier_percentage_max = {outlier_percentage_max}%")
-    return prepare_autood_run(filepath, logger, parameters, get_db_config())
 
+# Calling autood with additional user inputs for each detection method
+def call_autood(filename, parameters, detection_methods):
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    logger.info(f"Start calling autood with file {filename}...indexColName = " +
+                f"{parameters['index_col_name']}, labelColName = {parameters['label_col_name']}")
+    #logger.info(
+    #     f"Parameters: outlier_percentage_min = {outlier_percentage_min}%, outlier_percentage_max = {outlier_percentage_max}%")
+    return prepare_autood_run(filepath, logger, parameters, detection_methods, get_db_config())
 
 
 #### DH
