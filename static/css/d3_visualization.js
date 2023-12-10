@@ -18,6 +18,9 @@ var clicks_highlight = 0
 var click1
 var click2
 
+var runNumber = 5; // Number of runs
+const local_data_path = "http://127.0.0.1:8080/data"; // Path to local data
+
 // placement of chart
 var SVG = d3.select("#dataviz_axisZoom")
     .append("svg")
@@ -29,9 +32,8 @@ var SVG = d3.select("#dataviz_axisZoom")
     .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");    
 
-
 //Read the data need to run local server: 'python -m http.server 8888' in console then open
-d3.json("http://127.0.0.1:8080/data", function(data) {
+d3.json(local_data_path, function(data) {
     const xValue = (data) => data.tsne1;
     const yValue = (data) => data.tsne2;
     
