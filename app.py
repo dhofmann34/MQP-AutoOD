@@ -11,11 +11,9 @@ import config
 import sql_queries as sql
 from autood import run_autood, OutlierDetectionMethod
 from config import get_db_config
-<<<<<<< HEAD
-from connect import new_session, new_run
-=======
 from tqdm import tqdm
->>>>>>> 832134d6ef0dbec303357c4ee930b703de7d2963
+from connect import new_session, new_run
+from connect import create_session_run_tables
 import collections
 collections.MutableSequence = collections.abc.MutableSequence
 collections.Iterable = collections.abc.Iterable
@@ -30,12 +28,14 @@ app.secret_key = 'secret_key'
 app, LOGGING_PATH = config.app_config(app)
 logger.add(LOGGING_PATH, format="{time} - {message}")
 
+from flask_cors import CORS
+CORS(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    create_session_run_tables
     if 'user_id' in session:
         user_id = session['user_id']
-        new_session(user_id)
         return redirect('/autood/index')
         # return f'Hello returning user! Your user ID is {user_id}'
     else:
@@ -110,9 +110,10 @@ def autood_input():
             flash('Please choose at least one detection method.')
             return redirect(request.url)
         user_id = session.get('user_id')
-        run_id = new_run(user_id)
         results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name,
-                              label_col_name, run_id)
+                              label_col_name)
+        new_run(user_id)
+
         if results.error_message:
             flash(results.error_message)
             return redirect(request.url)
@@ -140,14 +141,14 @@ def return_files_tut(filename):
 
 
 def call_autood(filename, outlier_percentage_min, outlier_percentage_max, detection_methods, index_col_name,
-                label_col_name, run_id):
+                label_col_name):
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     logger.info(
         f"Start calling autood with file {filename}...indexColName = {index_col_name}, labelColName = {label_col_name}")
     logger.info(
         f"Parameters: outlier_percentage_min = {outlier_percentage_min}%, outlier_percentage_max = {outlier_percentage_max}%")
     return run_autood(filepath, logger, outlier_percentage_min, outlier_percentage_max, detection_methods,
-                      index_col_name, label_col_name, get_db_config(), run_id)
+                      index_col_name, label_col_name, get_db_config())
 
 
 #### DH
@@ -180,46 +181,35 @@ def result_index():
     except:
         return render_template('index.html')
 
-
-@app.route('/data')  # get data from DB as json
-def send_data():
+@app.route('/data/<string:session_id>/<int:tab_index>')  # get data from DB as json
+def send_data(session_id, tab_index):
     conn = psycopg2.connect(**get_db_config())
     cur = conn.cursor()
-    # we can use multiple execute statements to get the data how we need it
-    cur.execute(sql.ITERATIONS_FROM_RELIABLE_TABLE)  # number of iterations for reliable labels
-    iteration = cur.fetchall()[0][0] + 1
-    cur.close()
-    cur = conn.cursor()
-
-    # drop all tables on each run
-    cur.execute(sql.DROP_ALL_TEMP_TABLES)
-
-    # create temp tables so that we can pass the data in a way that JS/D3 needs it
-    cur.execute(sql.CREATE_TEMP_LOF_TABLE)
-
-    cur.execute(sql.CREATE_TEMP_KNN_TABLE)
-
-    cur.execute(sql.CREATE_TEMP_IF_TABLE)
-
-    cur.execute(sql.CREATE_TEMP_MAHALANOBIS_TABLE)
-
-    cur.execute(sql.CREATE_REALIABLE_TABLES(iteration))
-
-    # Join all tables together
-    SQL_statement = sql.JOIN_ALL_TABLES
-    join_reliable = sql.JOIN_RELIABLE_TABLES(iteration)
-
-    cur.execute(f"{SQL_statement}{join_reliable}")
-
-    # data = [col for col in cur]
-    field_names = [i[0] for i in cur.description]
-    result = [dict(zip(field_names, row)) for row in cur.fetchall()]
-    # conn.commit()
+    sql_query = sql.get_json(session_id, tab_index)
+    cur.execute(sql_query)
+    result = cur.fetchone()[0]
     cur.close()
     conn.close()
     logger.info("Database connection closed successfully.")
     return jsonify(result)
 
+@app.route('/getRunCount', methods=['GET'])
+def get_run_count():
+    user_id = session.get('user_id')
+    conn = psycopg2.connect(**get_db_config())
+    cur = conn.cursor()
+    sql_query = sql.get_count(user_id)
+    cur.execute(sql_query)
+    result = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+    logger.info("Database connection closed successfully.")
+    return jsonify(result)
+
+@app.route('/getSessionID', methods=['GET'])
+def get_session_id():
+    user_id = session.get('user_id')
+    return user_id
 
 #### DH
 

@@ -9,6 +9,19 @@ DROP_ALL_TABLES = """
     input
     """
 
+CREATE_SESSION_RUN_TABLE = """
+    CREATE TABLE IF NOT EXISTS session (
+        id uuid PRIMARY KEY
+    );
+
+    CREATE TABLE IF NOT EXISTS run (
+        id integer,
+        json JSONB,
+        session_id uuid NOT NULL REFERENCES session(id) ON UPDATE CASCADE,
+        PRIMARY KEY (id, session_id)
+    );
+"""
+
 CREATE_SESSION_TABLE = """
     CREATE TABLE session (
         id uuid PRIMARY KEY
@@ -21,33 +34,44 @@ def NEW_SESSION(id):
 
 CREATE_RUN_TABLE = """
     CREATE TABLE run (
-        id SERIAL PRIMARY KEY,
-        session_id uuid NOT NULL REFERENCES session(id) ON UPDATE CASCADE
+        id integer,
+        json JSONB,
+        session_id uuid NOT NULL REFERENCES session(id) ON UPDATE CASCADE,
+        PRIMARY KEY (id, session_id)
     );
     """
 
-def NEW_RUN(session_id):
-    query = f"INSERT INTO run VALUES (DEFAULT, '{session_id}') RETURNING id;"
+NEW_RUN = """
+                INSERT INTO run (id, json, session_id)
+                VALUES (
+                    (SELECT COUNT(*) FROM run WHERE session_id = %s) + 1,
+                    %s,
+                    %s
+                )
+            """
+
+def get_json(session_id, run_id):
+    query = f"SELECT json FROM run WHERE session_id = '{session_id}' AND id = {run_id};"
+    return query
+
+def get_count(session_id):
+    query = f"SELECT COUNT(*) FROM run WHERE session_id = '{session_id}';"
     return query
 
 CREATE_DETECTORS_TABLE = """
-    CREATE TABLE detectors (id integer, detector text, k integer, n integer, prediction integer, score float, 
-    run_id integer NOT NULL REFERENCES run(id) ON UPDATE CASCADE);
+    CREATE TABLE detectors (id integer, detector text, k integer, n integer, prediction integer, score float);
     """
 
 CREATE_PREDICTIONS_TABLE = """
-    CREATE TABLE predictions (id integer, prediction integer, correct integer,
-    run_id integer NOT NULL REFERENCES run(id) ON UPDATE CASCADE);
+    CREATE TABLE predictions (id integer, prediction integer, correct integer);
     """
 
 CREATE_RELIABLE_TABLE = """
-    CREATE TABLE reliable (id integer, iteration integer, reliable integer,
-    run_id integer NOT NULL REFERENCES run(id) ON UPDATE CASCADE);
+    CREATE TABLE reliable (id integer, iteration integer, reliable integer);
     """
 
 CREATE_TSNE_TABLE = """
-    CREATE TABLE tsne (id integer, tsne1 float, tsne2 float,
-    run_id integer NOT NULL REFERENCES run(id) ON UPDATE CASCADE);
+    CREATE TABLE tsne (id integer, tsne1 float, tsne2 float);
     """
 
 def CREATE_INPUT_TABLE(columnName, columnDataType):
@@ -136,6 +160,12 @@ def JOIN_RELIABLE_TABLES(iteration):
     for i in range(iteration):
         join_reliable = f"{join_reliable} FULL JOIN reliable_{i} using (id)" 
     return join_reliable
+
+def DROP_REALIABLE_TABLES(iteration):
+    dropTableStatement = ""
+    for i in range(iteration):
+        dropTableStatement += f"DROP TABLE IF EXISTS reliable_{i};\n"
+    return dropTableStatement
 
 TRUNCATE_ALL_TABLES = """
                             DO $$ 
