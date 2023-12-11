@@ -6,6 +6,7 @@ import os
 
 
 # Temporary function to find results and logs files -- need a clean results folder.
+# Will use most recent results and log files
 # file_type: log, results
 def get_file(path, file_type='log'):
     for root, directories, files in os.walk(path):
