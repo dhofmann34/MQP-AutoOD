@@ -11,7 +11,11 @@ import config
 import sql_queries as sql
 from autood import run_autood, OutlierDetectionMethod
 from config import get_db_config
+<<<<<<< HEAD
 from connect import new_session, new_run
+=======
+from tqdm import tqdm
+>>>>>>> 832134d6ef0dbec303357c4ee930b703de7d2963
 import collections
 collections.MutableSequence = collections.abc.MutableSequence
 collections.Iterable = collections.abc.Iterable
@@ -41,20 +45,6 @@ def home():
         new_session(user_id)
         return redirect('/autood/index')
         # return f'Hello new user! Your user ID is {user_id}'
-
-
-@app.route('/autood/results_summary', methods=['GET'])  # DH
-def results1():
-    results = results_global
-    final_log_filename = final_log_filename_global
-    try:
-        return render_template('result_summary.html', best_f1=results.best_unsupervised_f1_score,
-                               autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
-                               best_method=",".join(results.best_unsupervised_methods),
-                               final_results=results.results_file_name, training_log=final_log_filename)
-    except:
-        return render_template('result_summary.html')
-
 
 @app.route('/autood/index', methods=['GET'])
 def autood_form():
@@ -180,7 +170,15 @@ def about_form():
 
 @app.route('/autood/result', methods=['GET'])
 def result_index():
-    return render_template('index.html')
+    results = results_global
+    final_log_filename = final_log_filename_global
+    try:
+        return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
+                               autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
+                               best_method=",".join(results.best_unsupervised_methods),
+                               final_results=results.results_file_name, training_log=final_log_filename)
+    except:
+        return render_template('index.html')
 
 
 @app.route('/data')  # get data from DB as json

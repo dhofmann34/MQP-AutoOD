@@ -1,130 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
-    <body id=body_results> 
-        <ul>
-            {% for item in nav.top %}
-            <li id = "nav" class="{{ 'active' if item.is_active else '' }}">
-                <a href="{{ item.url }}">{{ item.label }}</a>
-            </li>
-            {% endfor %}
-        </ul>
-    </body>
-    <head>
-        <title>AutoOD Results</title>
-        <!-- <h1 style="text-align:center">AutoOD Results</h1> -->
-        <!-- Load d3.js -->
-        <script src="https://d3js.org/d3.v4.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/d3_visualization.css') }}"> 
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
-        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-        <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-        <script src="https://unpkg.com/d3-simple-slider"></script>
-        <script src="{{ url_for('static', filename='css/d3_visualization.js') }}" defer></script>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap" rel="stylesheet">
-        <script>
-            // Loader animation
-            $(function(){
-                $('#resetButton').click(function(){
-                    e1 = $('#loader');
-                    e1.addClass('animate');
-                    e1.one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
+
+<body id=body_results>
+    <ul>
+        {% for item in nav.top %}
+        <li id="nav" class="{{ 'active' if item.is_active else '' }}">
+            <a href="{{ item.url }}">{{ item.label }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+
+<head>
+    <title>AutoOD Results</title>
+    <!-- <h1 style="text-align:center">AutoOD Results</h1> -->
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/d3_visualization.css') }}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+    <script src="{{ url_for('static', filename='css/d3_visualization.js') }}" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap" rel="stylesheet">
+    <script>
+        // Functions that need to be run when the page loads
+        window.onload = function () {
+            defaultClick();
+            updateRunHistoryTabs();
+        }
+
+        // Get the element with id="defaultOpen" and click on it
+        function defaultClick() {
+            document.getElementById("defaultOpen").click();
+        }
+
+        // Loader animation
+        $(function () {
+            $('#resetButton').click(function () {
+                e1 = $('#loader');
+                e1.addClass('animate');
+                e1.one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
                     function (e) {
                         e1.removeClass('animate');
                     });
-                });
             });
+        });
 
-            function refreshPage(){
-                window.location.reload();
-            } 
-            // setTimeout(refreshPage,3000);
-        </script>
-    </head>
+        // Dynamically add tabs to the run history
+        function updateRunHistoryTabs() {
 
-    <div id="dataviz_axisZoom"></div>
+            for (let i = 0; i < (runNumber - 1); i++) {
+                const text = "Run" + (i + 2);
+                var node_list = document.createElement("li");
+                var node_button = document.createElement("button");
 
-    <div id="reliable_labels">
-        <div id="reliable_inout_div">
-            <label for="reliable_inout">Reliable Label:</label>       
-            <select id="reliable_inout"></select>
+                node_button.append(text);
+                node_button.classList.add("tablinks");
+                node_button.addEventListener('click', function (event) {
+                    updateTabContent(event, text);
+                });
+                node_list.appendChild(node_button)
+
+                document.getElementById("tab").appendChild(node_list);
+            }
+        }
+
+        // Updates button activation and tabcontent header
+        function updateTabContent(evt, runHistory) {
+            var i, tablinks;
+
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            evt.currentTarget.className += " active";
+            document.getElementById("history_header").innerHTML = runHistory;
+        }
+    </script>
+</head>
+
+<!-- <div id="dataviz_axisZoom"></div> -->
+
+<div id="reliable_labels">
+    <div id="reliable_inout_div">
+        <label for="reliable_inout">Reliable Label:</label>
+        <select id="reliable_inout"></select>
+    </div>
+    <p id="reliable_output"> </p>
+    <div class="row align-items-center">
+        <div class="col-sm-2">
+            <p id="value-step"></p>
         </div>
-        <p id="reliable_output"> </p>
-        <div class="row align-items-center">
-            <div class="col-sm-2"><p id="value-step"></p></div>
-            <label for="slider-step">Reliable labels by iteration </label>
-            <div class="col-sm"><div id="slider-step"></div></div>
+        <label for="slider-step">Reliable labels by iteration </label>
+        <div class="col-sm">
+            <div id="slider-step"></div>
         </div>
     </div>
+</div>
 
-    <div id="filter">
-        <div id="filtertitle">Filtering:</div>
+<div id="filter">
+    <div id="filtertitle">Filtering:</div>
 
-        <br>
-        <div id="pred_but">
-            <label for="metric">Metric:</label>        
-            <select id="metric"></select>
-        </div>
-        <div id="label_but">
-            <label for="selectButton_label">Label:</label>       
-            <select id="selectButton_label"></select>
-        </div>
-        <div id="correct_but">
-            <label for="selectButton_correct">Correct Prediction?:</label>       
-            <select id="selectButton_correct"></select>
-        </div>
+    <br>
+    <div id="pred_but">
+        <label for="metric">Metric:</label>
+        <select id="metric"></select>
     </div>
+    <div id="label_but">
+        <label for="selectButton_label">Label:</label>
+        <select id="selectButton_label"></select>
+    </div>
+    <div id="correct_but">
+        <label for="selectButton_correct">Correct Prediction?:</label>
+        <select id="selectButton_correct"></select>
+    </div>
+</div>
 
-    <ul class="legend">
-        <li><span class="inlier"></span id = "in">Inlier</li>
-        <li><span class="outlier"></span id = "out">Outlier</li>
-        <!-- <li><span class="incorrect"></span id = "incorr">Incorrect Prediction</li> -->
+<ul class="legend">
+    <li><span class="inlier"></span id="in">Inlier</li>
+    <li><span class="outlier"></span id="out">Outlier</li>
+    <!-- <li><span class="incorrect"></span id = "incorr">Incorrect Prediction</li> -->
+</ul>
+
+<div class="vl"></div>
+
+<div id=temp>
+    <div id=test_tabel></div>
+    <div id=table_div>
+        <table id="table" class="display" style="width:10%;"></table>
+    </div>
+    <div id=table2_div>
+        <table id="table2" class="display" style="width:10%"></table>
+    </div>
+</div>
+
+<div id="summary">
+    <form enctype=multipart/form-data>
+        <table>
+            <tr>
+                <td><b>F-1 of AutoOD</b></td>
+                <td> </td>
+                <td>{{ autood_f1 }}</td>
+            </tr>
+            <tr>
+                <td><b>F-1 of Best Unsupervised Detector</b></td>
+                <td> </td>
+                <td>{{ best_f1 }}</td>
+            </tr>
+            <tr>
+                <td><b>Best Unsupervised Detector</b></td>
+                <td> </td>
+                <td>{{best_method}}</td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="loader"></div>
+
+<div class="tab_holder">
+    <ul class="tab" id="tab">
+        <li><button class="tablinks" onclick="updateTabContent(event, 'Run1')" id="defaultOpen">Run1</button></li>
     </ul>
-    
-    <div class="vl"></div>
-    
-    <div id=popup_chart>
-        <div id="barplot"></div>
-        <div id="barplot2"></div>
-    </div>
-    
-    <div id=temp>
-        <div id = test_tabel></div>
-        <div id=table_div>
-            <table id="table" class="display" style="width:10%;"></table>
-        </div>
-        <div id=table2_div>
-            <table id="table2" class="display" style="width:10%"></table>
+    <div class="tabcontent_holder">
+        <div id="Run1" class="tabcontent">
+            <h3 id="history_header">Run1</h3>
+            <div id="dataviz_axisZoom"></div>
         </div>
     </div>
-    
-    <div id="summary"> 
-        <form enctype=multipart/form-data>
-            <table>
-                <tr>
-                    <td><b>F-1 of AutoOD</b></td>
-                    <td>         </td>
-                    <td>{{ autood_f1 }}</td>
-                </tr>
-                <tr>
-                    <td><b>F-1 of Best Unsupervised Detector</b></td>
-                    <td>         </td>
-                    <td>{{ best_f1 }}</td>
-                </tr>
-                <tr>
-                    <td><b>Best Unsupervised Detector</b></td>
-                    <td>         </td>
-                    <td>{{best_method}}</td>
-                </tr>
-            </table>
-        </form>
+    <div>
+        <button id="resetButton"><b>Reset</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
     </div>
+</div>
 
-    <div id="resetButtonHolder">
-        <button id="resetButton" ><b>Reset</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
-    </div>
-    <div id="loader"></div>
+<div id=popup_chart>
+    <div id="barplot"></div>
+    <div id="barplot2"></div>
+</div>
 
 </html>
-
