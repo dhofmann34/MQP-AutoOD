@@ -11,7 +11,7 @@ from logging import Logger
 from sklearn.neighbors import NearestNeighbors
 from warnings import simplefilter
 from dataclasses import dataclass, field
-from autood_parameters import get_default_parameters
+from autood_parameters import get_default_parameters, get_detection_parameters
 from pathlib import Path
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
@@ -965,9 +965,27 @@ def get_default_detection_method_list():
             OutlierDetectionMethod.Manalanobis]
 
 
-#def prepare_autood_run(filepath, logger, outlier_min, outlier_max, detection_methods, index_col_name, label_col_name,
-#                       db_parameters_in):
-def prepare_autood_run(filepath, logger, parameters, db_parameters_in):
+def prepare_autood_run(filepath, logger, parameters, detection_methods, db_parameters_in):
+    dataset = Path(filepath).stem
+    logger.info(f"Dataset Name = {dataset}")
+    global db_parameters
+    db_parameters = db_parameters_in
+
+    # Parse parameters, transform into schema expected by the DB
+    detection_parameters = get_detection_parameters(parameters, detection_methods)
+
+    # Put parameters into the DB
+    return AutoOD(AutoODParameters(
+        filepath,
+        detection_methods,
+        detection_method_parameters=detection_parameters,
+        index_col_name=parameters['index_col_name'],
+        label_col_name=parameters['label_col_name']
+    ), logger).run_autood(dataset)
+
+
+def prepare_autood_run(filepath, logger, outlier_min, outlier_max, detection_methods, index_col_name, label_col_name,
+                       db_parameters_in):
     dataset = Path(filepath).stem
     logger.info(f"Dataset Name = {dataset}")
 
@@ -981,7 +999,7 @@ def prepare_autood_run(filepath, logger, parameters, db_parameters_in):
         interval = (outlier_max_percent - outlier_min_percent) / 5
         new_N_range = [round(x, 5) for x in np.arange(outlier_min_percent, outlier_max_percent + interval, interval)]
         default_parameters.N_range = new_N_range
-    # Put all run configs into DB here, then run autood
+
     return AutoOD(AutoODParameters(
         filepath,
         detection_methods,
