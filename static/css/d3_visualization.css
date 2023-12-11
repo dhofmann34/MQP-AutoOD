@@ -466,9 +466,18 @@ li a:hover {
     height: 650px;
 }
 
-#rerun {
+#rerun_holder {
     position: absolute;
     left: 15px;
     top: 1200px;
-    
+    background-color: white;
+    width: 760px;
+    height: 80px;
+    border-radius: 10px;
+    padding-left: .5%;
+    padding-top: .2%;
+    padding-bottom: .2%;
+    font-family: 'Open Sans', sans-serif;
+    vertical-align: baseline;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
 }

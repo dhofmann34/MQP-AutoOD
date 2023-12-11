@@ -25,6 +25,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/rerun.css') }}">
     <script>
         // Functions that need to be run when the page loads
         window.onload = function () {
@@ -81,144 +82,144 @@
         }
 
         // Get the modal
-      var modal1 = document.getElementById("myModal1");
-      var modal2 = document.getElementById("myModal2");
-      var modal3 = document.getElementById("myModal3");
-      var modal4 = document.getElementById("myModal4");
-      
-      // Get the button that opens the modal
-      var btn1 = document.getElementById("myBtn1").addEventListener("click", popup1);
-      var btn2 = document.getElementById("myBtn2").addEventListener("click", popup2);
-      var btn3 = document.getElementById("myBtn3").addEventListener("click", popup3);
-      var btn4 = document.getElementById("myBtn4").addEventListener("click", popup4);
-      
-      // Get the <span> element that closes the modal
-      var span1 = document.getElementsByClassName("close1")[0];
-      var span2 = document.getElementsByClassName("close2")[0];
-      var span3 = document.getElementsByClassName("close3")[0];
-      var span4 = document.getElementsByClassName("close4")[0];
+        var modal1 = document.getElementById("myModal1");
+        var modal2 = document.getElementById("myModal2");
+        var modal3 = document.getElementById("myModal3");
+        var modal4 = document.getElementById("myModal4");
 
-      //Getting the update buttons
-      var lofUpdate = document.getElementById("lofUpdate").addEventListener("click", stringifyLOFData);
-      var knnUpdate = document.getElementById("knnUpdate").addEventListener("click", stringifyKNNData);
-      var ifUpdate = document.getElementById("ifUpdate").addEventListener("click", stringifyIFData);
-      var mUpdate = document.getElementById("mUpdate").addEventListener("click", stringifyMData);
+        // Get the button that opens the modal
+        var btn1 = document.getElementById("myBtn1").addEventListener("click", popup1);
+        var btn2 = document.getElementById("myBtn2").addEventListener("click", popup2);
+        var btn3 = document.getElementById("myBtn3").addEventListener("click", popup3);
+        var btn4 = document.getElementById("myBtn4").addEventListener("click", popup4);
 
-      //Getting submit button
-      var submitBtn = document.getElementById("submitBtn").addEventListener("click", sendJSONData);
+        // Get the <span> element that closes the modal
+        var span1 = document.getElementsByClassName("close1")[0];
+        var span2 = document.getElementsByClassName("close2")[0];
+        var span3 = document.getElementsByClassName("close3")[0];
+        var span4 = document.getElementsByClassName("close4")[0];
 
-      // When the user clicks the button, open the modal 
-      function popup1() {
-        modal1.style.display = "block";
-      }
-      function popup2() {
-        modal2.style.display = "block";
-      }
-      function popup3() {
-        modal3.style.display = "block";
-      }
-      function popup4() {
-        modal4.style.display = "block";
-      }
-      
-      // When the user clicks on <span> (x), close the modal
-      span1.onclick = function() {
-        modal1.style.display = "none";
-      }
-      span2.onclick = function() {
-        modal2.style.display = "none";
-      }
-      span3.onclick = function() {
-        modal3.style.display = "none";
-      }
-      span4.onclick = function() {
-        modal4.style.display = "none";
-      }
-      
-      // When the user clicks anywhere outside of the modal, close it
-      window.onclick = function(event) {
-        if (event.target == modal) {
-          modal1.style.display = "none";
+        //Getting the update buttons
+        var lofUpdate = document.getElementById("lofUpdate").addEventListener("click", stringifyLOFData);
+        var knnUpdate = document.getElementById("knnUpdate").addEventListener("click", stringifyKNNData);
+        var ifUpdate = document.getElementById("ifUpdate").addEventListener("click", stringifyIFData);
+        var mUpdate = document.getElementById("mUpdate").addEventListener("click", stringifyMData);
+
+        //Getting submit button
+        var submitBtn = document.getElementById("submitBtn").addEventListener("click", sendJSONData);
+
+        // When the user clicks the button, open the modal 
+        function popup1() {
+            modal1.style.display = "block";
         }
-      }
-      window.onclick = function(event) {
-        if (event.target == modal) {
-          modal2.style.display = "none";
+        function popup2() {
+            modal2.style.display = "block";
         }
-      }
-      window.onclick = function(event) {
-        if (event.target == modal) {
-          modal3.style.display = "none";
+        function popup3() {
+            modal3.style.display = "block";
         }
-      }
-      window.onclick = function(event) {
-        if (event.target == modal) {
-          modal4.style.display = "none";
+        function popup4() {
+            modal4.style.display = "block";
         }
-      }
 
-      //Making JSON Object
-      //LOF Data
-      var lofKRange = "";
-      var lofMinOutlier = "";
-      var lofMaxOutlier = "";
-      
-      function stringifyLOFData(){
-        lofKRange = document.querySelector('#lofKRange');
-        lofMinOutlier = document.querySelector('#lofMinOutlier');
-        lofMaxOutlier = document.querySelector('#lofMaxOutlier');
-        modal1.style.display = "none";
-      }
-      //KNN Data
-      var knnKRange = "";
-      var knnMinOutlier = ""; 
-      var knnMaxOutlier = "";
+        // When the user clicks on <span> (x), close the modal
+        span1.onclick = function () {
+            modal1.style.display = "none";
+        }
+        span2.onclick = function () {
+            modal2.style.display = "none";
+        }
+        span3.onclick = function () {
+            modal3.style.display = "none";
+        }
+        span4.onclick = function () {
+            modal4.style.display = "none";
+        }
 
-      function stringifyKNNData(){
-        knnKRange = document.querySelector('#knnKRange');
-        knnMinOutlier = document.querySelector('#knnMinOutlier');
-        knnMaxOutlier = document.querySelector('#knnMaxOutlier');
-        modal2.style.display = "none";
-      }
-      //Isolation Forest Data
-      var ifKRange = "";
-      var ifRange = ""
-      var ifMinOutlier = "";
-      var ifMaxOutlier = "";
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal1.style.display = "none";
+            }
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal2.style.display = "none";
+            }
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal3.style.display = "none";
+            }
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal4.style.display = "none";
+            }
+        }
 
-      function stringifyIFData(){        
-        ifKRange = document.querySelector('#ifKRange');
-        ifRange = document.querySelector('#ifRange');
-        ifMinOutlier = document.querySelector('#ifMinOutlier');
-        ifMaxOutlier = document.querySelector('#ifMaxOutlier');
-        modal3.style.display = "none";
-      }
-      //Malanohbis Data
-      var mMinOutlier = "";
-      var mMaxOutlier = "";
-            
-      function stringifyMData(){
-        mMinOutlier = document.querySelector('#mMinOutlier');
-        mMaxOutlier = document.querySelector('#mMaxOutlier');
-        modal4.style.display = "none";
-      }
+        //Making JSON Object
+        //LOF Data
+        var lofKRange = "";
+        var lofMinOutlier = "";
+        var lofMaxOutlier = "";
 
-      // JSON object
-      var data = "";
+        function stringifyLOFData() {
+            lofKRange = document.querySelector('#lofKRange');
+            lofMinOutlier = document.querySelector('#lofMinOutlier');
+            lofMaxOutlier = document.querySelector('#lofMaxOutlier');
+            modal1.style.display = "none";
+        }
+        //KNN Data
+        var knnKRange = "";
+        var knnMinOutlier = "";
+        var knnMaxOutlier = "";
 
-      function sendJSONData(){
-        data = JSON.stringify({
-          "lofKRange": lofKRange.value, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier.value,
-          "knnKRange": knnKRange.value, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier.value,
-          "ifKRange": ifKRange.value, "ifRange": ifRange.value,"ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier.value,
-          "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier.value,
-        });
-        var xhr = new XMLHttpRequest();
-        var url = "url";
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(data);
-      }
+        function stringifyKNNData() {
+            knnKRange = document.querySelector('#knnKRange');
+            knnMinOutlier = document.querySelector('#knnMinOutlier');
+            knnMaxOutlier = document.querySelector('#knnMaxOutlier');
+            modal2.style.display = "none";
+        }
+        //Isolation Forest Data
+        var ifKRange = "";
+        var ifRange = ""
+        var ifMinOutlier = "";
+        var ifMaxOutlier = "";
+
+        function stringifyIFData() {
+            ifKRange = document.querySelector('#ifKRange');
+            ifRange = document.querySelector('#ifRange');
+            ifMinOutlier = document.querySelector('#ifMinOutlier');
+            ifMaxOutlier = document.querySelector('#ifMaxOutlier');
+            modal3.style.display = "none";
+        }
+        //Malanohbis Data
+        var mMinOutlier = "";
+        var mMaxOutlier = "";
+
+        function stringifyMData() {
+            mMinOutlier = document.querySelector('#mMinOutlier');
+            mMaxOutlier = document.querySelector('#mMaxOutlier');
+            modal4.style.display = "none";
+        }
+
+        // JSON object
+        var data = "";
+
+        function sendJSONData() {
+            data = JSON.stringify({
+                "lofKRange": lofKRange.value, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier.value,
+                "knnKRange": knnKRange.value, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier.value,
+                "ifKRange": ifKRange.value, "ifRange": ifRange.value, "ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier.value,
+                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier.value,
+            });
+            var xhr = new XMLHttpRequest();
+            var url = "url";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(data);
+        }
 
     </script>
 </head>
@@ -323,155 +324,152 @@
     <div id="barplot2"></div>
 </div>
 
-<div id="rerun">
-    <link rel="stylesheet" href="./style.css" />
-    <div>
-      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/rerun.css') }}"> 
-
-      <div class="home-container">
-        <div data-thq="thq-dropdown" class="home-thq-dropdown list-item">
-          <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle">
-            <span class="home-text">Re-Run Settings</span>
-            <div data-thq="thq-dropdown-arrow" class="home-dropdown-arrow">
-              <svg viewBox="0 0 1024 1024" class="home-icon">
-                <path d="M426 726v-428l214 214z"></path>
-              </svg>
+<div id="rerun_holder">
+    <div id="rerun">
+        <div>
+            <div class="home-container">
+                <div data-thq="thq-dropdown" class="home-thq-dropdown list-item">
+                    <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle">
+                        <span class="home-text">Re-Run Settings</span>
+                        <div data-thq="thq-dropdown-arrow" class="home-dropdown-arrow">
+                            <svg viewBox="0 0 1024 1024" class="home-icon">
+                                <path d="M426 726v-428l214 214z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <ul data-thq="thq-dropdown-list" class="home-dropdown-list">
+                        <li data-thq="thq-dropdown" class="home-dropdown list-item">
+                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle1">
+                                <input type="checkbox" checked="true" />
+                                <span class="home-text1">Local Outlier Factor</span>
+                                <button type="button" class="button" id="myBtn1"><img
+                                        src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
+                                        alt="gearPNG" width="50" height="50" /></button>
+    
+                                <!-- The Modal -->
+                                <div id="myModal1" class="modal">
+    
+                                    <!-- Modal content -->
+                                    <div class="modal-content">
+                                        <span class="close1">&times;</span>
+                                        <p>Local Outlier Factor</p>
+                                        <br><br>
+                                        <form action="/action_page.php">
+                                            <label for="lofKRange">K-Range (interger-interger):</label>
+                                            <input type="text" id="lofKRange" name="lofKRange"><br><br>
+                                            <label for="lofMinOutlier">Minimum Outlier % (float):</label>
+                                            <input type="text" id="lofMinOutlier" name="lofMinOutlier"><br><br>
+                                            <label for="lofMaxOutlier">Max Outlier % (float):</label>
+                                            <input type="text" id="lofMaxOutlier" name="lofMaxOutlier"><br><br>
+                                            <br><br>
+                                            <button type="button" class="button" id="lofUpdate">Update</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!--End of Form Pop Up-->
+                            </div>
+                        </li>
+                        <li data-thq="thq-dropdown" class="home-dropdown1 list-item">
+                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle2">
+                                <input type="checkbox" checked="true" />
+                                <span class="home-text2">knn-N-Neighbors</span>
+                                <button type="button" class="button" id="myBtn2"><img
+                                        src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
+                                        alt="gearPNG" width="50" height="50" /></button>
+                                <!-- The Modal -->
+                                <div id="myModal2" class="modal">
+    
+                                    <!-- Modal content -->
+                                    <div class="modal-content">
+                                        <span class="close2">&times;</span>
+                                        <p>k - Nearest - Neighbors Settings</p>
+                                        <br><br>
+                                        <form action="/action_page.php">
+                                            <label for="knnKRange">K-Range (interger-interger):</label>
+                                            <input type="text" id="knnKRange" name="knnKRange"><br><br>
+                                            <label for="knnMinOutlier">Minimum Outlier % (float):</label>
+                                            <input type="text" id="knnMinOutlier" name="knnMinOutlier"><br><br>
+                                            <label for="knnMaxOutlier">Max Outlier % (float):</label>
+                                            <input type="text" id="knnMaxOutlier" name="knnMaxOutlier"><br><br>
+                                            <br><br>
+                                            <button type="button" class="button" id="knnUpdate">Update</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!--End of Form Pop Up-->
+                            </div>
+                        </li>
+                        <li data-thq="thq-dropdown" class="home-dropdown2 list-item">
+                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle3">
+                                <input type="checkbox" checked="true" />
+                                <span class="home-text3">Isloation Forest</span>
+                                <button type="button" class="button" id="myBtn3"><img
+                                        src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
+                                        alt="gearPNG" width="50" height="50" /></button>
+                                <!-- The Modal -->
+                                <div id="myModal3" class="modal">
+    
+                                    <!-- Modal content -->
+                                    <div class="modal-content">
+                                        <span class="close3">&times;</span>
+                                        <p>Isolation Forest</p>
+                                        <br><br>
+                                        <form action="/action_page.php">
+                                            <label for="ifKRange">K-Range (interger-interger):</label>
+                                            <input type="text" id="ifKRange" name="ifKRange"><br><br>
+                                            <label for="ifRange">IF-Range (float-float):</label>
+                                            <input type="text" id="ifRange" name="ifRange"><br><br>
+                                            <label for="ifMinOutlier">Minimum Outlier % (float):</label>
+                                            <input type="text" id="ifMinOutlier" name="ifMinOutlier"><br><br>
+                                            <label for="ifMaxOutlier">Max Outlier % (float):</label>
+                                            <input type="text" id="ifMaxOutlier" name="ifMaxOutlier"><br><br>
+                                            <br><br>
+                                            <button type="button" class="button" id="ifUpdate">Update</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!--End of Form Pop Up-->
+                            </div>
+                        </li>
+                        <li data-thq="thq-dropdown" class="home-dropdown3 list-item">
+                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle4">
+                                <input type="checkbox" checked="true" />
+                                <span class="home-text4">Malanohbis</span>
+                                <button type="button" class="button" id="myBtn4"><img
+                                        src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
+                                        alt="gearPNG" width="50" height="50" /></button>
+                                <!-- The Modal -->
+                                <div id="myModal4" class="modal">
+    
+                                    <!-- Modal content -->
+                                    <div class="modal-content">
+                                        <span class="close4">&times;</span>
+                                        <p>Mahalanobis</p>
+                                        <br><br>
+                                        <form action="/action_page.php">
+                                            <label for="mMinOutlier">Minimum Outlier % (float):</label>
+                                            <input type="text" id="mMinOutlier" name="mMinOutlier"><br><br>
+                                            <label for="mMaxOutlier">Max Outlier % (float):</label>
+                                            <input type="text" id="mMaxOutlier" name="mMaxOutlier"><br><br>
+                                            <br><br>
+                                            <button type="button" class="button" id="mUpdate">Update</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!--End of Form Pop Up-->
+                            </div>
+                        </li>
+                        <li data-thq="thq-dropdown" class="home-dropdown4 list-item">
+                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle5">
+                                <button type="button" class="button" id="submitBtn">Submit&nbsp;</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-          </div>
-          <ul data-thq="thq-dropdown-list" class="home-dropdown-list">
-            <li data-thq="thq-dropdown" class="home-dropdown list-item">
-              <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle1">
-                <input type="checkbox" checked="true" />
-                <span class="home-text1">Local Outlier Factor</span>
-                <button type="button" class="button" id="myBtn1"><img src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0" alt="gearPNG"
-                  width="50" 
-                  height="50"/></button>
-                 
-                  <!-- The Modal -->
-                  <div id="myModal1" class="modal">
-                  
-                    <!-- Modal content -->
-                    <div class="modal-content">
-                      <span class="close1">&times;</span>
-                      <p>Local Outlier Factor</p>
-                      <br><br>
-                      <form action="/action_page.php">
-                          <label for="lofKRange">K-Range (interger-interger):</label>
-                          <input type="text" id="lofKRange" name="lofKRange"><br><br>
-                          <label for="lofMinOutlier">Minimum Outlier % (float):</label>
-                          <input type="text" id="lofMinOutlier" name="lofMinOutlier"><br><br>
-                          <label for="lofMaxOutlier">Max Outlier % (float):</label>
-                          <input type="text" id="lofMaxOutlier" name="lofMaxOutlier"><br><br>
-                          <br><br>
-                          <button type="button" class = "button" id="lofUpdate">Update</button>
-                        </form>
-                    </div>
-                  </div>
-                  <!--End of Form Pop Up-->
-              </div>
-            </li>
-            <li data-thq="thq-dropdown" class="home-dropdown1 list-item">
-              <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle2">
-                <input type="checkbox" checked="true" />
-                <span class="home-text2">knn-N-Neighbors</span>
-                <button type="button" class="button" id="myBtn2"><img src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0" alt="gearPNG"
-                  width="50" 
-                  height="50"/></button>
-                  <!-- The Modal -->
-                  <div id="myModal2" class="modal">
-                  
-                    <!-- Modal content -->
-                    <div class="modal-content">
-                      <span class="close2">&times;</span>
-                      <p>k - Nearest - Neighbors Settings</p>
-                      <br><br>
-                      <form action="/action_page.php">
-                          <label for="knnKRange">K-Range (interger-interger):</label>
-                          <input type="text" id="knnKRange" name="knnKRange"><br><br>
-                          <label for="knnMinOutlier">Minimum Outlier % (float):</label>
-                          <input type="text" id="knnMinOutlier" name="knnMinOutlier"><br><br>
-                          <label for="knnMaxOutlier">Max Outlier % (float):</label>
-                          <input type="text" id="knnMaxOutlier" name="knnMaxOutlier"><br><br>
-                          <br><br>
-                          <button type="button" class = "button" id="knnUpdate">Update</button>
-                        </form>
-                    </div>
-                  </div>
-                  <!--End of Form Pop Up-->
-              </div>
-            </li>
-            <li data-thq="thq-dropdown" class="home-dropdown2 list-item">
-              <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle3">
-                <input type="checkbox" checked="true" />
-                <span class="home-text3">Isloation Forest</span>
-                <button type="button" class="button" id="myBtn3"><img src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0" alt="gearPNG"
-                  width="50" 
-                  height="50"/></button>
-                  <!-- The Modal -->
-                  <div id="myModal3" class="modal">
-                  
-                    <!-- Modal content -->
-                    <div class="modal-content">
-                      <span class="close3">&times;</span>
-                      <p>Isolation Forest</p>
-                      <br><br>
-                      <form action="/action_page.php">
-                          <label for="ifKRange">K-Range (interger-interger):</label>
-                          <input type="text" id="ifKRange" name="ifKRange"><br><br>
-                          <label for="ifRange">IF-Range (float-float):</label>
-                          <input type="text" id="ifRange" name="ifRange"><br><br>
-                          <label for="ifMinOutlier">Minimum Outlier % (float):</label>
-                          <input type="text" id="ifMinOutlier" name="ifMinOutlier"><br><br>
-                          <label for="ifMaxOutlier">Max Outlier % (float):</label>
-                          <input type="text" id="ifMaxOutlier" name="ifMaxOutlier"><br><br>
-                          <br><br>
-                          <button type="button" class = "button" id="ifUpdate">Update</button>
-                        </form>
-                    </div>
-                  </div>
-                  <!--End of Form Pop Up-->
-              </div>
-            </li>
-            <li data-thq="thq-dropdown" class="home-dropdown3 list-item">
-              <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle4">
-                <input type="checkbox" checked="true" />
-                <span class="home-text4">Malanohbis</span>
-                <button type="button" class="button" id="myBtn4"><img src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0" alt="gearPNG"
-                  width="50" 
-                  height="50"/></button>
-                  <!-- The Modal -->
-                  <div id="myModal4" class="modal">
-                  
-                    <!-- Modal content -->
-                    <div class="modal-content">
-                      <span class="close4">&times;</span>
-                      <p>Mahalanobis</p>
-                      <br><br>
-                      <form action="/action_page.php">
-                          <label for="mMinOutlier">Minimum Outlier % (float):</label>
-                          <input type="text" id="mMinOutlier" name="mMinOutlier"><br><br>
-                          <label for="mMaxOutlier">Max Outlier % (float):</label>
-                          <input type="text" id="mMaxOutlier" name="mMaxOutlier"><br><br>
-                          <br><br>
-                          <button type="button" class = "button" id="mUpdate">Update</button>
-                        </form>
-                    </div>
-                  </div>
-                  <!--End of Form Pop Up-->
-              </div>
-            </li>
-            <li data-thq="thq-dropdown" class="home-dropdown4 list-item">
-              <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle5">
-                <button type="button" class="button" id="submitBtn">Submit&nbsp;</button>
-              </div>
-            </li>
-          </ul>
         </div>
-      </div>
+    
     </div>
-
 </div>
-
-
 
 </html>
