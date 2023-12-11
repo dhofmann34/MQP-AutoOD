@@ -137,7 +137,6 @@ input {
   border-radius: var(--dl-radius-radius-radius2);
   padding-right: var(--dl-space-space-unit);
   padding-bottom: var(--dl-space-space-halfunit);
-  background-color: #f7f5f5;
 }
 
 .home-text {
