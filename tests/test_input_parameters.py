@@ -65,6 +65,7 @@ class DetectorMethods(unittest.TestCase):
     def setUp(cls):
         print("setup")
 
+
 # Runs the test suites
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()

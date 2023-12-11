@@ -205,8 +205,6 @@ class AutoOD:
         data = load_dataset(file_name, self.params.index_col_name, self.params.label_col_name)
         return data
 
-    # def _run_lof(self):
-
     def _run_unsupervised_outlier_detection_methods(self):
         all_results = []
         all_scores = []
@@ -217,200 +215,221 @@ class AutoOD:
         detector_index_ranges = []
 
         if OutlierDetectionMethod.LOF in self.params.detection_methods:
-            f1_list_start_index = len(f1s)
-            N_size = len(self.params.N_range)
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-            krange_list = self.params.k_range * N_size
-            knn_N_range = np.sort(N_range * len(self.params.k_range))
-
-            self.logger.info(f'Start running LOF with k={self.params.k_range}')
-            temp_lof_results = dict()
-            for k in self.params.k_range:
-                lof_scores = run_lof(self.X, k=k)
-                temp_lof_results[k] = lof_scores
-            if database == "y":  # DHDB
-                col_names = ["id", "detector", "k", "n", "prediction", "score"]
-                lof_df = pd.DataFrame(columns=col_names)
-            for i in range(len(krange_list)):
-                lof_predictions, lof_scores = get_predictions(temp_lof_results[krange_list[i]],
-                                                              num_outliers=knn_N_range[
-                                                                  i])  # DH: get predictions takes in num outliers
-                all_results.append(lof_predictions)
-                all_scores.append(lof_scores)
-                if database == "y":  # DHDB
-                    temp_lof_data = pd.DataFrame()
-                    temp_lof_data["id"] = self.X.index  # WITH ARFF FILE INDEX STARTS AT 0 WITH CSV IT STARTS WITH 1
-                    temp_lof_data["detector"] = "LOF"
-                    temp_lof_data["k"] = krange_list[i]
-                    temp_lof_data["n"] = knn_N_range[i]
-                    temp_lof_data["prediction"] = lof_predictions
-                    temp_lof_data["score"] = lof_scores
-                    lof_df = pd.concat([lof_df, temp_lof_data])  # lof_df.append(temp_lof_data)
-                if self.y is not None:
-                    f1 = get_f1_scores(predictions=lof_predictions, y=self.y)  # f1 score for each of the detectors?
-                    f1s.append(f1)
-            if database == "y":  # DHDB
-                insert_input("detectors", lof_df)
-            f1_list_end_index = len(f1s)
-            instance_index_ranges.append([f1_list_start_index, f1_list_end_index])
-            detector_index_ranges.append([num_detectors, num_detectors + len(self.params.k_range)])
-            num_detectors = num_detectors + len(self.params.k_range)
-            if self.y is not None:
-                best_lof_f1 = 0
-                for i in np.sort(self.params.k_range):
-                    temp_f1 = max(np.array(f1s[f1_list_start_index: f1_list_end_index])[
-                                      np.where(np.array(krange_list) == i)[
-                                          0]])  # DH self.params.k_range is our paramiters. aka len(self.params.k_range) = num of detectors
-                    best_lof_f1 = max(best_lof_f1,
-                                      temp_f1)  # DH here we can set up a dict of detector id and the f1 score?
-                methods_to_best_f1["LOF"] = best_lof_f1
-                self.logger.info('Best LOF F-1 = {}'.format(best_lof_f1))
+            num_detectors += self._run_lof(all_results, all_scores, methods_to_best_f1, f1s,
+                                           num_detectors, instance_index_ranges, detector_index_ranges)
 
         if OutlierDetectionMethod.KNN in self.params.detection_methods:
-            f1_list_start_index = len(f1s)
-            N_size = len(self.params.N_range)
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-            krange_list = self.params.k_range * N_size
-            knn_N_range = np.sort(N_range * len(self.params.k_range))
-
-            self.logger.info(f'Start running KNN with k={self.params.k_range}')
-            temp_knn_results = dict()
-            for k in self.params.k_range:
-                knn_scores = run_knn(self.X, k=k)
-                temp_knn_results[k] = knn_scores
-            if database == "y":  # DHDB
-                col_names = ["id", "detector", "k", "n", "prediction", "score"]
-                knn_df = pd.DataFrame(columns=col_names)
-            for i in range(len(krange_list)):
-                knn_predictions, knn_scores = get_predictions(temp_knn_results[krange_list[i]],
-                                                              num_outliers=knn_N_range[i])
-                all_results.append(knn_predictions)
-                all_scores.append(knn_scores)
-                if database == "y":  # DHDB
-                    temp_knn_data = pd.DataFrame()
-                    temp_knn_data["id"] = self.X.index
-                    temp_knn_data["detector"] = "KNN"
-                    temp_knn_data["k"] = krange_list[i]
-                    temp_knn_data["n"] = knn_N_range[i]
-                    temp_knn_data["prediction"] = knn_predictions
-                    temp_knn_data["score"] = knn_scores
-                    knn_df = pd.concat([knn_df, temp_knn_data])  # knn_df.append(temp_knn_data)
-                if self.y is not None:
-                    f1 = get_f1_scores(predictions=knn_predictions, y=self.y)
-                    f1s.append(f1)
-
-            if database == "y":  # DHDB
-                insert_input("detectors", knn_df)
-            f1_list_end_index = len(f1s)
-            instance_index_ranges.append([f1_list_start_index, f1_list_end_index])
-            detector_index_ranges.append([num_detectors, num_detectors + len(self.params.k_range)])
-            num_detectors = num_detectors + len(self.params.k_range)
-            if self.y is not None:
-                best_knn_f1 = 0
-                for i in np.sort(self.params.k_range):
-                    temp_f1 = max(
-                        np.array(f1s[f1_list_start_index:f1_list_end_index])[np.where(np.array(krange_list) == i)[0]])
-                    best_knn_f1 = max(best_knn_f1, temp_f1)
-                methods_to_best_f1["KNN"] = best_knn_f1
-                self.logger.info('Best KNN F-1 = {}'.format(best_knn_f1))
+            num_detectors += self._run_knn(all_results, all_scores, methods_to_best_f1, f1s,
+                                           num_detectors, instance_index_ranges, detector_index_ranges)
 
         if OutlierDetectionMethod.IsolationForest in self.params.detection_methods:
-            f1_list_start_index = len(f1s)
-            N_size = len(self.params.N_range)
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-            knn_N_range = np.sort(N_range * len(self.params.k_range)) # TODO: change this
-
-            self.logger.info(f'Start running Isolation Forest with max feature = {self.params.if_range}')
-            temp_if_results = dict()
-            for k in self.params.if_range:
-                if_scores = run_isolation_forest(self.X, max_features=k)
-                temp_if_results[k] = if_scores
-            if_range_list = self.params.if_range * N_size
-            if_N_range = np.sort(self.params.N_range * len(self.params.if_range))
-            if database == "y":  # DHDB
-                col_names = ["id", "detector", "k", "n", "prediction", "score"]
-                if_df = pd.DataFrame(columns=col_names)
-            for i in range(len(if_range_list)):
-                if_predictions, if_scores = get_predictions(temp_if_results[if_range_list[i]],
-                                                            num_outliers=knn_N_range[i])
-                all_results.append(if_predictions)
-                all_scores.append(if_scores)
-                if database == "y":  # DHDB
-                    temp_if_data = pd.DataFrame()
-                    temp_if_data["id"] = self.X.index
-                    temp_if_data["detector"] = "IF"
-                    temp_if_data["k"] = if_range_list[i]
-                    temp_if_data["n"] = knn_N_range[i]
-                    temp_if_data["prediction"] = if_predictions
-                    temp_if_data["score"] = if_scores
-                    if_df = pd.concat([if_df, temp_if_data])  # if_df.append(temp_if_data)
-                if self.y is not None:
-                    f1 = get_f1_scores(predictions=if_predictions, y=self.y)
-                    f1s.append(f1)
-
-            if database == "y":  # DHDB
-                insert_input("detectors", if_df)
-            f1_list_end_index = len(f1s)
-            instance_index_ranges.append([f1_list_start_index, f1_list_end_index])
-            detector_index_ranges.append([num_detectors, num_detectors + len(self.params.if_range)])
-            num_detectors = num_detectors + len(self.params.if_range)
-            if self.y is not None:
-                best_if_f1 = 0
-                for i in np.sort(self.params.if_range):
-                    temp_f1 = max(
-                        np.array(f1s[f1_list_start_index:f1_list_end_index])[np.where(np.array(if_range_list) == i)[0]])
-                    best_if_f1 = max(best_if_f1, temp_f1)
-                methods_to_best_f1["Isolation_Forest"] = best_if_f1
-                self.logger.info('Best IF F-1 = {}'.format(best_if_f1))
+            num_detectors += self._run_isolation_forest(all_results, all_scores, methods_to_best_f1, f1s,
+                                                        num_detectors, instance_index_ranges, detector_index_ranges)
 
         if OutlierDetectionMethod.Mahalanobis in self.params.detection_methods:
-            self.logger.info(f'Start running Mahalanobis..')
-            f1_list_start_index = len(f1s)
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-            mahalanobis_scores = run_mahalanobis(self.X)
-            best_mahala_f1 = 0
-            if database == "y":  # DHDB
-                col_names = ["id", "detector", "n", "prediction", "score"]  # no k
-                mahala_df = pd.DataFrame(columns=col_names)
-            for i in range(len(N_range)):
-                mahalanobis_predictions, mahalanobis_scores = get_predictions(mahalanobis_scores,
-                                                                              num_outliers=N_range[i])
-                all_results.append(mahalanobis_predictions)
-                all_scores.append(mahalanobis_scores)
-                if database == "y":  # DHDB
-                    temp_mahala_data = pd.DataFrame()
-                    temp_mahala_data["id"] = self.X.index
-                    temp_mahala_data["detector"] = "mahalanobis"
-                    # temp_mahala_data["k"] = if_range_list[i]
-                    temp_mahala_data["n"] = N_range[i]
-                    temp_mahala_data["prediction"] = mahalanobis_predictions
-                    temp_mahala_data["score"] = mahalanobis_scores
-                    mahala_df = pd.concat([mahala_df, temp_mahala_data])  # mahala_df.append(temp_mahala_data)
-                if self.y is not None:
-                    f1 = get_f1_scores(mahalanobis_predictions, self.y)
-                    best_mahala_f1 = max(best_mahala_f1, f1)
-                    f1s.append(f1)
-
-            if database == "y":  # DHDB
-                insert_input("detectors", mahala_df)
-            f1_list_end_index = len(f1s)
-            if self.y is not None:
-                methods_to_best_f1["malalanobis"] = best_mahala_f1
-                self.logger.info('Best Mahala F-1 = {}'.format(best_mahala_f1))
-            instance_index_ranges.append([f1_list_start_index, f1_list_end_index])
-            detector_index_ranges.append([num_detectors, num_detectors + 1])
-            num_detectors = num_detectors + 1
-        if self.y is not None and methods_to_best_f1:
-            self.best_unsupervised_f1_score = max(methods_to_best_f1.values())
-            self.best_unsupervised_methods = [method for method, f1 in methods_to_best_f1.items() if
-                                              f1 >= self.best_unsupervised_f1_score]
-            self.logger.info(f"Best Unsupervised F-1 Score = {self.best_unsupervised_f1_score}")
-            self.logger.info(f"Best Unsupervised Outlier Detection Method = {self.best_unsupervised_methods}")
+            num_detectors += self._run_mahanalobis(all_results, all_scores, methods_to_best_f1, f1s,
+                                                   num_detectors, instance_index_ranges, detector_index_ranges)
         L = np.stack(all_results).T
         scores = np.stack(all_scores).T
         self.logger.info(f"Instance Index Ranges: {instance_index_ranges}")
         self.logger.info(f"Detector Index Ranges: {detector_index_ranges}")
         return L, scores, instance_index_ranges, detector_index_ranges
+
+    def _run_lof(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
+                 instance_index_ranges, detector_index_ranges):
+        f1_list_start_index = len(f1s)
+        N_size = len(self.params.N_range)
+        N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
+        krange_list = self.params.k_range * N_size
+        knn_N_range = np.sort(N_range * len(self.params.k_range))
+
+        self.logger.info(f'Start running LOF with k={self.params.k_range}')
+        temp_lof_results = dict()
+        for k in self.params.k_range:
+            lof_scores = run_lof(self.X, k=k)
+            temp_lof_results[k] = lof_scores
+        if database == "y":  # DHDB
+            col_names = ["id", "detector", "k", "n", "prediction", "score"]
+            lof_df = pd.DataFrame(columns=col_names)
+        for i in range(len(krange_list)):
+            lof_predictions, lof_scores = get_predictions(temp_lof_results[krange_list[i]],
+                                                          num_outliers=knn_N_range[
+                                                              i])  # DH: get predictions takes in num outliers
+            all_results.append(lof_predictions)
+            all_scores.append(lof_scores)
+            if database == "y":  # DHDB
+                temp_lof_data = pd.DataFrame()
+                temp_lof_data["id"] = self.X.index  # WITH ARFF FILE INDEX STARTS AT 0 WITH CSV IT STARTS WITH 1
+                temp_lof_data["detector"] = "LOF"
+                temp_lof_data["k"] = krange_list[i]
+                temp_lof_data["n"] = knn_N_range[i]
+                temp_lof_data["prediction"] = lof_predictions
+                temp_lof_data["score"] = lof_scores
+                lof_df = pd.concat([lof_df, temp_lof_data])  # lof_df.append(temp_lof_data)
+            if self.y is not None:
+                f1 = get_f1_scores(predictions=lof_predictions, y=self.y)  # f1 score for each of the detectors?
+                f1s.append(f1)
+        if database == "y":  # DHDB
+            insert_input("detectors", lof_df)
+        f1_list_end_index = len(f1s)
+        instance_index_ranges.append([f1_list_start_index, f1_list_end_index])
+        detector_index_ranges.append([num_detectors, num_detectors + len(self.params.k_range)])
+        num_detectors = len(self.params.k_range)
+        if self.y is not None:
+            best_lof_f1 = 0
+            for i in np.sort(self.params.k_range):
+                temp_f1 = max(np.array(f1s[f1_list_start_index: f1_list_end_index])[
+                                  np.where(np.array(krange_list) == i)[
+                                      0]])  # DH self.params.k_range is our paramiters. aka len(self.params.k_range) = num of detectors
+                best_lof_f1 = max(best_lof_f1,
+                                  temp_f1)  # DH here we can set up a dict of detector id and the f1 score?
+            methods_to_best_f1["LOF"] = best_lof_f1
+            self.logger.info('Best LOF F-1 = {}'.format(best_lof_f1))
+        return num_detectors
+
+    def _run_knn(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
+                 instance_index_ranges, detector_index_ranges):
+        f1_list_start_index = len(f1s)
+        N_size = len(self.params.N_range)
+        N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
+        krange_list = self.params.k_range * N_size
+        knn_N_range = np.sort(N_range * len(self.params.k_range))
+
+        self.logger.info(f'Start running KNN with k={self.params.k_range}')
+        temp_knn_results = dict()
+        for k in self.params.k_range:
+            knn_scores = run_knn(self.X, k=k)
+            temp_knn_results[k] = knn_scores
+        if database == "y":  # DHDB
+            col_names = ["id", "detector", "k", "n", "prediction", "score"]
+            knn_df = pd.DataFrame(columns=col_names)
+        for i in range(len(krange_list)):
+            knn_predictions, knn_scores = get_predictions(temp_knn_results[krange_list[i]],
+                                                          num_outliers=knn_N_range[i])
+            all_results.append(knn_predictions)
+            all_scores.append(knn_scores)
+            if database == "y":  # DHDB
+                temp_knn_data = pd.DataFrame()
+                temp_knn_data["id"] = self.X.index
+                temp_knn_data["detector"] = "KNN"
+                temp_knn_data["k"] = krange_list[i]
+                temp_knn_data["n"] = knn_N_range[i]
+                temp_knn_data["prediction"] = knn_predictions
+                temp_knn_data["score"] = knn_scores
+                knn_df = pd.concat([knn_df, temp_knn_data])  # knn_df.append(temp_knn_data)
+            if self.y is not None:
+                f1 = get_f1_scores(predictions=knn_predictions, y=self.y)
+                f1s.append(f1)
+
+        if database == "y":  # DHDB
+            insert_input("detectors", knn_df)
+        f1_list_end_index = len(f1s)
+        instance_index_ranges.append([f1_list_start_index, f1_list_end_index])
+        detector_index_ranges.append([num_detectors, num_detectors + len(self.params.k_range)])
+        num_detectors = len(self.params.k_range)
+        if self.y is not None:
+            best_knn_f1 = 0
+            for i in np.sort(self.params.k_range):
+                temp_f1 = max(
+                    np.array(f1s[f1_list_start_index:f1_list_end_index])[np.where(np.array(krange_list) == i)[0]])
+                best_knn_f1 = max(best_knn_f1, temp_f1)
+            methods_to_best_f1["KNN"] = best_knn_f1
+            self.logger.info('Best KNN F-1 = {}'.format(best_knn_f1))
+        return num_detectors
+
+    def _run_isolation_forest(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
+                              instance_index_ranges, detector_index_ranges):
+        f1_list_start_index = len(f1s)
+        N_size = len(self.params.N_range)
+        N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
+        if_N_range = np.sort(N_range * len(self.params.if_range))
+        self.logger.info(f'Start running Isolation Forest with max feature = {self.params.if_range}')
+        temp_if_results = dict()
+        for k in self.params.if_range:
+            if_scores = run_isolation_forest(self.X, max_features=k)
+            temp_if_results[k] = if_scores
+        if_range_list = self.params.if_range * N_size
+        if database == "y":  # DHDB
+            col_names = ["id", "detector", "k", "n", "prediction", "score"]
+            if_df = pd.DataFrame(columns=col_names)
+        for i in range(len(if_range_list)):
+            if_predictions, if_scores = get_predictions(temp_if_results[if_range_list[i]],
+                                                        num_outliers=if_N_range[i])
+            all_results.append(if_predictions)
+            all_scores.append(if_scores)
+            if database == "y":  # DHDB
+                temp_if_data = pd.DataFrame()
+                temp_if_data["id"] = self.X.index
+                temp_if_data["detector"] = "IF"
+                temp_if_data["k"] = if_range_list[i]
+                temp_if_data["n"] = if_N_range[i]
+                temp_if_data["prediction"] = if_predictions
+                temp_if_data["score"] = if_scores
+                if_df = pd.concat([if_df, temp_if_data])  # if_df.append(temp_if_data)
+            if self.y is not None:
+                f1 = get_f1_scores(predictions=if_predictions, y=self.y)
+                f1s.append(f1)
+        if database == "y":  # DHDB
+            insert_input("detectors", if_df)
+        f1_list_end_index = len(f1s)
+        instance_index_ranges.append([f1_list_start_index, f1_list_end_index])
+        detector_index_ranges.append([num_detectors, num_detectors + len(self.params.if_range)])
+        num_detectors = len(self.params.if_range)
+        if self.y is not None:
+            best_if_f1 = 0
+            for i in np.sort(self.params.if_range):
+                temp_f1 = max(
+                    np.array(f1s[f1_list_start_index:f1_list_end_index])[np.where(np.array(if_range_list) == i)[0]])
+                best_if_f1 = max(best_if_f1, temp_f1)
+            methods_to_best_f1["Isolation_Forest"] = best_if_f1
+            self.logger.info('Best IF F-1 = {}'.format(best_if_f1))
+        return num_detectors
+
+    def _run_mahanalobis(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
+                         instance_index_ranges, detector_index_ranges):
+        self.logger.info(f'Start running Mahalanobis..')
+        f1_list_start_index = len(f1s)
+        N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
+        mahalanobis_scores = run_mahalanobis(self.X)
+        best_mahala_f1 = 0
+        if database == "y":  # DHDB
+            col_names = ["id", "detector", "n", "prediction", "score"]  # no k
+            mahala_df = pd.DataFrame(columns=col_names)
+        for i in range(len(N_range)):
+            mahalanobis_predictions, mahalanobis_scores = get_predictions(mahalanobis_scores,
+                                                                          num_outliers=N_range[i])
+            all_results.append(mahalanobis_predictions)
+            all_scores.append(mahalanobis_scores)
+            if database == "y":  # DHDB
+                temp_mahala_data = pd.DataFrame()
+                temp_mahala_data["id"] = self.X.index
+                temp_mahala_data["detector"] = "mahalanobis"
+                # temp_mahala_data["k"] = if_range_list[i]
+                temp_mahala_data["n"] = N_range[i]
+                temp_mahala_data["prediction"] = mahalanobis_predictions
+                temp_mahala_data["score"] = mahalanobis_scores
+                mahala_df = pd.concat([mahala_df, temp_mahala_data])  # mahala_df.append(temp_mahala_data)
+            if self.y is not None:
+                f1 = get_f1_scores(mahalanobis_predictions, self.y)
+                best_mahala_f1 = max(best_mahala_f1, f1)
+                f1s.append(f1)
+
+        if database == "y":  # DHDB
+            insert_input("detectors", mahala_df)
+        f1_list_end_index = len(f1s)
+        if self.y is not None:
+            methods_to_best_f1["malalanobis"] = best_mahala_f1
+            self.logger.info('Best Mahala F-1 = {}'.format(best_mahala_f1))
+        instance_index_ranges.append([f1_list_start_index, f1_list_end_index])
+        detector_index_ranges.append([num_detectors, num_detectors + 1])
+        num_detectors = 1
+        if self.y is not None and methods_to_best_f1:
+            self.best_unsupervised_f1_score = max(methods_to_best_f1.values())
+            self.best_unsupervised_methods = [method for method, f1 in methods_to_best_f1.items() if
+                                          f1 >= self.best_unsupervised_f1_score]
+            self.logger.info(f"Best Unsupervised F-1 Score = {self.best_unsupervised_f1_score}")
+            self.logger.info(f"Best Unsupervised Outlier Detection Method = {self.best_unsupervised_methods}")
+        return num_detectors
 
     def run_mv(self, L, y):
         mid = np.shape(L)[1] / 2
