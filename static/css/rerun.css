@@ -16,7 +16,7 @@ select {
 
 button,
 [type="button"],
-[type="reset"],
+[type="submitBtn"],
 [type="submit"] {
   -webkit-appearance: button;
 }
@@ -36,15 +36,6 @@ button:-moz-focus,
   outline: 1px dotted ButtonText;
 }
 
-a {
-  color: inherit;
-  text-decoration: inherit;
-}
-
-img {
-  display: block;
-}
-
 [data-thq="thq-dropdown"]:hover>[data-thq="thq-dropdown-list"] {
   display: flex;
 }
@@ -56,34 +47,22 @@ img {
 /* The Modal (background) */
 .modal {
   display: none;
-  /* Hidden by default */
-  position: fixed;
-  /* Stay in place */
-  z-index: 1;
-  /* Sit on top */
-  padding-top: 100px;
-  /* Location of the box */
-  left: 0;
-  top: 0;
+  position: absolute;
+  z-index: 30;
+  left: 900;
+  top: 1200;
   width: 100%;
-  /* Full width */
   height: 100%;
-  /* Full height */
   overflow: auto;
-  /* Enable scroll if needed */
-  background-color: rgb(0, 0, 0);
-  /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.4);
-  /* Black w/ opacity */
 }
+
 
 /* Modal Content */
 .modal-content {
   background-color: #fefefe;
+  border-radius: 10px;
   margin: auto;
   padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
 }
 
 /* The Close Button */
@@ -136,13 +115,10 @@ input {
 
 .home-container {
   width: 100%;
-  display: flex;
   overflow: auto;
-  height: 200px;
+  height: 300px;
   align-items: center;
-  flex-direction: column;
   justify-content: center;
-  background-color: #D9D9D9;
 }
 
 .home-thq-dropdown {
@@ -153,8 +129,6 @@ input {
 }
 
 .home-dropdown-toggle {
-  fill: #595959;
-  color: #595959;
   width: 263px;
   display: inline-flex;
   align-items: center;
@@ -227,7 +201,7 @@ input {
 .home-dropdown-toggle1:hover {
   fill: #fff;
   color: #fff;
-  background-color: #595959;
+  background-color: maroon;
 }
 
 .home-text1 {
@@ -263,7 +237,7 @@ input {
 .home-dropdown-toggle2:hover {
   fill: #fff;
   color: #fff;
-  background-color: #595959;
+  background-color: maroon;
 }
 
 .home-text2 {
@@ -299,7 +273,7 @@ input {
 .home-dropdown-toggle3:hover {
   fill: #fff;
   color: #fff;
-  background-color: #595959;
+  background-color: maroon;
 }
 
 .home-text3 {
@@ -335,7 +309,7 @@ input {
 .home-dropdown-toggle4:hover {
   fill: #fff;
   color: #fff;
-  background-color: #595959;
+  background-color: maroon;
 }
 
 .home-text4 {
@@ -366,10 +340,4 @@ input {
   border-radius: var(--dl-radius-radius-radius4);
   padding-right: var(--dl-space-space-unit);
   padding-bottom: var(--dl-space-space-halfunit);
-}
-
-.home-dropdown-toggle5:hover {
-  fill: #fff;
-  color: #fff;
-  background-color: #595959;
 }
