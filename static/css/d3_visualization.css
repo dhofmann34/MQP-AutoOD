@@ -465,3 +465,10 @@ li a:hover {
     width: 800px;
     height: 650px;
 }
+
+#rerun {
+    position: absolute;
+    left: 15px;
+    top: 1200px;
+    
+}
