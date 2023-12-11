@@ -1,5 +1,4 @@
 from typing import List, Optional
-from enum import Enum, auto
 import numpy as np
 from scipy.io import arff
 import pandas as pd
@@ -20,6 +19,8 @@ import time
 from psycopg2.extensions import register_adapter, AsIs
 import scipy.linalg
 import sys
+
+from outlier_detection_methods import OutlierDetectionMethod
 
 db_parameters = None
 
@@ -47,13 +48,6 @@ if database == "y":
     from connect import truncate_temp_tables
 
 simplefilter(action='ignore', category=FutureWarning)
-
-
-class OutlierDetectionMethod(Enum):
-    LOF = auto()
-    KNN = auto()
-    IsolationForest = auto()
-    Manalanobis = auto()
 
 
 @dataclass
@@ -366,7 +360,7 @@ class AutoOD:
                 methods_to_best_f1["Isolation_Forest"] = best_if_f1
                 self.logger.info('Best IF F-1 = {}'.format(best_if_f1))
 
-        if OutlierDetectionMethod.Manalanobis in self.params.detection_methods:
+        if OutlierDetectionMethod.Mahalanobis in self.params.detection_methods:
             self.logger.info(f'Start running Mahalanobis..')
             f1_list_start_index = len(f1s)
             N_range = [int(np.shape(X)[0] * percent) for percent in self.params.N_range]
@@ -962,10 +956,10 @@ class AutoOD:
 
 def get_default_detection_method_list():
     return [OutlierDetectionMethod.LOF, OutlierDetectionMethod.KNN,
-            OutlierDetectionMethod.Manalanobis]
+            OutlierDetectionMethod.Mahalanobis]
 
 
-def prepare_autood_run(filepath, logger, parameters, detection_methods, db_parameters_in):
+def prepare_autood_run_from_params(filepath, logger, parameters, detection_methods, db_parameters_in):
     dataset = Path(filepath).stem
     logger.info(f"Dataset Name = {dataset}")
     global db_parameters
@@ -1003,6 +997,7 @@ def prepare_autood_run(filepath, logger, outlier_min, outlier_max, detection_met
     return AutoOD(AutoODParameters(
         filepath,
         detection_methods,
+        detection_method_parameters=None,
         k_range=default_parameters.k_range,
         if_range=default_parameters.if_range,
         N_range=default_parameters.N_range,

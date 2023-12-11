@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 from numpy import arange
-from autood import OutlierDetectionMethod
+from outlier_detection_methods import OutlierDetectionMethod
 
 # Default detection parameters
 default_N_range = [0.05, 0.07, 0.09, 0.11, 0.13, 0.15]
@@ -9,6 +9,7 @@ default_k_range = list(range(10, 110, 10))
 default_if_range = [0.5, 0.6, 0.7, 0.8, 0.9]
 default_outlier_min = 5
 default_outlier_max = 15
+
 
 @dataclass
 class AutoODDefaultParameters:
@@ -37,6 +38,7 @@ def get_default_parameters(dataset):
         if_range=[0.5, 0.6, 0.7, 0.8, 0.9],
         N_range=[0.05, 0.07, 0.09, 0.11, 0.13, 0.15]
     )
+
 
 # Optional arguments include: k_range, if_range
 def get_detector_instances(detector: str, outlier_min, outlier_max, **kwargs):
@@ -87,6 +89,6 @@ def get_detection_parameters(parameters, detection_methods: list):
             outlier_max = default_outlier_max if parameters['ifMaxOutlier'] == '' else parameters['ifMaxOutlier']
             detection_parameters['isolation_forest'] = get_detector_instances("IF", outlier_min, outlier_max,
                                                                               if_range=parameters['ifRange'])
-        # elif method == OutlierDetectionMethod.Manalanobis:
+        # elif method == OutlierDetectionMethod.Mahalanobis:
 
     return detection_parameters

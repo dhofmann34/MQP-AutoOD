@@ -66,19 +66,19 @@ def get_detection_methods(methods: list):
         "lof": OutlierDetectionMethod.LOF,
         "knn": OutlierDetectionMethod.KNN,
         "if": OutlierDetectionMethod.IsolationForest,
-        "mahala": OutlierDetectionMethod.Manalanobis
+        "mahala": OutlierDetectionMethod.Mahalanobis
     }
     selected_methods = [name_to_method_map[method] for method in methods]
     return selected_methods
 
 
-def get_detection_methods(parameters: dict):
+def get_detection_methods_from_params(parameters: dict):
     selected_methods = []
     name_to_method_map = {
         "lofKRange": OutlierDetectionMethod.LOF,
         "knnKRange": OutlierDetectionMethod.KNN,
         "ifKRange": OutlierDetectionMethod.IsolationForest
-        # "mahala": OutlierDetectionMethod.Manalanobis # TODO: figure out mahalanobis
+        # "mahala": OutlierDetectionMethod.Mahalanobis # TODO: figure out mahalanobis
     }
     for name in name_to_method_map:
         if parameters[name] != "":
@@ -110,7 +110,7 @@ def autood_input():
             parameters['index_col_name'] = request.form['indexColName']
             parameters['label_col_name'] = request.form['labelColName']
             # check for detection methods in parameters
-            detection_methods = get_detection_methods(parameters)
+            detection_methods = get_detection_methods_from_params(parameters)
         else: # Normal flow
             # Retrieve parameters from input page
             index_col_name = request.form['indexColName']
@@ -124,7 +124,7 @@ def autood_input():
             return redirect(request.url)
 
         if app.config['ADDITIONAL_INPUTS']:
-            results = call_autood(filename, parameters, detection_methods)
+            results = call_autood_from_params(filename, parameters, detection_methods)
         else:
             results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name, label_col_name)
         if results.error_message:
@@ -165,13 +165,13 @@ def call_autood(filename, outlier_percentage_min, outlier_percentage_max, detect
 
 
 # Calling autood with additional user inputs for each detection method
-def call_autood(filename, parameters, detection_methods):
+def call_autood_from_params(filename, parameters, detection_methods):
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     logger.info(f"Start calling autood with file {filename}...indexColName = " +
                 f"{parameters['index_col_name']}, labelColName = {parameters['label_col_name']}")
     #logger.info(
     #     f"Parameters: outlier_percentage_min = {outlier_percentage_min}%, outlier_percentage_max = {outlier_percentage_max}%")
-    return prepare_autood_run(filepath, logger, parameters, detection_methods, get_db_config())
+    return prepare_autood_run_from_params(filepath, logger, parameters, detection_methods, get_db_config())
 
 
 #### DH
