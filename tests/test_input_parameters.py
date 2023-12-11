@@ -60,6 +60,11 @@ class ParameterParsing(unittest.TestCase):
         self.assertListEqual(if_[0]['params']['N_range'], [0.05, 0.07, 0.09, 0.11, 0.13, 0.15])
 
 
+class DetectorMethods(unittest.TestCase):
+    @classmethod
+    def setUp(cls):
+        print("setup")
+
 # Runs the test suites
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
