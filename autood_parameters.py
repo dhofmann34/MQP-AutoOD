@@ -45,19 +45,29 @@ def get_detector_instances(detector: str, outlier_min, outlier_max, **kwargs):
     detector_instances = []
     N_range = default_N_range
     if outlier_min != '' and outlier_max != '':       # Use custom N range
-        outlier_min_percent = outlier_min * 0.01
-        outlier_max_percent = outlier_max * 0.01
+        outlier_min_percent = float(outlier_min) * 0.01
+        outlier_max_percent = float(outlier_max) * 0.01
         interval = (outlier_max_percent - outlier_min_percent) / 5
         N_range = [round(x, 5) for x in arange(outlier_min_percent, outlier_max_percent + interval, interval)]
 
     k_range = kwargs.get('k_range', None)
     if_range = kwargs.get('if_range', None)
-    if (detector == 'KNN' or detector == 'LOF') and k_range == []:
-        k_range = default_k_range
-    if detector == 'IF' and if_range == []:
-        if_range = default_if_range
 
-    iter_list, val = k_range, "k" if k_range is not None else if_range, "max_features"
+    # If k_range or if_range is not set by the user, use the defaults
+    # Iteration list and name is based on which detector is being used
+    if detector == 'KNN' or detector == 'LOF':
+        if not k_range:
+            k_range = default_k_range
+        else:
+            k_range = list(map(int, k_range.split(",")))
+        iter_list, val = k_range, "k"
+    if detector == 'IF':
+        if not if_range:
+            if_range = default_if_range
+        else:
+            if_range = list(map(float, if_range.split(",")))
+        iter_list, val = if_range, "max_features"
+
     for n in iter_list:
         instance = {"id": detector + "_" + str(n),
                     "params": {

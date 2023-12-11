@@ -1,13 +1,13 @@
 {
-  "lofKRange": "",
-  "lofMinOutlier": "",
-  "lofMaxOutlier": "",
-  "knnKRange": "",
-  "knnMinOutlier": "",
-  "knnMaxOutlier": "",
-  "ifRange": "",
-  "ifMinOutlier": "",
-  "ifMaxOutlier": "",
+  "lofKRange": "10,20,30,40",
+  "lofMinOutlier": "5",
+  "lofMaxOutlier": "15",
+  "knnKRange": "15,25,35",
+  "knnMinOutlier": "2",
+  "knnMaxOutlier": "10",
+  "ifRange": "5,10,15,20",
+  "ifMinOutlier": "5",
+  "ifMaxOutlier": "15",
   "mMinOutlier": "",
   "mMaxOutlier": ""
 }
