@@ -237,6 +237,7 @@ class AutoOD:
 
     def _run_lof(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
                  instance_index_ranges, detector_index_ranges):
+        # check for parameter inputs
         f1_list_start_index = len(f1s)
         N_size = len(self.params.N_range)
         N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
