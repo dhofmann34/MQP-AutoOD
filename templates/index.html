@@ -131,7 +131,7 @@
         }
         var knnUpdate = document.getElementById("knnUpdate");
         if(knnUpdate){
-            knnUpdate.addEventListener("click", updateKNNData);  //stringify
+            knnUpdate.addEventListener("click", updateKNNData);
         }
         var ifUpdate = document.getElementById("ifUpdate");
         if(ifUpdate){
@@ -149,26 +149,26 @@
         }
 
         // When the user clicks anywhere outside of the modal, close it
-<!--        window.onclick = function (event) {-->
-<!--            if (event.target == modal) {-->
-<!--                closeModal1();-->
-<!--            }-->
-<!--        }-->
-<!--        window.onclick = function (event) {-->
-<!--            if (event.target == modal) {-->
-<!--                closeModal2();-->
-<!--            }-->
-<!--        }-->
-<!--        window.onclick = function (event) {-->
-<!--            if (event.target == modal) {-->
-<!--                closeModal3();-->
-<!--            }-->
-<!--        }-->
-<!--        window.onclick = function (event) {-->
-<!--            if (event.target == modal) {-->
-<!--                closeModal4();-->
-<!--            }-->
-<!--        }-->
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                closeModal1();
+            }
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                closeModal2();
+            }
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                closeModal3();
+            }
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                closeModal4();
+            }
+        }
 
         //Making JSON Object
         //LOF Data
@@ -209,6 +209,7 @@
             closeModal3()
             console.log("IFData updated");
         }
+
         //Mahalanobis Data
         var mMinOutlier = "5";
         var mMaxOutlier = "15";
@@ -220,8 +221,7 @@
             console.log("MData updated");
         }
 
-        function sendJSONData(lofKRange, lofMinOutlier, lofMaxOutlier, knnKRange,
-            knnMinOutlier, knnMaxOutlier, ifKRange, ifRange, ifMinOutlier, ifMaxOutlier, mMinOutlier, mMaxOutlier) {
+        function sendJSONData() {
             if(document.getElementById("lofCB").checked == false){
                 var data = JSON.stringify({
                     "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
@@ -387,7 +387,7 @@
         </div>
     </div>
     <div>   
-        <button id="submitBtn" onclick="sendJSONData(5)"><b>Rerun</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
+        <button id="submitBtn" onclick="sendJSONData()"><b>Rerun</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
 
     </div>
 </div>
