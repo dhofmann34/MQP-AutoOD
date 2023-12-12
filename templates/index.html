@@ -125,35 +125,50 @@
         }
 
         //Getting the update buttons
-        var lofUpdate = document.getElementById("lofUpdate").addEventListener("click", stringifyLOFData);
-        var knnUpdate = document.getElementById("knnUpdate").addEventListener("click", stringifyKNNData);
-        var ifUpdate = document.getElementById("ifUpdate").addEventListener("click", stringifyIFData);
-        var mUpdate = document.getElementById("mUpdate").addEventListener("click", stringifyMData);
+        var lofUpdate = document.getElementById("lofUpdate");
+        if(lofUpdate){
+            lofUpdate.addEventListener("click", updateLOFData);
+        }
+        var knnUpdate = document.getElementById("knnUpdate");
+        if(knnUpdate){
+            knnUpdate.addEventListener("click", updateKNNData);  //stringify
+        }
+        var ifUpdate = document.getElementById("ifUpdate");
+        if(ifUpdate){
+            ifUpdate.addEventListener("click", updateIFData);
+        }
+        var mUpdate = document.getElementById("mUpdate");
+        if(mUpdate){
+            mUpdate.addEventListener("click", updateMData);
+        }
 
         //Getting submit button
-        var submitBtn = document.getElementById("submitBtn").addEventListener("click", sendJSONData);
+        var submitBtn = document.getElementById("submitBtn")
+        if(submitBtn){
+            submitBtn.addEventListener("click", sendJSONData(lofKRange, lofMinOutlier, lofMaxOutlier, knnKRange, knnMinOutlier, knnMaxOutlier, ifKRange, ifRange, ifMinOutlier, ifMaxOutlier, mMinOutlier, mMaxOutlier));
+        }
 
         // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                closeModal1();
-            }
-        }
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                closeModal2()
-            }
-        }
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                closeModal3()
-            }
-        }
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                closeModal4()
-            }
-        }
+<!--        window.onclick = function (event) {-->
+<!--            if (event.target == modal) {-->
+<!--                closeModal1();-->
+<!--            }-->
+<!--        }-->
+<!--        window.onclick = function (event) {-->
+<!--            if (event.target == modal) {-->
+<!--                closeModal2();-->
+<!--            }-->
+<!--        }-->
+<!--        window.onclick = function (event) {-->
+<!--            if (event.target == modal) {-->
+<!--                closeModal3();-->
+<!--            }-->
+<!--        }-->
+<!--        window.onclick = function (event) {-->
+<!--            if (event.target == modal) {-->
+<!--                closeModal4();-->
+<!--            }-->
+<!--        }-->
 
         //Making JSON Object
         //LOF Data
@@ -189,12 +204,12 @@
         function updateIFData() {
             ifKRange = document.querySelector('#ifKRange').value;
             ifRange = document.querySelector('#ifRange').value;
-            ifMinOutlier = document.querySelector('#ifMinOutlier').valye;
+            ifMinOutlier = document.querySelector('#ifMinOutlier').value;
             ifMaxOutlier = document.querySelector('#ifMaxOutlier').value;
             closeModal3()
             console.log("IFData updated");
         }
-        //Malanohbis Data
+        //Mahalanobis Data
         var mMinOutlier = "5";
         var mMaxOutlier = "15";
 
@@ -205,13 +220,13 @@
             console.log("MData updated");
         }
 
-        function sendJSONData() {
-            
+        function sendJSONData(lofKRange, lofMinOutlier, lofMaxOutlier, knnKRange,
+            knnMinOutlier, knnMaxOutlier, ifKRange, ifRange, ifMinOutlier, ifMaxOutlier, mMinOutlier, mMaxOutlier) {
             if(document.getElementById("lofCB").checked == false){
                 var data = JSON.stringify({
-                "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
-                "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier,
-                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier,
+                    "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
+                    "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": ifMinOutlier, "ifMaxOutlier": ifMaxOutlier,
+                    "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier
                 });
                 var xhr = new XMLHttpRequest();
                 var url = "result";
@@ -221,11 +236,11 @@
                 console.log("JSON file has been sent");
             } 
 
-           else  if(document.getElementById("knnCB").checked == false){
+           else if(document.getElementById("knnCB").checked == false){
                 var data = JSON.stringify({
                 "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
                 "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier,
-                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier,
+                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier
                 });
                 var xhr = new XMLHttpRequest();
                 var url = "result";
@@ -239,7 +254,7 @@
                 var data = JSON.stringify({
                 "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
                 "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
-                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier,
+                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier
             });
                 var xhr = new XMLHttpRequest();
                 var url = "result";
@@ -254,8 +269,8 @@
                 var data = JSON.stringify({
                 "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
                 "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
-                "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier,
-            });
+                "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": ifMinOutlier, "ifMaxOutlier": ifMaxOutlier
+                });
                 var xhr = new XMLHttpRequest();
                 var url = "result";
                 xhr.open("POST", url, true);
@@ -264,12 +279,12 @@
                 console.log("JSON file has been sent");
             }
             else{
-            var data = JSON.stringify({
-                "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
-                "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
-                "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier,
-                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier,
-            });
+                var data = JSON.stringify({
+                    "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
+                    "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
+                    "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": ifMinOutlier, "ifMaxOutlier": ifMaxOutlier,
+                    "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier
+                });
                 var xhr = new XMLHttpRequest();
                 var url = "result";
                 xhr.open("POST", url, true);
@@ -372,7 +387,7 @@
         </div>
     </div>
     <div>   
-        <button id="submitBtn" onclick="sendJSONData()"><b>Rerun</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
+        <button id="submitBtn" onclick="sendJSONData(5)"><b>Rerun</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
 
     </div>
 </div>
@@ -461,7 +476,7 @@
             <p>Local Outlier Factor</p>
             <br><br>
             <form action="/action_page.php">
-                <label for="lofKRange">K-Range (interger-interger):</label>
+                <label for="lofKRange">K-Range (integer-integer):</label>
                 <input type="text" id="lofKRange" name="lofKRange"><br><br>
                 <label for="lofMinOutlier">Minimum Outlier % (float):</label>
                 <input type="text" id="lofMinOutlier" name="lofMinOutlier"><br><br>
@@ -481,7 +496,7 @@
             <p>k - Nearest - Neighbors Settings</p>
             <br><br>
             <form action="/action_page.php">
-                <label for="knnKRange">K-Range (interger-interger):</label>
+                <label for="knnKRange">K-Range (integer-integer):</label>
                 <input type="text" id="knnKRange" name="knnKRange"><br><br>
                 <label for="knnMinOutlier">Minimum Outlier % (float):</label>
                 <input type="text" id="knnMinOutlier" name="knnMinOutlier"><br><br>
@@ -501,7 +516,7 @@
             <p>Isolation Forest</p>
             <br><br>
             <form action="/action_page.php">
-                <label for="ifKRange">K-Range (interger-interger):</label>
+                <label for="ifKRange">K-Range (integer-integer):</label>
                 <input type="text" id="ifKRange" name="ifKRange"><br><br>
                 <label for="ifRange">IF-Range (float-float):</label>
                 <input type="text" id="ifRange" name="ifRange"><br><br>

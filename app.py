@@ -71,7 +71,7 @@ def get_detection_methods(methods):
 
 @app.route('/autood/result', methods=['POST'])
 def autood_rerun():
-   print(request)
+   print(request.data)
    return redirect(request.url)
 
 @app.route('/autood/index', methods=['POST'])
