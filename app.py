@@ -8,7 +8,7 @@ import psycopg2
 from flask import jsonify
 import config
 import sql_queries as sql
-from autood import prepare_autood_run, OutlierDetectionMethod
+from autood import prepare_autood_run, OutlierDetectionMethod, prepare_autood_run_from_params
 from config import get_db_config
 from tqdm import tqdm
 import collections
