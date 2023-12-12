@@ -136,86 +136,147 @@
         // When the user clicks anywhere outside of the modal, close it
         window.onclick = function (event) {
             if (event.target == modal) {
-                modal1.style.display = "none";
+                closeModal1();
             }
         }
         window.onclick = function (event) {
             if (event.target == modal) {
-                modal2.style.display = "none";
+                closeModal2()
             }
         }
         window.onclick = function (event) {
             if (event.target == modal) {
-                modal3.style.display = "none";
+                closeModal3()
             }
         }
         window.onclick = function (event) {
             if (event.target == modal) {
-                modal4.style.display = "none";
+                closeModal4()
             }
         }
 
         //Making JSON Object
         //LOF Data
-        var lofKRange = "";
-        var lofMinOutlier = "";
-        var lofMaxOutlier = "";
+        var lofKRange = "5";
+        var lofMinOutlier = "0.01";
+        var lofMaxOutlier = "0.1";
 
-        function stringifyLOFData() {
-            lofKRange = document.querySelector('#lofKRange');
-            lofMinOutlier = document.querySelector('#lofMinOutlier');
-            lofMaxOutlier = document.querySelector('#lofMaxOutlier');
-            modal1.style.display = "none";
+        function updateLOFData() {
+            lofKRange = document.querySelector('#lofKRange').value;
+            lofMinOutlier = document.querySelector('#lofMinOutlier').value;
+            lofMaxOutlier = document.querySelector('#lofMaxOutlier').value;
+            closeModal1()
+            console.log("LOFData updated");
         }
         //KNN Data
-        var knnKRange = "";
-        var knnMinOutlier = "";
-        var knnMaxOutlier = "";
+        var knnKRange = "5";
+        var knnMinOutlier = "0.01";
+        var knnMaxOutlier = "0.1";
 
-        function stringifyKNNData() {
-            knnKRange = document.querySelector('#knnKRange');
-            knnMinOutlier = document.querySelector('#knnMinOutlier');
-            knnMaxOutlier = document.querySelector('#knnMaxOutlier');
-            modal2.style.display = "none";
+        function updateKNNData() {
+            knnKRange = document.querySelector('#knnKRange').value;
+            knnMinOutlier = document.querySelector('#knnMinOutlier').value;
+            knnMaxOutlier = document.querySelector('#knnMaxOutlier'.value);
+            closeModal2()
+            console.log("KNNData updated");
         }
         //Isolation Forest Data
-        var ifKRange = "";
-        var ifRange = ""
-        var ifMinOutlier = "";
-        var ifMaxOutlier = "";
+        var ifKRange = "5";
+        var ifRange = "5"
+        var ifMinOutlier = "0.01";
+        var ifMaxOutlier = "0.1";
 
-        function stringifyIFData() {
-            ifKRange = document.querySelector('#ifKRange');
-            ifRange = document.querySelector('#ifRange');
-            ifMinOutlier = document.querySelector('#ifMinOutlier');
-            ifMaxOutlier = document.querySelector('#ifMaxOutlier');
-            modal3.style.display = "none";
+        function updateIFData() {
+            ifKRange = document.querySelector('#ifKRange').value;
+            ifRange = document.querySelector('#ifRange').value;
+            ifMinOutlier = document.querySelector('#ifMinOutlier').valye;
+            ifMaxOutlier = document.querySelector('#ifMaxOutlier').value;
+            closeModal3()
+            console.log("IFData updated");
         }
         //Malanohbis Data
-        var mMinOutlier = "";
-        var mMaxOutlier = "";
+        var mMinOutlier = "0.01";
+        var mMaxOutlier = "0.1";
 
-        function stringifyMData() {
-            mMinOutlier = document.querySelector('#mMinOutlier');
-            mMaxOutlier = document.querySelector('#mMaxOutlier');
-            modal4.style.display = "none";
+        function updateMData() {
+            mMinOutlier = document.querySelector('#mMinOutlier').value;
+            mMaxOutlier = document.querySelector('#mMaxOutlier').value;
+            closeModal4()
+            console.log("MData updated");
         }
 
-        // JSON object
-        var data = "";
-
         function sendJSONData() {
-            data = JSON.stringify({
-                "lofKRange": lofKRange.value, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier.value,
-                "knnKRange": knnKRange.value, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier.value,
-                "ifKRange": ifKRange.value, "ifRange": ifRange.value, "ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier.value,
-                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier.value,
+            
+            if(document.getElementById("lofCB").checked == false){
+                var data = JSON.stringify({
+                "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
+                "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier,
+                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier,
+                });
+                var xhr = new XMLHttpRequest();
+                var url = "url";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(data);
+                console.log("JSON file has been sent");
+            } 
+
+           else  if(document.getElementById("knnCB").checked == false){
+                var data = JSON.stringify({
+                "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
+                "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier,
+                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier,
+                });
+                var xhr = new XMLHttpRequest();
+                var url = "url";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(data);
+                console.log("JSON file has been sent");
+            }
+
+            else if(document.getElementById("ifCB").checked == false){
+                var data = JSON.stringify({
+                "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
+                "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
+                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier,
             });
-            var xhr = new XMLHttpRequest();
-            var url = "url";
-            xhr.open("POST", url, true);
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(data);
+                var xhr = new XMLHttpRequest();
+                var url = "url";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(data);
+                console.log("JSON file has been sent");
+
+            } 
+            
+            else if(document.getElementById("mCB").checked == false){
+                var data = JSON.stringify({
+                "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
+                "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
+                "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier,
+            });
+                var xhr = new XMLHttpRequest();
+                var url = "url";
+                xhr.open("POST", url, true);
+                r.setRequestHeader("Content-Type", "application/json");
+                xhr.send(data);
+                console.log("JSON file has been sent");
+            }
+            else{
+            var data = JSON.stringify({
+                "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
+                "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
+                "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier,
+                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier,
+            });
+                var xhr = new XMLHttpRequest();
+                var url = "url";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(data);
+                console.log("JSON file has been sent");
+            }
         }
 
     </script>
@@ -311,7 +372,7 @@
         </div>
     </div>
     <div>   
-        <button id="submitBtn"><b>Rerun</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
+        <button id="submitBtn" onclick="sendJSONData()"><b>Rerun</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
 
     </div>
 </div>
@@ -337,7 +398,7 @@
                     <ul data-thq="thq-dropdown-list" class="home-dropdown-list">
                         <li data-thq="thq-dropdown" class="home-dropdown list-item">
                             <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle1">
-                                <input type="checkbox" checked="true" />
+                                <input type="checkbox" checked="true" id="lofCB"/>
                                 <span class="home-text1">Local Outlier Factor</span>
                                 <button type="button" class="button" id="myBtn1" onclick="displayModal1()"><img
                                         src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
@@ -349,7 +410,7 @@
                         </li>
                         <li data-thq="thq-dropdown" class="home-dropdown1 list-item">
                             <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle2">
-                                <input type="checkbox" checked="true" />
+                                <input type="checkbox" checked="true" id="knnCB"/>
                                 <span class="home-text2">knn-N-Neighbors</span>
                                 <button type="button" class="button" id="myBtn2" onclick="displayModal2()"><img
                                         src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
@@ -360,7 +421,7 @@
                         </li>
                         <li data-thq="thq-dropdown" class="home-dropdown2 list-item">
                             <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle3">
-                                <input type="checkbox" checked="true" />
+                                <input type="checkbox" checked="true" id="ifCB"/>
                                 <span class="home-text3">Isloation Forest</span>
                                 <button type="button" class="button" id="myBtn3" onclick="displayModal3()"><img
                                         src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
@@ -371,7 +432,7 @@
                         </li>
                         <li data-thq="thq-dropdown" class="home-dropdown3 list-item">
                             <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle4">
-                                <input type="checkbox" checked="true" />
+                                <input type="checkbox" checked="true"id="mCB" />
                                 <span class="home-text4">Malanohbis</span>
                                 <button type="button" class="button" id="myBtn4" onclick="displayModal4()"><img
                                         src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
@@ -407,7 +468,7 @@
                 <label for="lofMaxOutlier">Max Outlier % (float):</label>
                 <input type="text" id="lofMaxOutlier" name="lofMaxOutlier"><br><br>
                 <br><br>
-                <button type="button" class="button" id="lofUpdate">Update</button>
+                <button type="button" class="button" id="lofUpdate" onclick="updateLOFData()">Update</button>
             </form>
         </div>
     </div>
@@ -427,7 +488,7 @@
                 <label for="knnMaxOutlier">Max Outlier % (float):</label>
                 <input type="text" id="knnMaxOutlier" name="knnMaxOutlier"><br><br>
                 <br><br>
-                <button type="button" class="button" id="knnUpdate">Update</button>
+                <button type="button" class="button" id="knnUpdate"onclick="updateKNNData()">Update</button>
             </form>
         </div>
     </div>
@@ -449,7 +510,7 @@
                 <label for="ifMaxOutlier">Max Outlier % (float):</label>
                 <input type="text" id="ifMaxOutlier" name="ifMaxOutlier"><br><br>
                 <br><br>
-                <button type="button" class="button" id="ifUpdate">Update</button>
+                <button type="button" class="button" id="ifUpdate" onclick="updateIFData()">Update</button>
             </form>
         </div>
     </div>
@@ -468,7 +529,7 @@
                 <label for="mMaxOutlier">Max Outlier % (float):</label>
                 <input type="text" id="mMaxOutlier" name="mMaxOutlier"><br><br>
                 <br><br>
-                <button type="button" class="button" id="mUpdate">Update</button>
+                <button type="button" class="button" id="mUpdate" onclick="updateMData()">Update</button>
             </form>
         </div>
     </div>

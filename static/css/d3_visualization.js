@@ -19,7 +19,7 @@ var click1
 var click2
 
 var runNumber = 5; // Number of runs
-const local_data_path = "http://127.0.0.1:8080/data"; // Path to local data
+const local_data_path = "http://127.0.0.1:8081/data"; // Path to local data
 
 // placement of chart
 var SVG = d3.select("#dataviz_axisZoom")

@@ -206,4 +206,4 @@ def send_data():
 
 
 if __name__ == '__main__':
-    app.run(host=app.config['HOST'], port=8080)  # 5000 for VM, 8080 for local machine
+    app.run(host=app.config['HOST'], port=8081)  # 5000 for VM, 8080 for local machine
