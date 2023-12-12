@@ -149,11 +149,11 @@
         }
 
         // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                closeAllModals();
-            }
-        }
+        // window.onclick = function (event) {
+        //     if (event.target == modal) {
+        //         closeAllModals();
+        //     }
+        // }
 
         //Making JSON Object
         //LOF Data
@@ -372,7 +372,7 @@
         </div>
     </div>
     <div>   
-        <button id="submitBtn" onclick="sendJSONData()"><b>Rerun</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
+        <button id="submitBtn"><b>Rerun</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
 
     </div>
 </div>
@@ -462,11 +462,11 @@
             <br><br>
             <form action="/action_page.php">
                 <label for="lofKRange">K-Range (integer-integer):</label>
-                <input type="text" id="lofKRange" name="lofKRange"><br><br>
+                <input type="text" id="lofKRange" name="lofKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]"><br><br>
                 <label for="lofMinOutlier">Minimum Outlier % (float):</label>
-                <input type="text" id="lofMinOutlier" name="lofMinOutlier"><br><br>
+                <input type="text" id="lofMinOutlier" name="lofMinOutlier" placeholder="5"><br><br>
                 <label for="lofMaxOutlier">Max Outlier % (float):</label>
-                <input type="text" id="lofMaxOutlier" name="lofMaxOutlier"><br><br>
+                <input type="text" id="lofMaxOutlier" name="lofMaxOutlier" placeholder="15"><br><br>
                 <br><br>
                 <button type="button" class="button" id="lofUpdate" onclick="updateLOFData()">Update</button>
             </form>
@@ -482,11 +482,11 @@
             <br><br>
             <form action="/action_page.php">
                 <label for="knnKRange">K-Range (integer-integer):</label>
-                <input type="text" id="knnKRange" name="knnKRange"><br><br>
+                <input type="text" id="knnKRange" name="knnKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]"><br><br>
                 <label for="knnMinOutlier">Minimum Outlier % (float):</label>
-                <input type="text" id="knnMinOutlier" name="knnMinOutlier"><br><br>
+                <input type="text" id="knnMinOutlier" name="knnMinOutlier" placeholder="5"><br><br>
                 <label for="knnMaxOutlier">Max Outlier % (float):</label>
-                <input type="text" id="knnMaxOutlier" name="knnMaxOutlier"><br><br>
+                <input type="text" id="knnMaxOutlier" name="knnMaxOutlier" placeholder="15"><br><br>
                 <br><br>
                 <button type="button" class="button" id="knnUpdate"onclick="updateKNNData()">Update</button>
             </form>
@@ -502,13 +502,13 @@
             <br><br>
             <form action="/action_page.php">
                 <label for="ifKRange">K-Range (integer-integer):</label>
-                <input type="text" id="ifKRange" name="ifKRange"><br><br>
+                <input type="text" id="ifKRange" name="ifKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]"><br><br>
                 <label for="ifRange">IF-Range (float-float):</label>
-                <input type="text" id="ifRange" name="ifRange"><br><br>
+                <input type="text" id="ifRange" name="ifRange" placeholder="[0.5,0.6,0.7,0.8,0.9]"><br><br>
                 <label for="ifMinOutlier">Minimum Outlier % (float):</label>
-                <input type="text" id="ifMinOutlier" name="ifMinOutlier"><br><br>
+                <input type="text" id="ifMinOutlier" name="ifMinOutlier" placeholder="5"><br><br>
                 <label for="ifMaxOutlier">Max Outlier % (float):</label>
-                <input type="text" id="ifMaxOutlier" name="ifMaxOutlier"><br><br>
+                <input type="text" id="ifMaxOutlier" name="ifMaxOutlier" placeholder="15"><br><br>
                 <br><br>
                 <button type="button" class="button" id="ifUpdate" onclick="updateIFData()">Update</button>
             </form>
@@ -525,9 +525,9 @@
             <br><br>
             <form action="/action_page.php">
                 <label for="mMinOutlier">Minimum Outlier % (float):</label>
-                <input type="text" id="mMinOutlier" name="mMinOutlier"><br><br>
+                <input type="text" id="mMinOutlier" name="mMinOutlier" placeholder="5"><br><br>
                 <label for="mMaxOutlier">Max Outlier % (float):</label>
-                <input type="text" id="mMaxOutlier" name="mMaxOutlier"><br><br>
+                <input type="text" id="mMaxOutlier" name="mMaxOutlier" placeholder="15"><br><br>
                 <br><br>
                 <button type="button" class="button" id="mUpdate" onclick="updateMData()">Update</button>
             </form>
