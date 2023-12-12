@@ -69,6 +69,11 @@ def get_detection_methods(methods):
     return selected_methods
 
 
+@app.route('/autood/result', methods=['POST'])
+def autood_rerun():
+   print(request)
+   return redirect(request.url)
+
 @app.route('/autood/index', methods=['POST'])
 def autood_input():
     if 'file' not in request.files:
@@ -206,4 +211,4 @@ def send_data():
 
 
 if __name__ == '__main__':
-    app.run(host=app.config['HOST'], port=8081)  # 5000 for VM, 8080 for local machine
+    app.run(host=app.config['HOST'], port=8080)  # 5000 for VM, 8080 for local machine

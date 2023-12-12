@@ -157,9 +157,9 @@
 
         //Making JSON Object
         //LOF Data
-        var lofKRange = "5";
-        var lofMinOutlier = "0.01";
-        var lofMaxOutlier = "0.1";
+        var lofKRange = "[10,20,30,40,50,60,70,80,90,100]";
+        var lofMinOutlier = "5";
+        var lofMaxOutlier = "15";
 
         function updateLOFData() {
             lofKRange = document.querySelector('#lofKRange').value;
@@ -169,9 +169,9 @@
             console.log("LOFData updated");
         }
         //KNN Data
-        var knnKRange = "5";
-        var knnMinOutlier = "0.01";
-        var knnMaxOutlier = "0.1";
+        var knnKRange = "[10,20,30,40,50,60,70,80,90,100]";
+        var knnMinOutlier = "5";
+        var knnMaxOutlier = "15";
 
         function updateKNNData() {
             knnKRange = document.querySelector('#knnKRange').value;
@@ -181,10 +181,10 @@
             console.log("KNNData updated");
         }
         //Isolation Forest Data
-        var ifKRange = "5";
-        var ifRange = "5"
-        var ifMinOutlier = "0.01";
-        var ifMaxOutlier = "0.1";
+        var ifKRange = "[10,20,30,40,50,60,70,80,90,100]";
+        var ifRange = "[0.5,0.6,0.7,0.8,0.9]"
+        var ifMinOutlier = "5";
+        var ifMaxOutlier = "15";
 
         function updateIFData() {
             ifKRange = document.querySelector('#ifKRange').value;
@@ -195,8 +195,8 @@
             console.log("IFData updated");
         }
         //Malanohbis Data
-        var mMinOutlier = "0.01";
-        var mMaxOutlier = "0.1";
+        var mMinOutlier = "5";
+        var mMaxOutlier = "15";
 
         function updateMData() {
             mMinOutlier = document.querySelector('#mMinOutlier').value;
@@ -214,7 +214,7 @@
                 "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier,
                 });
                 var xhr = new XMLHttpRequest();
-                var url = "url";
+                var url = "result";
                 xhr.open("POST", url, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send(data);
@@ -228,7 +228,7 @@
                 "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier,
                 });
                 var xhr = new XMLHttpRequest();
-                var url = "url";
+                var url = "result";
                 xhr.open("POST", url, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send(data);
@@ -242,7 +242,7 @@
                 "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier,
             });
                 var xhr = new XMLHttpRequest();
-                var url = "url";
+                var url = "result";
                 xhr.open("POST", url, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send(data);
@@ -257,7 +257,7 @@
                 "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier,
             });
                 var xhr = new XMLHttpRequest();
-                var url = "url";
+                var url = "result";
                 xhr.open("POST", url, true);
                 r.setRequestHeader("Content-Type", "application/json");
                 xhr.send(data);
@@ -271,7 +271,7 @@
                 "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier,
             });
                 var xhr = new XMLHttpRequest();
-                var url = "url";
+                var url = "result";
                 xhr.open("POST", url, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send(data);
