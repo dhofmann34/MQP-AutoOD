@@ -661,6 +661,7 @@ function fetchDataAndUpdateVisualization(localDataPath) {
 
         // filter AutoOD preds
         var options = ["AutoOD Predictions", "Ground Truth"]
+        d3.select("#metric").selectAll("option").remove();
         d3.select("#metric")
             .selectAll('myOptions')
                 .data(options)
@@ -676,6 +677,7 @@ function fetchDataAndUpdateVisualization(localDataPath) {
 
         // Filtering correct preds
         var options = ["Both", "Yes", "No"]
+        d3.select("#selectButton_correct").selectAll("option").remove();
         d3.select("#selectButton_correct")
             .selectAll('myOptions')
                 .data(options)
@@ -692,6 +694,7 @@ function fetchDataAndUpdateVisualization(localDataPath) {
 
         // Filtering ground truth labels
         var options = ["Both", "Inlier", "Outlier"]
+        d3.select("#selectButton_label").selectAll("option").remove();
         d3.select("#selectButton_label")
             .selectAll('myOptions')
                 .data(options)
@@ -742,6 +745,7 @@ function fetchDataAndUpdateVisualization(localDataPath) {
         // starting value for reliable labels option: reliable inlier or outlier
         var selectedOption_reliable = "Both"
         var options = ["Both", "Inlier", "Outlier"]
+        d3.select("#reliable_inout").selectAll("option").remove();
         d3.select("#reliable_inout")
             .selectAll('myOptions')
                 .data(options)
@@ -778,6 +782,8 @@ function fetchDataAndUpdateVisualization(localDataPath) {
             .ticks(count_round1)
             .step(1)
             .default(count_round1)
+
+        d3.select('div#slider-step svg').remove();
 
         var gStep = d3
             .select('div#slider-step')
