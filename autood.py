@@ -309,9 +309,9 @@ class AutoOD:
             k_range = [inst['params']['k'] for inst in knn_params]
             # Note: only the first outlier range is used to run.
             # Customization of outlier ranges for each instance: future work.
-            N_range_percents = knn_params['knn'][0]['params']['N_range']
+            N_range_percents = knn_params[0]['params']['N_range']
             N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
-            k_range_list = self.params.k_range * N_range_percents
+            k_range_list = k_range * len(N_range_percents)
             knn_N_range = np.sort(N_range * len(k_range))
             self.logger.info(f'Start running KNN with k={k_range}, N_range={N_range}')
 
@@ -485,7 +485,10 @@ class AutoOD:
         training_data_F1 = []
         two_prediction_corr = []
 
-        N_size = len(self.params.N_range)
+        if self.params.N_range is None:
+            N_size = len(self.params.detection_method_parameters['global_N_range'])
+        else:
+            N_size = len(self.params.N_range)
 
         last_training_data_indexes = []
         counter = 0
