@@ -100,23 +100,17 @@ def get_detection_parameters(parameters, detection_methods: list):
                             "label_col_name": parameters['label_col_name']}
     for method in detection_methods:
         if method == OutlierDetectionMethod.KNN:
-            outlier_min = default_outlier_min if parameters['knnMinOutlier'] == '' else parameters['knnMinOutlier']
-            outlier_max = default_outlier_max if parameters['knnMaxOutlier'] == '' else parameters['knnMaxOutlier']
-            detection_parameters['knn'] = get_detector_instances("KNN", outlier_min, outlier_max,
+            detection_parameters['knn'] = get_detector_instances("KNN", default_outlier_min, default_outlier_max,
                                                                  k_range=parameters['knnKRange'])
         elif method == OutlierDetectionMethod.LOF:
-            outlier_min = default_outlier_min if parameters['lofMinOutlier'] == '' else parameters['lofMinOutlier']
-            outlier_max = default_outlier_max if parameters['lofMaxOutlier'] == '' else parameters['lofMaxOutlier']
-            detection_parameters['local_outlier_factor'] = get_detector_instances("LOF", outlier_min, outlier_max,
+            detection_parameters['local_outlier_factor'] = get_detector_instances("LOF", default_outlier_min,
+                                                                                  default_outlier_max,
                                                                                   k_range=parameters['lofKRange'])
         elif method == OutlierDetectionMethod.IsolationForest:
-            outlier_min = default_outlier_min if parameters['ifMinOutlier'] == '' else parameters['ifMinOutlier']
-            outlier_max = default_outlier_max if parameters['ifMaxOutlier'] == '' else parameters['ifMaxOutlier']
-            detection_parameters['isolation_forest'] = get_detector_instances("IF", outlier_min, outlier_max,
+            detection_parameters['isolation_forest'] = get_detector_instances("IF", default_outlier_min,
+                                                                              default_outlier_max,
                                                                               if_range=parameters['ifRange'])
         elif method == OutlierDetectionMethod.Mahalanobis:
-            outlier_min = default_outlier_min if parameters['mMinOutlier'] == '' else parameters['mMinOutlier']
-            outlier_max = default_outlier_max if parameters['mMaxOutlier'] == '' else parameters['mMaxOutlier']
-            detection_parameters['mahalanobis'] = get_detector_instances("MA", outlier_min, outlier_max)
+            detection_parameters['mahalanobis'] = get_detector_instances("MA", default_outlier_min, default_outlier_max)
 
     return detection_parameters

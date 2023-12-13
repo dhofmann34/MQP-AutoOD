@@ -19,6 +19,7 @@ def input_params_suite_setup():
     # input_params_suite.addTest(ParameterParsing('check_if'))
     # input_params_suite.addTest(ParameterParsing('check_mahala'))
     input_params_suite.addTest(DetectorMethodsKNN('check_run_KNN'))
+    input_params_suite.addTest(DetectorMethodsLOF('check_run_LOF'))
     return input_params_suite
 
 
@@ -107,6 +108,29 @@ class DetectorMethodsKNN(unittest.TestCase):
         self.assertNotEqual(self.results.autood_f1_score, 0)
         self.assertNotEqual(self.results.best_unsupervised_f1_score, 0)
         self.assertListEqual(self.results.best_unsupervised_methods, ["KNN"])
+
+
+class DetectorMethodsLOF(unittest.TestCase):
+    @classmethod
+    def setUp(cls):
+        filepath = os.path.join('..\\files', 'pima.csv')
+        detection_methods = [OutlierDetectionMethod.LOF]
+        with open("test_files\\lof_params.json", "r") as input_json:
+            cls.detection_parameters = json.load(input_json)
+        cls.detection_parameters["index_col_name"] = "id"
+        cls.detection_parameters["label_col_name"] = "label"
+        logger.add('static/job.log', format="{time} - {message}")
+        cls.results = prepare_autood_run_from_params(filepath, logger,
+                                                     cls.detection_parameters, detection_methods, get_db_config())
+
+    def check_run_LOF(self):
+        self.assertIsNotNone(self.results)
+        knn_pima_df = pd.read_csv("results\\" + self.results.results_file_name)
+        self.assertEqual(len(knn_pima_df), 768)
+        self.assertEqual(self.results.error_message, "")
+        self.assertNotEqual(self.results.autood_f1_score, 0)
+        self.assertNotEqual(self.results.best_unsupervised_f1_score, 0)
+        self.assertListEqual(self.results.best_unsupervised_methods, ["LOF"])
 
 
 # Runs the test suites

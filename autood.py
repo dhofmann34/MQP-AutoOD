@@ -238,29 +238,31 @@ class AutoOD:
     def _run_lof(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
                  instance_index_ranges, detector_index_ranges):
         if self.params.detection_method_parameters is None:
+            k_range = self.params.k_range
             N_size = len(self.params.N_range)
             N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-            krange_list = self.params.k_range * N_size
-            knn_N_range = np.sort(N_range * len(self.params.k_range))
-            self.logger.info(f'Start running LOF with k={self.params.k_range}')
+            k_range_list = k_range * N_size
+            knn_N_range = np.sort(N_range * len(k_range))
+            self.logger.info(f'Start running LOF with k={k_range}')
         else:           # Run with custom input parameters
             lof_params = self.params.detection_method_parameters['local_outlier_factor']
-            N_size = len(lof_params)
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in lof_params['N_range']]
-            krange_list = self.params.k_range * N_size
-            knn_N_range = np.sort(N_range * len(self.params.k_range))
-            self.logger.info(f'Start running LOF with k={self.params.k_range}')
+            k_range = [inst['params']['k'] for inst in lof_params]
+            N_range_percents = self.params.detection_method_parameters['global_N_range']
+            N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
+            k_range_list = k_range * len(N_range_percents)
+            knn_N_range = np.sort(N_range * len(k_range))
+            self.logger.info(f'Start running LOF with k={k_range}, N_range={N_range}')
 
         f1_list_start_index = len(f1s)
         temp_lof_results = dict()
-        for k in self.params.k_range:
+        for k in k_range:
             lof_scores = run_lof(self.X, k=k)
             temp_lof_results[k] = lof_scores
         if database == "y":  # DHDB
             col_names = ["id", "detector", "k", "n", "prediction", "score"]
             lof_df = pd.DataFrame(columns=col_names)
-        for i in range(len(krange_list)):
-            lof_predictions, lof_scores = get_predictions(temp_lof_results[krange_list[i]],
+        for i in range(len(k_range_list)):
+            lof_predictions, lof_scores = get_predictions(temp_lof_results[k_range_list[i]],
                                                           num_outliers=knn_N_range[
                                                               i])  # DH: get predictions takes in num outliers
             all_results.append(lof_predictions)
@@ -269,7 +271,7 @@ class AutoOD:
                 temp_lof_data = pd.DataFrame()
                 temp_lof_data["id"] = self.X.index  # WITH ARFF FILE INDEX STARTS AT 0 WITH CSV IT STARTS WITH 1
                 temp_lof_data["detector"] = "LOF"
-                temp_lof_data["k"] = krange_list[i]
+                temp_lof_data["k"] = k_range_list[i]
                 temp_lof_data["n"] = knn_N_range[i]
                 temp_lof_data["prediction"] = lof_predictions
                 temp_lof_data["score"] = lof_scores
@@ -281,14 +283,14 @@ class AutoOD:
             insert_input("detectors", lof_df)
         f1_list_end_index = len(f1s)
         instance_index_ranges.append([f1_list_start_index, f1_list_end_index])
-        detector_index_ranges.append([num_detectors, num_detectors + len(self.params.k_range)])
-        num_detectors = len(self.params.k_range)
+        detector_index_ranges.append([num_detectors, num_detectors + len(k_range)])
+        num_detectors = len(k_range)
         if self.y is not None:
             best_lof_f1 = 0
-            for i in np.sort(self.params.k_range):
+            for i in np.sort(k_range):
                 temp_f1 = max(np.array(f1s[f1_list_start_index: f1_list_end_index])[
-                                  np.where(np.array(krange_list) == i)[
-                                      0]])  # DH self.params.k_range is our paramiters. aka len(self.params.k_range) = num of detectors
+                                  np.where(np.array(k_range_list) == i)[
+                                      0]])  # DH self.params.k_range is our parameters. aka len(self.params.k_range) = num of detectors
                 best_lof_f1 = max(best_lof_f1,
                                   temp_f1)  # DH here we can set up a dict of detector id and the f1 score?
             methods_to_best_f1["LOF"] = best_lof_f1
@@ -306,15 +308,14 @@ class AutoOD:
             k_range = self.params.k_range
             N_size = len(self.params.N_range)
             N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-            k_range_list = self.params.k_range * N_size
-            knn_N_range = np.sort(N_range * len(self.params.k_range))
-            self.logger.info(f'Start running KNN with k={self.params.k_range}')
-        else:   # Run with custom parameters
+            k_range_list = k_range * N_size
+            knn_N_range = np.sort(N_range * len(k_range))
+            self.logger.info(f'Start running KNN with k={k_range}')
+        else:       # Run with custom parameters
             knn_params = self.params.detection_method_parameters['knn']
             k_range = [inst['params']['k'] for inst in knn_params]
-            # Note: only the first outlier range is used to run.
             # Customization of outlier ranges for each instance: future work.
-            N_range_percents = knn_params[0]['params']['N_range']
+            N_range_percents = self.params.detection_method_parameters['global_N_range']
             N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
             k_range_list = k_range * len(N_range_percents)
             knn_N_range = np.sort(N_range * len(k_range))
