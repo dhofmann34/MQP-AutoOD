@@ -154,61 +154,37 @@
 
         //Making JSON Object
         //LOF Data
+        var globalMinOutlier = "5";
+        var globalMaxOutlier = "15";
+
         var lofKRange = "[10,20,30,40,50,60,70,80,90,100]";
-        var lofMinOutlier = "5";
-        var lofMaxOutlier = "15";
 
         function updateLOFData() {
             lofKRange = document.querySelector('#lofKRange').value;
-            lofMinOutlier = document.querySelector('#lofMinOutlier').value;
-            lofMaxOutlier = document.querySelector('#lofMaxOutlier').value;
             closeModal1()
             console.log("LOFData updated");
         }
         //KNN Data
         var knnKRange = "[10,20,30,40,50,60,70,80,90,100]";
-        var knnMinOutlier = "5";
-        var knnMaxOutlier = "15";
 
         function updateKNNData() {
             knnKRange = document.querySelector('#knnKRange').value;
-            knnMinOutlier = document.querySelector('#knnMinOutlier').value;
-            knnMaxOutlier = document.querySelector('#knnMaxOutlier'.value);
             closeModal2()
             console.log("KNNData updated");
         }
         //Isolation Forest Data
-        var ifKRange = "[10,20,30,40,50,60,70,80,90,100]";
         var ifRange = "[0.5,0.6,0.7,0.8,0.9]"
-        var ifMinOutlier = "5";
-        var ifMaxOutlier = "15";
 
         function updateIFData() {
-            ifKRange = document.querySelector('#ifKRange').value;
             ifRange = document.querySelector('#ifRange').value;
-            ifMinOutlier = document.querySelector('#ifMinOutlier').value;
-            ifMaxOutlier = document.querySelector('#ifMaxOutlier').value;
             closeModal3()
             console.log("IFData updated");
         }
-
-        //Mahalanobis Data
-        var mMinOutlier = "5";
-        var mMaxOutlier = "15";
-
-        function updateMData() {
-            mMinOutlier = document.querySelector('#mMinOutlier').value;
-            mMaxOutlier = document.querySelector('#mMaxOutlier').value;
-            closeModal4()
-            console.log("MData updated");
-        }
-
         function sendJSONData() {
             if(document.getElementById("lofCB").checked == false){
                 var data = JSON.stringify({
-                    "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
-                    "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": ifMinOutlier, "ifMaxOutlier": ifMaxOutlier,
-                    "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier
+                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier, 
+                    "runMalanohbis": "true", "knnKRange": knnKRange, "ifRange": ifRange, 
                 });
                 var xhr = new XMLHttpRequest();
                 var url = "result";
@@ -220,9 +196,8 @@
 
            else if(document.getElementById("knnCB").checked == false){
                 var data = JSON.stringify({
-                "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
-                "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": lofMinOutlier, "ifMaxOutlier": lofMaxOutlier,
-                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier
+                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier, 
+                    "runMalanohbis": "true", "lofKRange": lofKRange, "ifRange": ifRange, 
                 });
                 var xhr = new XMLHttpRequest();
                 var url = "result";
@@ -234,9 +209,8 @@
 
             else if(document.getElementById("ifCB").checked == false){
                 var data = JSON.stringify({
-                "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
-                "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
-                "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier
+                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier, 
+                    "runMalanohbis": "true", "lofKRange": lofKRange, "knnKRange": knnKRange, 
             });
                 var xhr = new XMLHttpRequest();
                 var url = "result";
@@ -249,9 +223,8 @@
             
             else if(document.getElementById("mCB").checked == false){
                 var data = JSON.stringify({
-                "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
-                "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
-                "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": ifMinOutlier, "ifMaxOutlier": ifMaxOutlier
+                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier, 
+                    "runMalanohbis": "false","lofKRange": lofKRange, "knnKRange": knnKRange, "ifRange": ifRange
                 });
                 var xhr = new XMLHttpRequest();
                 var url = "result";
@@ -262,10 +235,8 @@
             }
             else{
                 var data = JSON.stringify({
-                    "lofKRange": lofKRange, "lofMinOutlier": lofMinOutlier, "lofMaxOutlier": lofMaxOutlier,
-                    "knnKRange": knnKRange, "knnMinOutlier": knnMinOutlier, "knnMaxOutlier": knnMaxOutlier,
-                    "ifKRange": ifKRange, "ifRange": ifRange, "ifMinOutlier": ifMinOutlier, "ifMaxOutlier": ifMaxOutlier,
-                    "mMinOutlier": mMinOutlier, "mMaxOutlier": mMaxOutlier
+                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier, 
+                    "runMalanohbis": "true", "lofKRange": lofKRange, "knnKRange": knnKRange, "ifRange": ifRange, 
                 });
                 var xhr = new XMLHttpRequest();
                 var url = "result";
@@ -393,6 +364,17 @@
                         </div>
                     </div>
                     <ul data-thq="thq-dropdown-list" class="home-dropdown-list">
+                        <br>
+                        <li data-thq="thq-dropdown" class="home-dropdown list-item">
+                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle1">
+                                <span class="home-text1">Range for all models</span><br>
+                                <span class="home-text1">Global minOutlier</span>
+                                <input type="text" id="globalMinOutlier" name="globalMinOutlier" placeholder="5">
+                                <br>
+                                <span class="home-text1">Global maxOutlier</span>
+                                <input type="text" id="globalMaxOutlier" name="globalMaxOutlier" placeholder="15">
+                            </div>
+                        </li>
                         <li data-thq="thq-dropdown" class="home-dropdown list-item">
                             <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle1">
                                 <input type="checkbox" checked="true" id="lofCB"/>
@@ -400,8 +382,6 @@
                                 <button type="button" class="button" id="myBtn1" onclick="displayModal1()"><img
                                         src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
                                         alt="gearPNG" width="50" height="50" /></button>
-
-
                                 <!--End of Form Pop Up-->
                             </div>
                         </li>
@@ -427,15 +407,10 @@
                                 <!--End of Form Pop Up-->
                             </div>
                         </li>
-                        <li data-thq="thq-dropdown" class="home-dropdown3 list-item">
-                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle4">
-                                <input type="checkbox" checked="true"id="mCB" />
-                                <span class="home-text4">Malanohbis</span>
-                                <button type="button" class="button" id="myBtn4" onclick="displayModal4()"><img
-                                        src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
-                                        alt="gearPNG" width="50" height="50" /></button>
-
-                                <!--End of Form Pop Up-->
+                        <li data-thq="thq-dropdown" class="home-dropdown2 list-item">
+                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle3">
+                                <input type="checkbox" checked="true" id="mCB"/>
+                                <span class="home-text3">Mahalanobis</span>
                             </div>
                         </li>
                     </ul>
@@ -458,12 +433,8 @@
             <p>Local Outlier Factor</p>
             <br><br>
             <form action="/action_page.php">
-                <label for="lofKRange">K-Range (integer-integer):</label>
-                <input type="text" id="lofKRange" name="lofKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]"><br><br>
-                <label for="lofMinOutlier">Minimum Outlier % (float):</label>
-                <input type="text" id="lofMinOutlier" name="lofMinOutlier" placeholder="5"><br><br>
-                <label for="lofMaxOutlier">Max Outlier % (float):</label>
-                <input type="text" id="lofMaxOutlier" name="lofMaxOutlier" placeholder="15"><br><br>
+                <label for="lofKRange">Enter K-Range for LOF:</label>
+                <input type="text" id="lofKRange" name="lofKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]">
                 <br><br>
                 <button type="button" class="button" id="lofUpdate" onclick="updateLOFData()">Update</button>
             </form>
@@ -478,12 +449,8 @@
             <p>k - Nearest - Neighbors Settings</p>
             <br><br>
             <form action="/action_page.php">
-                <label for="knnKRange">K-Range (integer-integer):</label>
-                <input type="text" id="knnKRange" name="knnKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]"><br><br>
-                <label for="knnMinOutlier">Minimum Outlier % (float):</label>
-                <input type="text" id="knnMinOutlier" name="knnMinOutlier" placeholder="5"><br><br>
-                <label for="knnMaxOutlier">Max Outlier % (float):</label>
-                <input type="text" id="knnMaxOutlier" name="knnMaxOutlier" placeholder="15"><br><br>
+                <label for="knnKRange">Enter K-Range for KNN:</label>
+                <input type="text" id="knnKRange" name="knnKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]">
                 <br><br>
                 <button type="button" class="button" id="knnUpdate"onclick="updateKNNData()">Update</button>
             </form>
@@ -498,35 +465,10 @@
             <p>Isolation Forest</p>
             <br><br>
             <form action="/action_page.php">
-                <label for="ifKRange">K-Range (integer-integer):</label>
-                <input type="text" id="ifKRange" name="ifKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]"><br><br>
-                <label for="ifRange">IF-Range (float-float):</label>
-                <input type="text" id="ifRange" name="ifRange" placeholder="[0.5,0.6,0.7,0.8,0.9]"><br><br>
-                <label for="ifMinOutlier">Minimum Outlier % (float):</label>
-                <input type="text" id="ifMinOutlier" name="ifMinOutlier" placeholder="5"><br><br>
-                <label for="ifMaxOutlier">Max Outlier % (float):</label>
-                <input type="text" id="ifMaxOutlier" name="ifMaxOutlier" placeholder="15"><br><br>
+                <label for="ifIFRange">Enter IF-Range for Isloation Forest:</label>
+                <input type="text" id="ifIFRange" name="ifIFRange" placeholder="[10,20,30,40,50,60,70,80,90,100]">
                 <br><br>
                 <button type="button" class="button" id="ifUpdate" onclick="updateIFData()">Update</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- The Modal -->
-    <div id="myModal4" class="modal">
-
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close4" onclick="closeModal4()">&times;</span>
-            <p>Mahalanobis</p>
-            <br><br>
-            <form action="/action_page.php">
-                <label for="mMinOutlier">Minimum Outlier % (float):</label>
-                <input type="text" id="mMinOutlier" name="mMinOutlier" placeholder="5"><br><br>
-                <label for="mMaxOutlier">Max Outlier % (float):</label>
-                <input type="text" id="mMaxOutlier" name="mMaxOutlier" placeholder="15"><br><br>
-                <br><br>
-                <button type="button" class="button" id="mUpdate" onclick="updateMData()">Update</button>
             </form>
         </div>
     </div>
