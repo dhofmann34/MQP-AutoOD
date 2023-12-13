@@ -369,16 +369,28 @@ class AutoOD:
 
     def _run_isolation_forest(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
                               instance_index_ranges, detector_index_ranges):
+        if self.params.detection_method_parameters is None:
+            if_range = self.params.if_range
+            N_size = len(self.params.N_range)
+            N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
+            if_N_range = np.sort(N_range * len(if_range))
+            if_range_list = if_range * N_size
+            self.logger.info(f'Start running Isolation Forest with max feature = {if_range}')
+        else:
+            if_params = self.params.detection_method_parameters['isolation_forest']
+            if_range = [inst['params']['max_features'] for inst in if_params]
+            # Customization of outlier ranges for each instance: future work.
+            N_range_percents = self.params.detection_method_parameters['global_N_range']
+            N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
+            if_N_range = np.sort(N_range * len(if_range))
+            if_range_list = if_range * len(N_range_percents)
+            self.logger.info(f'Start running Isolation Forest with max feature = {if_range}, N_range = {N_range}')
+
         f1_list_start_index = len(f1s)
-        N_size = len(self.params.N_range)
-        N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-        if_N_range = np.sort(N_range * len(self.params.if_range))
-        self.logger.info(f'Start running Isolation Forest with max feature = {self.params.if_range}')
         temp_if_results = dict()
-        for k in self.params.if_range:
+        for k in if_range:
             if_scores = run_isolation_forest(self.X, max_features=k)
             temp_if_results[k] = if_scores
-        if_range_list = self.params.if_range * N_size
         if database == "y":  # DHDB
             col_names = ["id", "detector", "k", "n", "prediction", "score"]
             if_df = pd.DataFrame(columns=col_names)
@@ -403,11 +415,11 @@ class AutoOD:
             insert_input("detectors", if_df)
         f1_list_end_index = len(f1s)
         instance_index_ranges.append([f1_list_start_index, f1_list_end_index])
-        detector_index_ranges.append([num_detectors, num_detectors + len(self.params.if_range)])
-        num_detectors = len(self.params.if_range)
+        detector_index_ranges.append([num_detectors, num_detectors + len(if_range)])
+        num_detectors = len(if_range)
         if self.y is not None:
             best_if_f1 = 0
-            for i in np.sort(self.params.if_range):
+            for i in np.sort(if_range):
                 temp_f1 = max(
                     np.array(f1s[f1_list_start_index:f1_list_end_index])[np.where(np.array(if_range_list) == i)[0]])
                 best_if_f1 = max(best_if_f1, temp_f1)
