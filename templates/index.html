@@ -144,9 +144,6 @@
 
         //Getting submit button
         var submitBtn = document.getElementById("submitBtn")
-        if(submitBtn){
-            submitBtn.addEventListener("click", sendJSONData(lofKRange, lofMinOutlier, lofMaxOutlier, knnKRange, knnMinOutlier, knnMaxOutlier, ifKRange, ifRange, ifMinOutlier, ifMaxOutlier, mMinOutlier, mMaxOutlier));
-        }
 
         // When the user clicks anywhere outside of the modal, close it
         // window.onclick = function (event) {
@@ -372,7 +369,7 @@
         </div>
     </div>
     <div>   
-        <button id="submitBtn"><b>Rerun</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
+        <button id="submitBtn" onclick="sendJSONData()"><b>Rerun</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
 
     </div>
 </div>
