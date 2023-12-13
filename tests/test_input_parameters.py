@@ -1,5 +1,7 @@
 import os
 import unittest
+
+import pandas as pd
 from loguru import logger
 from autood import prepare_autood_run_from_params
 from autood_parameters import get_detection_parameters
@@ -18,6 +20,13 @@ def input_params_suite_setup():
     # input_params_suite.addTest(ParameterParsing('check_mahala'))
     input_params_suite.addTest(DetectorMethodsKNN('check_run_KNN'))
     return input_params_suite
+
+
+def get_file(file_prefix='results_pima'):
+    for root, directories, files in os.walk("..\\"):
+        for file in files:
+            if file[0:len(file_prefix)] == file_prefix:
+                return os.path.join(root, file)
 
 
 class ParameterParsing(unittest.TestCase):
@@ -92,6 +101,12 @@ class DetectorMethodsKNN(unittest.TestCase):
 
     def check_run_KNN(self):
         self.assertIsNotNone(self.results)
+        knn_pima_df = pd.read_csv("results\\" + self.results.results_file_name)
+        self.assertEqual(len(knn_pima_df), 768)
+        self.assertEqual(self.results.error_message, "")
+        self.assertNotEqual(self.results.autood_f1_score, 0)
+        self.assertNotEqual(self.results.best_unsupervised_f1_score, 0)
+        self.assertListEqual(self.results.best_unsupervised_methods, ["KNN"])
 
 
 # Runs the test suites

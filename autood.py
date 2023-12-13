@@ -293,6 +293,11 @@ class AutoOD:
                                   temp_f1)  # DH here we can set up a dict of detector id and the f1 score?
             methods_to_best_f1["LOF"] = best_lof_f1
             self.logger.info('Best LOF F-1 = {}'.format(best_lof_f1))
+            self.best_unsupervised_f1_score = max(methods_to_best_f1.values())
+            self.best_unsupervised_methods = [method for method, f1 in methods_to_best_f1.items() if
+                                              f1 >= self.best_unsupervised_f1_score]
+            self.logger.info(f"Best Unsupervised F-1 Score (post-LOF) = {self.best_unsupervised_f1_score}")
+            self.logger.info(f"Best Unsupervised Outlier Detection Method (post-LOF) = {self.best_unsupervised_methods}")
         return num_detectors
 
     def _run_knn(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
@@ -354,6 +359,11 @@ class AutoOD:
                 best_knn_f1 = max(best_knn_f1, temp_f1)
             methods_to_best_f1["KNN"] = best_knn_f1
             self.logger.info('Best KNN F-1 = {}'.format(best_knn_f1))
+            self.best_unsupervised_f1_score = max(methods_to_best_f1.values())
+            self.best_unsupervised_methods = [method for method, f1 in methods_to_best_f1.items() if
+                                              f1 >= self.best_unsupervised_f1_score]
+            self.logger.info(f"Best Unsupervised F-1 Score (post-KNN) = {self.best_unsupervised_f1_score}")
+            self.logger.info(f"Best Unsupervised Outlier Detection Method (post-KNN) = {self.best_unsupervised_methods}")
         return len(k_range)
 
     def _run_isolation_forest(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
@@ -402,6 +412,11 @@ class AutoOD:
                 best_if_f1 = max(best_if_f1, temp_f1)
             methods_to_best_f1["Isolation_Forest"] = best_if_f1
             self.logger.info('Best IF F-1 = {}'.format(best_if_f1))
+            self.best_unsupervised_f1_score = max(methods_to_best_f1.values())
+            self.best_unsupervised_methods = [method for method, f1 in methods_to_best_f1.items() if
+                                              f1 >= self.best_unsupervised_f1_score]
+            self.logger.info(f"Best Unsupervised F-1 Score (post-Isolation Forest) = {self.best_unsupervised_f1_score}")
+            self.logger.info(f"Best Unsupervised Outlier Detection Method (post-Isolation Forest) = {self.best_unsupervised_methods}")
         return num_detectors
 
     def _run_mahalanobis(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
@@ -446,8 +461,8 @@ class AutoOD:
             self.best_unsupervised_f1_score = max(methods_to_best_f1.values())
             self.best_unsupervised_methods = [method for method, f1 in methods_to_best_f1.items() if
                                           f1 >= self.best_unsupervised_f1_score]
-            self.logger.info(f"Best Unsupervised F-1 Score = {self.best_unsupervised_f1_score}")
-            self.logger.info(f"Best Unsupervised Outlier Detection Method = {self.best_unsupervised_methods}")
+            self.logger.info(f"Best Unsupervised F-1 Score (post-Mahalanobis) = {self.best_unsupervised_f1_score}")
+            self.logger.info(f"Best Unsupervised Outlier Detection Method (post-Mahalanobis) = {self.best_unsupervised_methods}")
         return num_detectors
 
     def run_mv(self, L, y):
