@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from typing import List
 from numpy import arange
@@ -50,6 +51,14 @@ def get_detector_instances(detector: str, outlier_min, outlier_max, **kwargs):
         interval = (outlier_max_percent - outlier_min_percent) / 5
         N_range = [round(x, 5) for x in arange(outlier_min_percent, outlier_max_percent + interval, interval)]
 
+    # If Mahalanobis, the only parameter needed is N_range, so return
+    if detector == 'MA':
+        instance = {"id": "MA_0",
+                    "params": {
+                        "N_range": N_range
+                    }}
+        return [instance]
+
     k_range = kwargs.get('k_range', None)
     if_range = kwargs.get('if_range', None)
 
@@ -59,13 +68,17 @@ def get_detector_instances(detector: str, outlier_min, outlier_max, **kwargs):
         if not k_range:
             k_range = default_k_range
         else:
-            k_range = list(map(int, k_range.split(",")))
+            cleaned_k_range = re.sub(r'[^0-9\s]', ' ', k_range).split(" ")
+            processed_k_range = list(filter(lambda x: x != '', cleaned_k_range))
+            k_range = list(map(int, processed_k_range))
         iter_list, val = k_range, "k"
     if detector == 'IF':
         if not if_range:
             if_range = default_if_range
         else:
-            if_range = list(map(float, if_range.split(",")))
+            cleaned_if_range = re.sub(r'[^0-9.0-9\s]', ' ', if_range).split(" ")
+            processed_if_range = list(filter(lambda x: x != '', cleaned_if_range))
+            if_range = list(map(float, processed_if_range))
         iter_list, val = if_range, "max_features"
 
     for n in iter_list:
@@ -99,6 +112,9 @@ def get_detection_parameters(parameters, detection_methods: list):
             outlier_max = default_outlier_max if parameters['ifMaxOutlier'] == '' else parameters['ifMaxOutlier']
             detection_parameters['isolation_forest'] = get_detector_instances("IF", outlier_min, outlier_max,
                                                                               if_range=parameters['ifRange'])
-        # elif method == OutlierDetectionMethod.Mahalanobis:
+        elif method == OutlierDetectionMethod.Mahalanobis:
+            outlier_min = default_outlier_min if parameters['mMinOutlier'] == '' else parameters['mMinOutlier']
+            outlier_max = default_outlier_max if parameters['mMaxOutlier'] == '' else parameters['mMaxOutlier']
+            detection_parameters['mahalanobis'] = get_detector_instances("MA", outlier_min, outlier_max)
 
     return detection_parameters

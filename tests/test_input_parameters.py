@@ -10,6 +10,7 @@ def input_params_suite_setup():
     input_params_suite.addTest(ParameterParsing('check_knn'))
     input_params_suite.addTest(ParameterParsing('check_lof'))
     input_params_suite.addTest(ParameterParsing('check_if'))
+    input_params_suite.addTest(ParameterParsing('check_mahala'))
     return input_params_suite
 
 
@@ -20,7 +21,7 @@ class ParameterParsing(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.detectors = [OutlierDetectionMethod.KNN, OutlierDetectionMethod.LOF, OutlierDetectionMethod.IsolationForest]
+        cls.detectors = [OutlierDetectionMethod.KNN, OutlierDetectionMethod.LOF, OutlierDetectionMethod.IsolationForest, OutlierDetectionMethod.Mahalanobis]
         with open("test_files\\raw_input_params_all.json", "r") as input_json:
             cls.input_params = json.load(input_json)
         cls.detection_parameters = get_detection_parameters(cls.input_params, cls.detectors)
@@ -58,6 +59,12 @@ class ParameterParsing(unittest.TestCase):
         self.assertEqual(if_[3]['id'], 'IF_1.0')
         self.assertEqual(if_[0]['params']['max_features'], 0.2)
         self.assertListEqual(if_[0]['params']['N_range'], [0.05, 0.07, 0.09, 0.11, 0.13, 0.15])
+
+    def check_mahala(self):
+        ma = self.detection_parameters['mahalanobis']
+        self.assertEqual(len(ma), 1)
+        self.assertEqual(ma[0]['id'], 'MA_0')
+        self.assertListEqual(ma[0]['params']['N_range'], [0.02, 0.036, 0.052, 0.068, 0.084, 0.1])
 
 
 class DetectorMethods(unittest.TestCase):

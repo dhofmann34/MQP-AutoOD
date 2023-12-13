@@ -227,7 +227,7 @@ class AutoOD:
                                                         num_detectors, instance_index_ranges, detector_index_ranges)
 
         if OutlierDetectionMethod.Mahalanobis in self.params.detection_methods:
-            num_detectors += self._run_mahanalobis(all_results, all_scores, methods_to_best_f1, f1s,
+            num_detectors += self._run_mahalanobis(all_results, all_scores, methods_to_best_f1, f1s,
                                                    num_detectors, instance_index_ranges, detector_index_ranges)
         L = np.stack(all_results).T
         scores = np.stack(all_scores).T
@@ -386,7 +386,7 @@ class AutoOD:
             self.logger.info('Best IF F-1 = {}'.format(best_if_f1))
         return num_detectors
 
-    def _run_mahanalobis(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
+    def _run_mahalanobis(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
                          instance_index_ranges, detector_index_ranges):
         self.logger.info(f'Start running Mahalanobis..')
         f1_list_start_index = len(f1s)

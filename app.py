@@ -77,11 +77,11 @@ def get_detection_methods_from_params(parameters: dict):
     name_to_method_map = {
         "lofKRange": OutlierDetectionMethod.LOF,
         "knnKRange": OutlierDetectionMethod.KNN,
-        "ifKRange": OutlierDetectionMethod.IsolationForest
-        # "mahala": OutlierDetectionMethod.Mahalanobis # TODO: figure out mahalanobis
+        "ifKRange": OutlierDetectionMethod.IsolationForest,
+        "mMinOutlier": OutlierDetectionMethod.Mahalanobis
     }
     for name in name_to_method_map:
-        if parameters[name] != "":
+        if name in parameters:
             selected_methods.append(name_to_method_map[name])
     logger.info(f"selected methods = {selected_methods}")
     return selected_methods
@@ -106,7 +106,7 @@ def autood_input():
         # Additional input parameters flow if flag set to True
         if app.config['ADDITIONAL_INPUTS']:
             # Retrieve parameters from input page
-            parameters = request.get_json()
+            parameters = request.data
             parameters['index_col_name'] = request.form['indexColName']
             parameters['label_col_name'] = request.form['labelColName']
             # check for detection methods in parameters
