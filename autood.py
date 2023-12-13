@@ -436,7 +436,11 @@ class AutoOD:
                          instance_index_ranges, detector_index_ranges):
         self.logger.info(f'Start running Mahalanobis..')
         f1_list_start_index = len(f1s)
-        N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
+        if self.params.detection_method_parameters is None:
+            N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
+        else:
+            N_range_percents = self.params.detection_method_parameters['global_N_range']
+            N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
         mahalanobis_scores = run_mahalanobis(self.X)
         best_mahala_f1 = 0
         if database == "y":  # DHDB
@@ -465,7 +469,7 @@ class AutoOD:
             insert_input("detectors", mahala_df)
         f1_list_end_index = len(f1s)
         if self.y is not None:
-            methods_to_best_f1["malalanobis"] = best_mahala_f1
+            methods_to_best_f1["mahalanobis"] = best_mahala_f1
             self.logger.info('Best Mahala F-1 = {}'.format(best_mahala_f1))
         instance_index_ranges.append([f1_list_start_index, f1_list_end_index])
         detector_index_ranges.append([num_detectors, num_detectors + 1])

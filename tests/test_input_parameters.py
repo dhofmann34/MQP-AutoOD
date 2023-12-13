@@ -13,14 +13,15 @@ from outlier_detection_methods import OutlierDetectionMethod
 
 def input_params_suite_setup():
     input_params_suite = unittest.TestSuite()
-    # input_params_suite.addTest(ParameterParsing('check_result_global_range'))
-    # input_params_suite.addTest(ParameterParsing('check_knn'))
-    # input_params_suite.addTest(ParameterParsing('check_lof'))
-    # input_params_suite.addTest(ParameterParsing('check_if'))
-    # input_params_suite.addTest(ParameterParsing('check_mahala'))
-    # input_params_suite.addTest(DetectorMethodsKNN('check_run_KNN'))
-    # input_params_suite.addTest(DetectorMethodsLOF('check_run_LOF'))
+    input_params_suite.addTest(ParameterParsing('check_result_global_range'))
+    input_params_suite.addTest(ParameterParsing('check_knn'))
+    input_params_suite.addTest(ParameterParsing('check_lof'))
+    input_params_suite.addTest(ParameterParsing('check_if'))
+    input_params_suite.addTest(ParameterParsing('check_mahala'))
+    input_params_suite.addTest(DetectorMethodsKNN('check_run_KNN'))
+    input_params_suite.addTest(DetectorMethodsLOF('check_run_LOF'))
     input_params_suite.addTest(DetectorMethodsIF('check_run_IF'))
+    input_params_suite.addTest(DetectorMethodsMA('check_run_MA'))
     return input_params_suite
 
 
@@ -59,7 +60,7 @@ class ParameterParsing(unittest.TestCase):
         self.assertEqual(knn[1]['id'], 'KNN_25')
         self.assertEqual(knn[2]['id'], 'KNN_35')
         self.assertEqual(knn[0]['params']['k'], 15)
-        self.assertListEqual(knn[0]['params']['N_range'], [0.02, 0.036, 0.052, 0.068, 0.084, 0.1])
+        self.assertListEqual(knn[0]['params']['N_range'], [0.05, 0.07, 0.09, 0.11, 0.13, 0.15])
 
     def check_lof(self):
         lof = self.detection_parameters['local_outlier_factor']
@@ -85,7 +86,7 @@ class ParameterParsing(unittest.TestCase):
         ma = self.detection_parameters['mahalanobis']
         self.assertEqual(len(ma), 1)
         self.assertEqual(ma[0]['id'], 'MA_0')
-        self.assertListEqual(ma[0]['params']['N_range'], [0.02, 0.036, 0.052, 0.068, 0.084, 0.1])
+        self.assertListEqual(ma[0]['params']['N_range'], [0.05, 0.07, 0.09, 0.11, 0.13, 0.15])
 
 
 class DetectorMethodsKNN(unittest.TestCase):
@@ -155,6 +156,29 @@ class DetectorMethodsIF(unittest.TestCase):
         self.assertNotEqual(self.results.autood_f1_score, 0)
         self.assertNotEqual(self.results.best_unsupervised_f1_score, 0)
         self.assertListEqual(self.results.best_unsupervised_methods, ["Isolation_Forest"])
+
+
+class DetectorMethodsMA(unittest.TestCase):
+    @classmethod
+    def setUp(cls):
+        filepath = os.path.join('..\\files', 'pima.csv')
+        detection_methods = [OutlierDetectionMethod.Mahalanobis]
+        with open("test_files\\ma_params.json", "r") as input_json:
+            cls.detection_parameters = json.load(input_json)
+        cls.detection_parameters["index_col_name"] = "id"
+        cls.detection_parameters["label_col_name"] = "label"
+        logger.add('static/job.log', format="{time} - {message}")
+        cls.results = prepare_autood_run_from_params(filepath, logger,
+                                                     cls.detection_parameters, detection_methods, get_db_config())
+
+    def check_run_MA(self):
+        self.assertIsNotNone(self.results)
+        if_pima_df = pd.read_csv("results\\" + self.results.results_file_name)
+        self.assertEqual(len(if_pima_df), 768)
+        self.assertEqual(self.results.error_message, "")
+        self.assertNotEqual(self.results.autood_f1_score, 0)
+        self.assertNotEqual(self.results.best_unsupervised_f1_score, 0)
+        self.assertListEqual(self.results.best_unsupervised_methods, ["mahalanobis"])
 
 
 # Runs the test suites

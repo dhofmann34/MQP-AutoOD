@@ -78,11 +78,14 @@ def get_detection_methods_from_params(parameters: dict):
         "lofKRange": OutlierDetectionMethod.LOF,
         "knnKRange": OutlierDetectionMethod.KNN,
         "ifKRange": OutlierDetectionMethod.IsolationForest,
-        "mMinOutlier": OutlierDetectionMethod.Mahalanobis
+        "runMahalanobis": OutlierDetectionMethod.Mahalanobis
     }
     for name in name_to_method_map:
         if name in parameters:
-            selected_methods.append(name_to_method_map[name])
+            if name is "runMahalanobis" and parameters["runMahalanobis"] == "True":
+                selected_methods.append(name_to_method_map[name])
+            else:
+                selected_methods.append(name_to_method_map[name])
     logger.info(f"selected methods = {selected_methods}")
     return selected_methods
 
