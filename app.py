@@ -109,9 +109,8 @@ def autood_input():
             parameters = request.data
             parameters['index_col_name'] = request.form['indexColName']
             parameters['label_col_name'] = request.form['labelColName']
-            # check for detection methods in parameters
             detection_methods = get_detection_methods_from_params(parameters)
-        else: # Normal flow
+        else:   # Normal flow
             # Retrieve parameters from input page
             index_col_name = request.form['indexColName']
             label_col_name = request.form['labelColName']

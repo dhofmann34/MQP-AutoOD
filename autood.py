@@ -237,14 +237,21 @@ class AutoOD:
 
     def _run_lof(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
                  instance_index_ranges, detector_index_ranges):
-        # check for parameter inputs
-        f1_list_start_index = len(f1s)
-        N_size = len(self.params.N_range)
-        N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-        krange_list = self.params.k_range * N_size
-        knn_N_range = np.sort(N_range * len(self.params.k_range))
+        if self.params.detection_method_parameters is None:
+            N_size = len(self.params.N_range)
+            N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
+            krange_list = self.params.k_range * N_size
+            knn_N_range = np.sort(N_range * len(self.params.k_range))
+            self.logger.info(f'Start running LOF with k={self.params.k_range}')
+        else:           # Run with custom input parameters
+            lof_params = self.params.detection_method_parameters['local_outlier_factor']
+            N_size = len(lof_params)
+            N_range = [int(np.shape(self.X)[0] * percent) for percent in lof_params['N_range']]
+            krange_list = self.params.k_range * N_size
+            knn_N_range = np.sort(N_range * len(self.params.k_range))
+            self.logger.info(f'Start running LOF with k={self.params.k_range}')
 
-        self.logger.info(f'Start running LOF with k={self.params.k_range}')
+        f1_list_start_index = len(f1s)
         temp_lof_results = dict()
         for k in self.params.k_range:
             lof_scores = run_lof(self.X, k=k)
@@ -290,22 +297,34 @@ class AutoOD:
 
     def _run_knn(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
                  instance_index_ranges, detector_index_ranges):
-        f1_list_start_index = len(f1s)
-        N_size = len(self.params.N_range)
-        N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-        krange_list = self.params.k_range * N_size
-        knn_N_range = np.sort(N_range * len(self.params.k_range))
+        if self.params.detection_method_parameters is None:
+            k_range = self.params.k_range
+            N_size = len(self.params.N_range)
+            N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
+            k_range_list = self.params.k_range * N_size
+            knn_N_range = np.sort(N_range * len(self.params.k_range))
+            self.logger.info(f'Start running KNN with k={self.params.k_range}')
+        else:   # Run with custom parameters
+            knn_params = self.params.detection_method_parameters['knn']
+            k_range = [inst['params']['k'] for inst in knn_params]
+            # Note: only the first outlier range is used to run.
+            # Customization of outlier ranges for each instance: future work.
+            N_range_percents = knn_params['knn'][0]['params']['N_range']
+            N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
+            k_range_list = self.params.k_range * N_range_percents
+            knn_N_range = np.sort(N_range * len(k_range))
+            self.logger.info(f'Start running KNN with k={k_range}, N_range={N_range}')
 
-        self.logger.info(f'Start running KNN with k={self.params.k_range}')
+        f1_list_start_index = len(f1s)
         temp_knn_results = dict()
-        for k in self.params.k_range:
+        for k in k_range:
             knn_scores = run_knn(self.X, k=k)
             temp_knn_results[k] = knn_scores
         if database == "y":  # DHDB
             col_names = ["id", "detector", "k", "n", "prediction", "score"]
             knn_df = pd.DataFrame(columns=col_names)
-        for i in range(len(krange_list)):
-            knn_predictions, knn_scores = get_predictions(temp_knn_results[krange_list[i]],
+        for i in range(len(k_range_list)):
+            knn_predictions, knn_scores = get_predictions(temp_knn_results[k_range_list[i]],
                                                           num_outliers=knn_N_range[i])
             all_results.append(knn_predictions)
             all_scores.append(knn_scores)
@@ -313,7 +332,7 @@ class AutoOD:
                 temp_knn_data = pd.DataFrame()
                 temp_knn_data["id"] = self.X.index
                 temp_knn_data["detector"] = "KNN"
-                temp_knn_data["k"] = krange_list[i]
+                temp_knn_data["k"] = k_range_list[i]
                 temp_knn_data["n"] = knn_N_range[i]
                 temp_knn_data["prediction"] = knn_predictions
                 temp_knn_data["score"] = knn_scores
@@ -326,17 +345,16 @@ class AutoOD:
             insert_input("detectors", knn_df)
         f1_list_end_index = len(f1s)
         instance_index_ranges.append([f1_list_start_index, f1_list_end_index])
-        detector_index_ranges.append([num_detectors, num_detectors + len(self.params.k_range)])
-        num_detectors = len(self.params.k_range)
+        detector_index_ranges.append([num_detectors, num_detectors + len(k_range)])
         if self.y is not None:
             best_knn_f1 = 0
-            for i in np.sort(self.params.k_range):
+            for i in np.sort(k_range):
                 temp_f1 = max(
-                    np.array(f1s[f1_list_start_index:f1_list_end_index])[np.where(np.array(krange_list) == i)[0]])
+                    np.array(f1s[f1_list_start_index:f1_list_end_index])[np.where(np.array(k_range_list) == i)[0]])
                 best_knn_f1 = max(best_knn_f1, temp_f1)
             methods_to_best_f1["KNN"] = best_knn_f1
             self.logger.info('Best KNN F-1 = {}'.format(best_knn_f1))
-        return num_detectors
+        return len(k_range)
 
     def _run_isolation_forest(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
                               instance_index_ranges, detector_index_ranges):
@@ -995,6 +1013,9 @@ def prepare_autood_run_from_params(filepath, logger, parameters, detection_metho
         filepath,
         detection_methods,
         detection_method_parameters=detection_parameters,
+        k_range=None,
+        if_range=None,
+        N_range=None,
         index_col_name=parameters['index_col_name'],
         label_col_name=parameters['label_col_name']
     ), logger).run_autood(dataset)

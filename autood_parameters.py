@@ -95,7 +95,9 @@ def get_detector_instances(detector: str, outlier_min, outlier_max, **kwargs):
 # Parse through input parameters and fill in missing values with defaults
 # Return a new dict that follows the correct JSON schema for the DB
 def get_detection_parameters(parameters, detection_methods: list):
-    detection_parameters = {"global_N_range": default_N_range}
+    detection_parameters = {"global_N_range": default_N_range,
+                            "index_col_name": parameters['index_col_name'],
+                            "label_col_name": parameters['label_col_name']}
     for method in detection_methods:
         if method == OutlierDetectionMethod.KNN:
             outlier_min = default_outlier_min if parameters['knnMinOutlier'] == '' else parameters['knnMinOutlier']

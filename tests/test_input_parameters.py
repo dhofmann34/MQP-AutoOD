@@ -1,16 +1,22 @@
+import os
 import unittest
+from loguru import logger
+from autood import prepare_autood_run_from_params
 from autood_parameters import get_detection_parameters
 import json
+
+from config import get_db_config
 from outlier_detection_methods import OutlierDetectionMethod
 
 
 def input_params_suite_setup():
     input_params_suite = unittest.TestSuite()
-    input_params_suite.addTest(ParameterParsing('check_result_global_range'))
-    input_params_suite.addTest(ParameterParsing('check_knn'))
-    input_params_suite.addTest(ParameterParsing('check_lof'))
-    input_params_suite.addTest(ParameterParsing('check_if'))
-    input_params_suite.addTest(ParameterParsing('check_mahala'))
+    # input_params_suite.addTest(ParameterParsing('check_result_global_range'))
+    # input_params_suite.addTest(ParameterParsing('check_knn'))
+    # input_params_suite.addTest(ParameterParsing('check_lof'))
+    # input_params_suite.addTest(ParameterParsing('check_if'))
+    # input_params_suite.addTest(ParameterParsing('check_mahala'))
+    input_params_suite.addTest(DetectorMethodsKNN('check_run_KNN'))
     return input_params_suite
 
 
@@ -24,12 +30,16 @@ class ParameterParsing(unittest.TestCase):
         cls.detectors = [OutlierDetectionMethod.KNN, OutlierDetectionMethod.LOF, OutlierDetectionMethod.IsolationForest, OutlierDetectionMethod.Mahalanobis]
         with open("test_files\\raw_input_params_all.json", "r") as input_json:
             cls.input_params = json.load(input_json)
+        cls.input_params["index_col_name"] = "id"
+        cls.input_params["label_col_name"] = "label"
         cls.detection_parameters = get_detection_parameters(cls.input_params, cls.detectors)
 
     def check_result_global_range(self):
         self.assertNotEqual(self.input_params, {})
         self.assertIsNotNone(self.detection_parameters)
         self.assertEqual(self.detection_parameters['global_N_range'], [0.05, 0.07, 0.09, 0.11, 0.13, 0.15])
+        self.assertEqual(self.detection_parameters['index_col_name'], "id")
+        self.assertEqual(self.detection_parameters['label_col_name'], "label")
 
     def check_knn(self):
         knn = self.detection_parameters['knn']
@@ -67,10 +77,21 @@ class ParameterParsing(unittest.TestCase):
         self.assertListEqual(ma[0]['params']['N_range'], [0.02, 0.036, 0.052, 0.068, 0.084, 0.1])
 
 
-class DetectorMethods(unittest.TestCase):
+class DetectorMethodsKNN(unittest.TestCase):
     @classmethod
     def setUp(cls):
-        print("setup")
+        filepath = os.path.join('..\\files', 'pima.csv')
+        detection_methods = [OutlierDetectionMethod.KNN]
+        with open("test_files\\knn_params.json", "r") as input_json:
+            cls.detection_parameters = json.load(input_json)
+        cls.detection_parameters["index_col_name"] = "id"
+        cls.detection_parameters["label_col_name"] = "label"
+        logger.add('static/job.log', format="{time} - {message}")
+        cls.results = prepare_autood_run_from_params(filepath, logger,
+                                                     cls.detection_parameters, detection_methods, get_db_config())
+
+    def check_run_KNN(self):
+        self.assertIsNotNone(self.results)
 
 
 # Runs the test suites

@@ -1,5 +1,7 @@
 {
   "global_N_range": [0.05, 0.07, 0.09, 0.11, 0.13, 0.15],
+  "index_col_name": "id",
+  "label_col_name": "label",
   "knn" : [
     {
       "id" : "KNN_10",
