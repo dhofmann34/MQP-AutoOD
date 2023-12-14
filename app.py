@@ -90,6 +90,12 @@ def get_detection_methods_from_params(parameters: dict):
     return selected_methods
 
 
+@app.route('/autood/result', methods=['POST'])
+def autood_rerun():
+   print(request.data)
+   return redirect(request.url)
+
+
 @app.route('/autood/index', methods=['POST'])
 def autood_input():
     if 'file' not in request.files:
