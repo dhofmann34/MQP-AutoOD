@@ -49,25 +49,39 @@
             });
         });
 
-        // Dynamically add tabs to the run history
-        function updateRunHistoryTabs() {
-
-            for (let i = 0; i < (runNumber - 1); i++) {
-                const text = "Run" + (i + 2);
-                var node_list = document.createElement("li");
-                var node_button = document.createElement("button");
-
-                node_button.append(text);
-                node_button.classList.add("tablinks");
-                node_button.addEventListener('click', function (event) {
-                    updateTabContent(event, text);
-                });
-                node_list.appendChild(node_button)
-
-                document.getElementById("tab").appendChild(node_list);
+        async function updateRunNumber() {
+            try {
+                const response = await fetch('http://localhost:8080/getRunCount');
+                const runCount = await response.text();
+                return runCount;
+            } catch (error) {
+                console.error('Error fetching run count:', error);
+                // Handle the error as needed
+                return null;
             }
         }
 
+        // Dynamically add tabs to the run history
+        function updateRunHistoryTabs() {
+            updateRunNumber()
+                .then(runCount => {
+                    console.log('Run count:', runCount);
+                    for (let i = 0; i < (runCount - 1); i++) {
+                        const text = "Run" + (i + 2);
+                        var node_list = document.createElement("li");
+                        var node_button = document.createElement("button");
+
+                        node_button.append(text);
+                        node_button.classList.add("tablinks");
+                        node_button.addEventListener('click', function (event) {
+                            updateTabContent(event, text);
+                        });
+                        node_list.appendChild(node_button)
+
+                        document.getElementById("tab").appendChild(node_list);
+                    }
+                });
+        }
         // Updates button activation and tabcontent header
         function updateTabContent(evt, runHistory) {
             var i, tablinks;
@@ -78,7 +92,16 @@
             }
             evt.currentTarget.className += " active";
             document.getElementById("history_header").innerHTML = runHistory;
-        }
+            fetch('http://localhost:8080/getSessionID')
+                .then(response => response.text())
+                .then(session_id => {
+                    var tabIndex = parseInt(runHistory.replace("Run", ""));
+                    var local_data_path = `http://127.0.0.1:8080/data/${session_id}/${tabIndex}`;
+                    console.log(local_data_path)
+                    fetchDataAndUpdateVisualization(local_data_path);
+                })
+                .catch(error => console.error('Error fetching session_id:', error));
+            }
     </script>
 </head>
 

@@ -1,4 +1,5 @@
-from flask import Flask, request, render_template, flash, redirect, Response, send_file
+from flask import Flask, request, render_template, flash, redirect, Response, send_file, session, url_for
+import uuid
 from werkzeug.utils import secure_filename
 import os
 from loguru import logger
@@ -11,6 +12,8 @@ import sql_queries as sql
 from autood import prepare_autood_run, OutlierDetectionMethod, prepare_autood_run_from_params
 from config import get_db_config
 from tqdm import tqdm
+from connect import new_session, new_run
+from connect import create_session_run_tables
 import collections
 
 collections.MutableSequence = collections.abc.MutableSequence
@@ -21,13 +24,27 @@ final_log_filename_global = None
 
 config.configure_packages()  # not needed when using virtual env
 app = Flask(__name__)
+app.secret_key = 'secret_key'
 app, LOGGING_PATH = config.app_config(app)
 logger.add(LOGGING_PATH, format="{time} - {message}")
 
+from flask_cors import CORS
+CORS(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    return redirect('/autood/index')
+    create_session_run_tables
+    if 'user_id' in session:
+        user_id = session['user_id']
+        return redirect('/autood/index')
+        # return f'Hello returning user! Your user ID is {user_id}'
+    else:
+        # If 'user_id' is not in the session, generate a new ID and store it
+        user_id = str(uuid.uuid4())
+        session['user_id'] = user_id
+        new_session(user_id)
+        return redirect('/autood/index')
+        # return f'Hello new user! Your user ID is {user_id}'
 
 
 @app.route('/autood/index', methods=['GET'])
@@ -98,62 +115,65 @@ def autood_rerun():
 
 @app.route('/autood/index', methods=['POST'])
 def autood_input():
-    if 'file' not in request.files:
-        flash('Please provide an input file or select a dataset.')
-        return redirect(request.url)
-    file = request.files['file']
-    # If the user does not select a file, the browser submits an
-    # empty file without a filename.
-    if file.filename == '':
-        flash('Please provide an input file or select a dataset.')
-        return redirect(request.url)
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        detection_methods = []
+    sample_file = request.form['selectedDataset']
+    if not sample_file:
+        if 'file' not in request.files:
+            flash('Please provide an input file or select a dataset.')
+            return redirect(request.url)
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            flash('Please provide an input file or select a dataset.')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        # Additional input parameters flow if flag set to True
-        if app.config['ADDITIONAL_INPUTS']:
-            # Retrieve parameters from input page
-            parameters = request.data
-            parameters['index_col_name'] = request.form['indexColName']
-            parameters['label_col_name'] = request.form['labelColName']
-            detection_methods = get_detection_methods_from_params(parameters)
-        else:   # Normal flow
-            # Retrieve parameters from input page
-            index_col_name = request.form['indexColName']
-            label_col_name = request.form['labelColName']
-            outlier_range_min = float(request.form['outlierRangeMin'])
-            outlier_range_max = float(request.form['outlierRangeMax'])
-            detection_methods = get_detection_methods(request.form.getlist('detectionMethods'))
-
-        if not detection_methods:
-            flash('Please choose at least one detection method.')
+        else:
+            flash('File type is not supported.')
             return redirect(request.url)
 
-        if app.config['ADDITIONAL_INPUTS']:
-            results = call_autood_from_params(filename, parameters, detection_methods)
-        else:
-            results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name, label_col_name)
-        if results.error_message:
-            flash(results.error_message)
-            return redirect(request.url)
-        else:
-            # Create empty job.log, old logging will be deleted
-            final_log_filename = f"log_{file.filename.replace('.', '_')}_{int(time.time())}"
-            copyfile(LOGGING_PATH, app.config['DOWNLOAD_FOLDER'] + final_log_filename)
-            open(LOGGING_PATH, 'w').close()
-            global results_global, final_log_filename_global
-            results_global = results
-            final_log_filename_global = final_log_filename
-            return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
-                                   autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
-                                   best_method=",".join(results.best_unsupervised_methods),
-                                   final_results=results.results_file_name, training_log=final_log_filename)
     else:
-        flash('File type is not supported.')
+        filename = sample_file
+    # start autoOD computation
+    if app.config['ADDITIONAL_INPUTS']:
+        # Retrieve parameters from input page
+        parameters = request.data
+        parameters['index_col_name'] = request.form['indexColName']
+        parameters['label_col_name'] = request.form['labelColName']
+        detection_methods = get_detection_methods_from_params(parameters)
+    else:
+        index_col_name = request.form['indexColName']
+        label_col_name = request.form['labelColName']
+        outlier_range_min = float(request.form['outlierRangeMin'])
+        outlier_range_max = float(request.form['outlierRangeMax'])
+        detection_methods = get_detection_methods(request.form.getlist('detectionMethods'))
+    if not detection_methods:
+        flash('Please choose at least one detection method.')
         return redirect(request.url)
-
+    if app.config['ADDITIONAL_INPUTS']:
+        results = call_autood_from_params(filename, parameters, detection_methods)
+    else:
+        results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name,
+                            label_col_name)
+    user_id = session.get('user_id')
+    new_run(user_id)
+    if results.error_message:
+        flash(results.error_message)
+        return redirect(request.url)
+    else:
+        # Create empty job.log, old logging will be deleted
+        final_log_filename = f"log_{filename.replace('.', '_')}_{int(time.time())}"
+        copyfile(LOGGING_PATH, app.config['DOWNLOAD_FOLDER'] + final_log_filename)
+        open(LOGGING_PATH, 'w').close()
+        global results_global, final_log_filename_global
+        results_global = results
+        final_log_filename_global = final_log_filename
+        return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
+                                autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
+                                best_method=",".join(results.best_unsupervised_methods),
+                                final_results=results.results_file_name, training_log=final_log_filename)
 
 @app.route('/return-files/<filename>')
 def return_files_tut(filename):
@@ -212,46 +232,35 @@ def result_index():
     except:
         return render_template('index.html')
 
-
-@app.route('/data')  # get data from DB as json
-def send_data():
+@app.route('/data/<string:session_id>/<int:tab_index>')  # get data from DB as json
+def send_data(session_id, tab_index):
     conn = psycopg2.connect(**get_db_config())
     cur = conn.cursor()
-    # we can use multiple execute statements to get the data how we need it
-    cur.execute(sql.ITERATIONS_FROM_RELIABLE_TABLE)  # number of iterations for reliable labels
-    iteration = cur.fetchall()[0][0] + 1
-    cur.close()
-    cur = conn.cursor()
-
-    # drop all tables on each run
-    cur.execute(sql.DROP_ALL_TEMP_TABLES)
-
-    # create temp tables so that we can pass the data in a way that JS/D3 needs it
-    cur.execute(sql.CREATE_TEMP_LOF_TABLE)
-
-    cur.execute(sql.CREATE_TEMP_KNN_TABLE)
-
-    cur.execute(sql.CREATE_TEMP_IF_TABLE)
-
-    cur.execute(sql.CREATE_TEMP_MAHALANOBIS_TABLE)
-
-    cur.execute(sql.CREATE_REALIABLE_TABLES(iteration))
-
-    # Join all tables together
-    SQL_statement = sql.JOIN_ALL_TABLES
-    join_reliable = sql.JOIN_RELIABLE_TABLES(iteration)
-
-    cur.execute(f"{SQL_statement}{join_reliable}")
-
-    # data = [col for col in cur]
-    field_names = [i[0] for i in cur.description]
-    result = [dict(zip(field_names, row)) for row in cur.fetchall()]
-    # conn.commit()
+    sql_query = sql.get_json(session_id, tab_index)
+    cur.execute(sql_query)
+    result = cur.fetchone()[0]
     cur.close()
     conn.close()
     logger.info("Database connection closed successfully.")
     return jsonify(result)
 
+@app.route('/getRunCount', methods=['GET'])
+def get_run_count():
+    user_id = session.get('user_id')
+    conn = psycopg2.connect(**get_db_config())
+    cur = conn.cursor()
+    sql_query = sql.get_count(user_id)
+    cur.execute(sql_query)
+    result = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+    logger.info("Database connection closed successfully.")
+    return jsonify(result)
+
+@app.route('/getSessionID', methods=['GET'])
+def get_session_id():
+    user_id = session.get('user_id')
+    return user_id
 
 #### DH
 
