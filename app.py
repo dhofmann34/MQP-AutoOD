@@ -99,7 +99,7 @@ def get_detection_methods_from_params(parameters: dict):
     }
     for name in name_to_method_map:
         if name in parameters:
-            if name is "runMahalanobis" and parameters["runMahalanobis"] == "True":
+            if name == "runMahalanobis" and parameters["runMahalanobis"] == "True":
                 selected_methods.append(name_to_method_map[name])
             else:
                 selected_methods.append(name_to_method_map[name])

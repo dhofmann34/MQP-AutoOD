@@ -36,6 +36,7 @@ CREATE_RUN_TABLE = """
     CREATE TABLE run (
         id integer,
         json JSONB,
+        run_configuration JSONB,
         session_id uuid NOT NULL REFERENCES session(id) ON UPDATE CASCADE,
         PRIMARY KEY (id, session_id)
     );
