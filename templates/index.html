@@ -95,51 +95,35 @@
         }
 
         function displayModal1(){
-            closeAllModals();
             document.getElementById("myModal1").style.display = "block";
         }
         function displayModal2(){
-            closeAllModals();
             document.getElementById("myModal2").style.display = "block";
         }
         function displayModal3(){
-            closeAllModals();
             document.getElementById("myModal3").style.display = "block";
         }
-        function displayModal4(){
-            closeAllModals();
-            document.getElementById("myModal4").style.display = "block";
-        }
+
 
         function closeModal1() {
             document.getElementById("myModal1").style.display = "none";
+            updateLOFData();
         }
         function closeModal2() {
             document.getElementById("myModal2").style.display = "none";
+            updateKNNData();
         }
         function closeModal3() {
             document.getElementById("myModal3").style.display = "none";
-        }
-        function closeModal4() {
-            document.getElementById("myModal4").style.display = "none";
+            updateIFData()
         }
 
-        //Getting the update buttons
-        var lofUpdate = document.getElementById("lofUpdate");
-        if(lofUpdate){
-            lofUpdate.addEventListener("click", updateLOFData);
+        function openReRunSettings(){
+            document.getElementById("settingsModal").style.display = "block";
         }
-        var knnUpdate = document.getElementById("knnUpdate");
-        if(knnUpdate){
-            knnUpdate.addEventListener("click", updateKNNData);
-        }
-        var ifUpdate = document.getElementById("ifUpdate");
-        if(ifUpdate){
-            ifUpdate.addEventListener("click", updateIFData);
-        }
-        var mUpdate = document.getElementById("mUpdate");
-        if(mUpdate){
-            mUpdate.addEventListener("click", updateMData);
+
+        function closeReRunSettings(){
+            document.getElementById("settingsModal").style.display = "none";
         }
 
         //Getting submit button
@@ -161,7 +145,6 @@
 
         function updateLOFData() {
             lofKRange = document.querySelector('#lofKRange').value;
-            closeModal1()
             console.log("LOFData updated");
         }
         //KNN Data
@@ -169,7 +152,6 @@
 
         function updateKNNData() {
             knnKRange = document.querySelector('#knnKRange').value;
-            closeModal2()
             console.log("KNNData updated");
         }
         //Isolation Forest Data
@@ -177,7 +159,6 @@
 
         function updateIFData() {
             ifRange = document.querySelector('#ifRange').value;
-            closeModal3()
             console.log("IFData updated");
         }
         function sendJSONData() {
@@ -350,74 +331,68 @@
     <div id="barplot2"></div>
 </div>
 
+
 <div id="rerun_holder">
-    <div id="rerun">
-        <div>
-            <div class="home-container">
-                <div data-thq="thq-dropdown" class="home-thq-dropdown list-item">
-                    <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle">
-                        <span class="home-text">Re-Run Settings</span>
-                        <div data-thq="thq-dropdown-arrow" class="home-dropdown-arrow">
-                            <svg viewBox="0 0 1024 1024" class="home-icon">
-                                <path d="M426 726v-428l214 214z"></path>
-                            </svg>
+    <button onclick="openReRunSettings()">Re-Run Settings</button>
+</div>
+
+<div id="settings_holder">
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close1" onclick="closeReRunSettings()">&times;</span>
+            <div id="rerun">
+                <div class="home-container">
+                    <div data-thq="thq-dropdown" class="home-thq-dropdown list-item">
+                        <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle">
+                            <span class="home-text">Re-Run Settings</span>
+                            <div data-thq="thq-dropdown-arrow" class="home-dropdown-arrow">
+                                <svg viewBox="0 0 1024 1024" class="home-icon">
+                                    <path d="M426 726v-428l214 214z"></path>
+                                </svg>
+                            </div>
                         </div>
+                        <ul data-thq="thq-dropdown-list" class="home-dropdown-list">
+                            <br>
+                            <li data-thq="thq-dropdown" class="home-dropdown list-item">
+                                <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle1">
+                                    <span class="home-text1">Range for all models</span><br>
+                                    <span class="home-text1">Global minOutlier</span>
+                                    <input type="text" id="globalMinOutlier" name="globalMinOutlier" placeholder="5">
+                                    <br>
+                                    <span class="home-text1">Global maxOutlier</span>
+                                    <input type="text" id="globalMaxOutlier" name="globalMaxOutlier" placeholder="15">
+                                </div>
+                            </li>
+                            <li data-thq="thq-dropdown" class="home-dropdown list-item">
+                                <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle1">
+                                    <input type="checkbox" checked="true" id="lofCB"/>
+                                <span class="home-text1" onclick="displayModal1()">Local Outlier Factor</span>
+                                </div>
+                            </li>
+                            <li data-thq="thq-dropdown" class="home-dropdown1 list-item">
+                                <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle2">
+                                    <input type="checkbox" checked="true" id="knnCB"/>
+                                    <span class="home-text2" onclick="displayModal2()">knn-N-Neighbors</span>
+                                </div>
+                            </li>
+                            <li data-thq="thq-dropdown" class="home-dropdown2 list-item">
+                                <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle3">
+                                    <input type="checkbox" checked="true" id="ifCB"/>
+                                    <span class="home-text3" onclick="displayModal3()">Isloation Forest</span>
+                                </div>
+                            </li>
+                            <li data-thq="thq-dropdown" class="home-dropdown2 list-item">
+                                <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle3">
+                                    <input type="checkbox" checked="true" id="mCB"/>
+                                    <span class="home-text3">Mahalanobis</span>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-                    <ul data-thq="thq-dropdown-list" class="home-dropdown-list">
-                        <br>
-                        <li data-thq="thq-dropdown" class="home-dropdown list-item">
-                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle1">
-                                <span class="home-text1">Range for all models</span><br>
-                                <span class="home-text1">Global minOutlier</span>
-                                <input type="text" id="globalMinOutlier" name="globalMinOutlier" placeholder="5">
-                                <br>
-                                <span class="home-text1">Global maxOutlier</span>
-                                <input type="text" id="globalMaxOutlier" name="globalMaxOutlier" placeholder="15">
-                            </div>
-                        </li>
-                        <li data-thq="thq-dropdown" class="home-dropdown list-item">
-                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle1">
-                                <input type="checkbox" checked="true" id="lofCB"/>
-                                <span class="home-text1">Local Outlier Factor</span>
-                                <button type="button" class="button" id="myBtn1" onclick="displayModal1()"><img
-                                        src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
-                                        alt="gearPNG" width="50" height="50" /></button>
-                                <!--End of Form Pop Up-->
-                            </div>
-                        </li>
-                        <li data-thq="thq-dropdown" class="home-dropdown1 list-item">
-                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle2">
-                                <input type="checkbox" checked="true" id="knnCB"/>
-                                <span class="home-text2">knn-N-Neighbors</span>
-                                <button type="button" class="button" id="myBtn2" onclick="displayModal2()"><img
-                                        src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
-                                        alt="gearPNG" width="50" height="50" /></button>
-
-                                <!--End of Form Pop Up-->
-                            </div>
-                        </li>
-                        <li data-thq="thq-dropdown" class="home-dropdown2 list-item">
-                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle3">
-                                <input type="checkbox" checked="true" id="ifCB"/>
-                                <span class="home-text3">Isloation Forest</span>
-                                <button type="button" class="button" id="myBtn3" onclick="displayModal3()"><img
-                                        src="https://thenounproject.com/api/private/icons/333752/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
-                                        alt="gearPNG" width="50" height="50" /></button>
-
-                                <!--End of Form Pop Up-->
-                            </div>
-                        </li>
-                        <li data-thq="thq-dropdown" class="home-dropdown2 list-item">
-                            <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle3">
-                                <input type="checkbox" checked="true" id="mCB"/>
-                                <span class="home-text3">Mahalanobis</span>
-                            </div>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </div>
-
+        </div>
     </div>
 </div>
 
@@ -434,9 +409,8 @@
             <br><br>
             <form action="/action_page.php">
                 <label for="lofKRange">Enter K-Range for LOF:</label>
-                <input type="text" id="lofKRange" name="lofKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]">
+                <input type="text" id="lofKRange" name="lofKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateLOFData()">
                 <br><br>
-                <button type="button" class="button" id="lofUpdate" onclick="updateLOFData()">Update</button>
             </form>
         </div>
     </div>
@@ -450,9 +424,8 @@
             <br><br>
             <form action="/action_page.php">
                 <label for="knnKRange">Enter K-Range for KNN:</label>
-                <input type="text" id="knnKRange" name="knnKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]">
+                <input type="text" id="knnKRange" name="knnKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateKNNData()">
                 <br><br>
-                <button type="button" class="button" id="knnUpdate"onclick="updateKNNData()">Update</button>
             </form>
         </div>
     </div>
@@ -465,10 +438,9 @@
             <p>Isolation Forest</p>
             <br><br>
             <form action="/action_page.php">
-                <label for="ifIFRange">Enter IF-Range for Isloation Forest:</label>
-                <input type="text" id="ifIFRange" name="ifIFRange" placeholder="[10,20,30,40,50,60,70,80,90,100]">
+                <label for="ifRange">Enter IF-Range for Isloation Forest:</label>
+                <input type="text" id="ifRange" name="ifRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateIFData()">
                 <br><br>
-                <button type="button" class="button" id="ifUpdate" onclick="updateIFData()">Update</button>
             </form>
         </div>
     </div>

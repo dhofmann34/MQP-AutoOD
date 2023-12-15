@@ -469,7 +469,7 @@ li a:hover {
     left: 15px;
     top: 920px;
     background-color: white;
-    width: 1000px;
+    width: 290px;
     height: auto;
     border-radius: 10px;
     padding-left: .5%;
@@ -484,6 +484,20 @@ li a:hover {
     position: absolute;
     left: 320px;
     top: 920px;
+    width: 700px;
+    height: 290px;
+    border-radius: 10px;
+    padding-left: .5%;
+    padding-top: .2%;
+    padding-bottom: .2%;
+    font-family: 'Open Sans', sans-serif;
+    vertical-align: baseline;
+}
+
+#settings_holder {
+    position: absolute;
+    left: 15px;
+    top: 970px;
     width: 700px;
     height: 290px;
     border-radius: 10px;
