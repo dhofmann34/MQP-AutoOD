@@ -15,7 +15,7 @@ from autood import OutlierDetectionMethod, prepare_autood_run_from_params
 from autood_parameters import get_detection_parameters
 from config import get_db_config
 from tqdm import tqdm
-from connect import new_session, new_run
+from connect import new_session, new_run, DecimalEncoder
 from connect import create_session_run_tables
 import collections
 
@@ -118,10 +118,11 @@ def autood_rerun():
     outlier_min = rerun_params['globalMinOutlier']
     outlier_max = rerun_params['globalMaxOutlier']
 
-    # get run configuration from the first run and extract the filename, index, and label column names
-    filename = 'cardio.csv'
-    index_col_name = "id"
-    label_col_name = "label"
+    # Get run configuration for the first run for filename, index, and label
+    first_run_config = get_first_run_info()
+    filename = first_run_config['filename']
+    index_col_name = first_run_config['index_col_name']
+    label_col_name = first_run_config['label_col_name']
 
     detection_methods = get_detection_methods_from_params(rerun_params)
     if detection_methods is not []:
@@ -307,6 +308,17 @@ def get_session_id():
     user_id = session.get('user_id')
     return user_id
 
+
+def get_first_run_info():
+    conn = psycopg2.connect(**get_db_config())
+    cur = conn.cursor()
+    sql_query = sql.get_run_configs(session.get('user_id'), 1)
+    cur.execute(sql_query)
+    result = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+    logger.info("Database connection closed successfully.")
+    return json.loads(result)
 
 #### DH
 
