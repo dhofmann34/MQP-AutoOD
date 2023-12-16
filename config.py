@@ -69,8 +69,6 @@ def app_config(app, filename='configurations.ini'):
     app.config['DEBUG'] = app_configs["debug-mode"] == 'True'
     app.config['ALLOWED_EXTENSIONS'] = app_configs["allowed-extensions"].split(",")
     app.config['HOST'] = db_configs['host']
-    # feature flag for additional user inputs
-    app.config['ADDITIONAL_INPUTS'] = app_configs["additional-inputs"] == 'True'
     app.secret_key = "super secret key"
 
     return app, app_configs["logging-path"]
