@@ -99,7 +99,7 @@ def get_detection_methods_from_params(parameters: dict):
     name_to_method_map = {
         "lofKRange": OutlierDetectionMethod.LOF,
         "knnKRange": OutlierDetectionMethod.KNN,
-        "ifKRange": OutlierDetectionMethod.IsolationForest,
+        "ifRange": OutlierDetectionMethod.IsolationForest,
         "runMahalanobis": OutlierDetectionMethod.Mahalanobis
     }
     for name in name_to_method_map:
@@ -124,12 +124,15 @@ def autood_rerun():
     index_col_name = first_run_config['index_col_name']
     label_col_name = first_run_config['label_col_name']
 
+    print(rerun_params)
+
     detection_methods = get_detection_methods_from_params(rerun_params)
     if detection_methods is not []:
         rerun_params['index_col_name'] = index_col_name
         rerun_params['label_col_name'] = label_col_name
         run_configuration = get_detection_parameters(rerun_params, detection_methods, outlier_min, outlier_max)
         run_configuration['filename'] = filename
+        print(run_configuration)
         results = call_autood_from_params(filename, run_configuration, detection_methods)
 
         # Update the DB with the new run results
