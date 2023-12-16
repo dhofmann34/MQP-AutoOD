@@ -118,7 +118,9 @@ def autood_rerun():
 
 @app.route('/autood/index', methods=['POST'])
 def autood_input():
-    sample_file = request.form['selectedDataset']
+    sample_file = None
+    if 'selectedDataset' in request.form:
+        sample_file = request.form['selectedDataset']
     if not sample_file:
         if 'file' not in request.files:
             flash('Please provide an input file or select a dataset.')
