@@ -96,7 +96,7 @@
                 .then(response => response.text())
                 .then(session_id => {
                     var tabIndex = parseInt(runHistory.replace("Run", ""));
-                    var local_data_path = `http://127.0.0.1:8080/data/${session_id}/${tabIndex}`;
+                    var local_data_path = `http://localhost:8080/data/${session_id}/${tabIndex}`;
                     console.log(local_data_path)
                     fetchDataAndUpdateVisualization(local_data_path);
                 })
