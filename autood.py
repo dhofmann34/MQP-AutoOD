@@ -10,7 +10,6 @@ from logging import Logger
 from sklearn.neighbors import NearestNeighbors
 from warnings import simplefilter
 from dataclasses import dataclass, field
-from autood_parameters import get_default_parameters, get_detection_parameters
 from pathlib import Path
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
@@ -55,9 +54,6 @@ class AutoODParameters:
     filepath: str
     detection_methods: List[OutlierDetectionMethod]
     detection_method_parameters: dict
-    k_range: List[int]
-    if_range: List[float]
-    N_range: List[int]
     index_col_name: Optional[str] = None
     label_col_name: Optional[str] = None
 
@@ -237,21 +233,13 @@ class AutoOD:
 
     def _run_lof(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
                  instance_index_ranges, detector_index_ranges):
-        if self.params.detection_method_parameters is None:
-            k_range = self.params.k_range
-            N_size = len(self.params.N_range)
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-            k_range_list = k_range * N_size
-            knn_N_range = np.sort(N_range * len(k_range))
-            self.logger.info(f'Start running LOF with k={k_range}')
-        else:           # Run with custom input parameters
-            lof_params = self.params.detection_method_parameters['local_outlier_factor']
-            k_range = [inst['params']['k'] for inst in lof_params]
-            N_range_percents = self.params.detection_method_parameters['global_N_range']
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
-            k_range_list = k_range * len(N_range_percents)
-            knn_N_range = np.sort(N_range * len(k_range))
-            self.logger.info(f'Start running LOF with k={k_range}, N_range={N_range}')
+        lof_params = self.params.detection_method_parameters['local_outlier_factor']
+        k_range = [inst['params']['k'] for inst in lof_params]
+        N_range_percents = self.params.detection_method_parameters['global_N_range']
+        N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
+        k_range_list = k_range * len(N_range_percents)
+        knn_N_range = np.sort(N_range * len(k_range))
+        self.logger.info(f'Start running LOF with k={k_range}, N_range={N_range}')
 
         f1_list_start_index = len(f1s)
         temp_lof_results = dict()
@@ -304,22 +292,13 @@ class AutoOD:
 
     def _run_knn(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
                  instance_index_ranges, detector_index_ranges):
-        if self.params.detection_method_parameters is None:
-            k_range = self.params.k_range
-            N_size = len(self.params.N_range)
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-            k_range_list = k_range * N_size
-            knn_N_range = np.sort(N_range * len(k_range))
-            self.logger.info(f'Start running KNN with k={k_range}')
-        else:       # Run with custom parameters
-            knn_params = self.params.detection_method_parameters['knn']
-            k_range = [inst['params']['k'] for inst in knn_params]
-            # Customization of outlier ranges for each instance: future work.
-            N_range_percents = self.params.detection_method_parameters['global_N_range']
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
-            k_range_list = k_range * len(N_range_percents)
-            knn_N_range = np.sort(N_range * len(k_range))
-            self.logger.info(f'Start running KNN with k={k_range}, N_range={N_range}')
+        knn_params = self.params.detection_method_parameters['knn']
+        k_range = [inst['params']['k'] for inst in knn_params]
+        N_range_percents = self.params.detection_method_parameters['global_N_range']
+        N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
+        k_range_list = k_range * len(N_range_percents)
+        knn_N_range = np.sort(N_range * len(k_range))
+        self.logger.info(f'Start running KNN with k={k_range}, N_range={N_range}')
 
         f1_list_start_index = len(f1s)
         temp_knn_results = dict()
@@ -369,22 +348,13 @@ class AutoOD:
 
     def _run_isolation_forest(self, all_results, all_scores, methods_to_best_f1, f1s, num_detectors,
                               instance_index_ranges, detector_index_ranges):
-        if self.params.detection_method_parameters is None:
-            if_range = self.params.if_range
-            N_size = len(self.params.N_range)
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-            if_N_range = np.sort(N_range * len(if_range))
-            if_range_list = if_range * N_size
-            self.logger.info(f'Start running Isolation Forest with max feature = {if_range}')
-        else:
-            if_params = self.params.detection_method_parameters['isolation_forest']
-            if_range = [inst['params']['max_features'] for inst in if_params]
-            # Customization of outlier ranges for each instance: future work.
-            N_range_percents = self.params.detection_method_parameters['global_N_range']
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
-            if_N_range = np.sort(N_range * len(if_range))
-            if_range_list = if_range * len(N_range_percents)
-            self.logger.info(f'Start running Isolation Forest with max feature = {if_range}, N_range = {N_range}')
+        if_params = self.params.detection_method_parameters['isolation_forest']
+        if_range = [inst['params']['max_features'] for inst in if_params]
+        N_range_percents = self.params.detection_method_parameters['global_N_range']
+        N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
+        if_N_range = np.sort(N_range * len(if_range))
+        if_range_list = if_range * len(N_range_percents)
+        self.logger.info(f'Start running Isolation Forest with max feature = {if_range}, N_range = {N_range}')
 
         f1_list_start_index = len(f1s)
         temp_if_results = dict()
@@ -436,11 +406,8 @@ class AutoOD:
                          instance_index_ranges, detector_index_ranges):
         self.logger.info(f'Start running Mahalanobis..')
         f1_list_start_index = len(f1s)
-        if self.params.detection_method_parameters is None:
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in self.params.N_range]
-        else:
-            N_range_percents = self.params.detection_method_parameters['global_N_range']
-            N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
+        N_range_percents = self.params.detection_method_parameters['global_N_range']
+        N_range = [int(np.shape(self.X)[0] * percent) for percent in N_range_percents]
         mahalanobis_scores = run_mahalanobis(self.X)
         best_mahala_f1 = 0
         if database == "y":  # DHDB
@@ -517,10 +484,7 @@ class AutoOD:
         training_data_F1 = []
         two_prediction_corr = []
 
-        if self.params.N_range is None:
-            N_size = len(self.params.detection_method_parameters['global_N_range'])
-        else:
-            N_size = len(self.params.N_range)
+        N_size = len(self.params.detection_method_parameters['global_N_range'])
 
         last_training_data_indexes = []
         counter = 0
@@ -1045,37 +1009,6 @@ def prepare_autood_run_from_params(filepath, logger, run_configuration, detectio
         filepath,
         detection_methods,
         detection_method_parameters=run_configuration,
-        k_range=None,
-        if_range=None,
-        N_range=None,
         index_col_name=run_configuration['index_col_name'],
         label_col_name=run_configuration['label_col_name']
-    ), logger).run_autood(dataset)
-
-
-def prepare_autood_run(filepath, logger, outlier_min, outlier_max, detection_methods, index_col_name, label_col_name,
-                       db_parameters_in):
-    dataset = Path(filepath).stem
-    logger.info(f"Dataset Name = {dataset}")
-
-    default_parameters = get_default_parameters(dataset)
-    global db_parameters
-    db_parameters = db_parameters_in
-    if outlier_min and outlier_max:
-        logger.info(f"Outlier Range defined as [{outlier_min}%, {outlier_max}%]")
-        outlier_min_percent = outlier_min * 0.01
-        outlier_max_percent = outlier_max * 0.01
-        interval = (outlier_max_percent - outlier_min_percent) / 5
-        new_N_range = [round(x, 5) for x in np.arange(outlier_min_percent, outlier_max_percent + interval, interval)]
-        default_parameters.N_range = new_N_range
-
-    return AutoOD(AutoODParameters(
-        filepath,
-        detection_methods,
-        detection_method_parameters=None,
-        k_range=default_parameters.k_range,
-        if_range=default_parameters.if_range,
-        N_range=default_parameters.N_range,
-        index_col_name=index_col_name,
-        label_col_name=label_col_name
     ), logger).run_autood(dataset)

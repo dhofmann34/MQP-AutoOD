@@ -11,7 +11,7 @@ import psycopg2
 from flask import jsonify
 import config
 import sql_queries as sql
-from autood import prepare_autood_run, OutlierDetectionMethod, prepare_autood_run_from_params
+from autood import OutlierDetectionMethod, prepare_autood_run_from_params
 from autood_parameters import get_detection_parameters
 from config import get_db_config
 from tqdm import tqdm
@@ -154,8 +154,6 @@ def autood_input():
                                                       outlier_range_min, outlier_range_max)
 
     results = call_autood_from_params(filename, run_configuration, detection_methods)
-    # results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name,
-    #                     label_col_name)
 
     # Update the DB with the new run results
     user_id = session.get('user_id')
@@ -181,17 +179,6 @@ def autood_input():
 def return_files_tut(filename):
     file_path = app.config['DOWNLOAD_FOLDER'] + filename
     return send_file(file_path, as_attachment=False, attachment_filename='')
-
-
-def call_autood(filename, outlier_percentage_min, outlier_percentage_max, detection_methods, index_col_name,
-                label_col_name):
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    logger.info(
-        f"Start calling autood with file {filename}...indexColName = {index_col_name}, labelColName = {label_col_name}")
-    logger.info(
-        f"Parameters: outlier_percentage_min = {outlier_percentage_min}%, outlier_percentage_max = {outlier_percentage_max}%")
-    return prepare_autood_run(filepath, logger, outlier_percentage_min, outlier_percentage_max, detection_methods,
-                              index_col_name, label_col_name, get_db_config())
 
 
 # Calling autood with additional user inputs for each detection method
