@@ -57,6 +57,12 @@ def get_json(session_id, run_id):
     query = f"SELECT json FROM run WHERE session_id = '{session_id}' AND id = {run_id};"
     return query
 
+
+def get_run_configs(session_id, run_id):
+    query = f"SELECT run_configuration FROM run WHERE session_id = '{session_id}' AND id = {run_id};"
+    return query
+
+
 def get_count(session_id):
     query = f"SELECT COUNT(*) FROM run WHERE session_id = '{session_id}';"
     return query

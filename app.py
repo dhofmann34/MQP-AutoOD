@@ -32,7 +32,9 @@ app, LOGGING_PATH = config.app_config(app)
 logger.add(LOGGING_PATH, format="{time} - {message}")
 
 from flask_cors import CORS
+
 CORS(app)
+
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -112,8 +114,43 @@ def get_detection_methods_from_params(parameters: dict):
 
 @app.route('/autood/result', methods=['POST'])
 def autood_rerun():
-   print(request.data)
-   return redirect(request.url)
+    rerun_params = request.get_json()
+    outlier_min = rerun_params['globalMinOutlier']
+    outlier_max = rerun_params['globalMaxOutlier']
+
+    # get run configuration from the first run and extract the filename, index, and label column names
+    filename = 'cardio.csv'
+    index_col_name = "id"
+    label_col_name = "label"
+
+    detection_methods = get_detection_methods_from_params(rerun_params)
+    if detection_methods is not []:
+        rerun_params['index_col_name'] = index_col_name
+        rerun_params['label_col_name'] = label_col_name
+        run_configuration = get_detection_parameters(rerun_params, detection_methods, outlier_min, outlier_max)
+        run_configuration['filename'] = filename
+        results = call_autood_from_params(filename, run_configuration, detection_methods)
+
+        # Update the DB with the new run results
+        user_id = session.get('user_id')
+        new_run(user_id, json.dumps(run_configuration))
+        if results.error_message:
+            flash(results.error_message)
+            return redirect(request.url)
+        else:
+            # Create empty job.log, old logging will be deleted
+            final_log_filename = f"log_{filename.replace('.', '_')}_{int(time.time())}"
+            copyfile(LOGGING_PATH, app.config['DOWNLOAD_FOLDER'] + final_log_filename)
+            open(LOGGING_PATH, 'w').close()
+            global results_global, final_log_filename_global
+            results_global = results
+            final_log_filename_global = final_log_filename
+            return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
+                                   autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
+                                   best_method=",".join(results.best_unsupervised_methods),
+                                   final_results=results.results_file_name, training_log=final_log_filename)
+    else:
+        return redirect(request.url)
 
 
 @app.route('/autood/index', methods=['POST'])
@@ -154,6 +191,7 @@ def autood_input():
     run_configuration = {'index_col_name': index_col_name, 'label_col_name': label_col_name}
     run_configuration = get_default_run_configuration(run_configuration, detection_methods,
                                                       outlier_range_min, outlier_range_max)
+    run_configuration['filename'] = filename
 
     results = call_autood_from_params(filename, run_configuration, detection_methods)
 
@@ -172,9 +210,9 @@ def autood_input():
         results_global = results
         final_log_filename_global = final_log_filename
         return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
-                                autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
-                                best_method=",".join(results.best_unsupervised_methods),
-                                final_results=results.results_file_name, training_log=final_log_filename)
+                               autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
+                               best_method=",".join(results.best_unsupervised_methods),
+                               final_results=results.results_file_name, training_log=final_log_filename)
 
 
 @app.route('/return-files/<filename>')
@@ -268,6 +306,7 @@ def get_run_count():
 def get_session_id():
     user_id = session.get('user_id')
     return user_id
+
 
 #### DH
 
