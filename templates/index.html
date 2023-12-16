@@ -25,6 +25,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/rerun.css') }}">
+
     <script>
         // Functions that need to be run when the page loads
         window.onload = function () {
@@ -39,7 +41,7 @@
 
         // Loader animation
         $(function () {
-            $('#resetButton').click(function () {
+            $('#submitBtn').click(function () {
                 e1 = $('#loader');
                 e1.addClass('animate');
                 e1.one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
@@ -102,6 +104,154 @@
                 })
                 .catch(error => console.error('Error fetching session_id:', error));
             }
+        }
+        // Get the modal
+        var modal1 = document.getElementById("myModal1");
+        var modal2 = document.getElementById("myModal2");
+        var modal3 = document.getElementById("myModal3");
+        var modal4 = document.getElementById("myModal4");
+
+        function closeAllModals(){
+            closeModal1();
+            closeModal2();
+            closeModal3();
+            closeModal4();
+        }
+
+        function displayModal1(){
+            document.getElementById("myModal1").style.display = "block";
+        }
+        function displayModal2(){
+            document.getElementById("myModal2").style.display = "block";
+        }
+        function displayModal3(){
+            document.getElementById("myModal3").style.display = "block";
+        }
+
+
+        function closeModal1() {
+            document.getElementById("myModal1").style.display = "none";
+            updateLOFData();
+        }
+        function closeModal2() {
+            document.getElementById("myModal2").style.display = "none";
+            updateKNNData();
+        }
+        function closeModal3() {
+            document.getElementById("myModal3").style.display = "none";
+            updateIFData()
+        }
+
+        function openReRunSettings(){
+            document.getElementById("settingsModal").style.display = "block";
+        }
+
+        function closeReRunSettings(){
+            document.getElementById("settingsModal").style.display = "none";
+        }
+
+        //Getting submit button
+        var submitBtn = document.getElementById("submitBtn")
+
+        // When the user clicks anywhere outside of the modal, close it
+        // window.onclick = function (event) {
+        //     if (event.target == modal) {
+        //         closeAllModals();
+        //     }
+        // }
+
+        //Making JSON Object
+        //LOF Data
+        var globalMinOutlier = "5";
+        var globalMaxOutlier = "15";
+
+        var lofKRange = "[10,20,30,40,50,60,70,80,90,100]";
+
+        function updateLOFData() {
+            lofKRange = document.querySelector('#lofKRange').value;
+            console.log("LOFData updated");
+        }
+        //KNN Data
+        var knnKRange = "[10,20,30,40,50,60,70,80,90,100]";
+
+        function updateKNNData() {
+            knnKRange = document.querySelector('#knnKRange').value;
+            console.log("KNNData updated");
+        }
+        //Isolation Forest Data
+        var ifRange = "[0.5,0.6,0.7,0.8,0.9]"
+
+        function updateIFData() {
+            ifRange = document.querySelector('#ifRange').value;
+            console.log("IFData updated");
+        }
+        function sendJSONData() {
+            if(document.getElementById("lofCB").checked == false){
+                var data = JSON.stringify({
+                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
+                    "runMalanohbis": "true", "knnKRange": knnKRange, "ifRange": ifRange,
+                });
+                var xhr = new XMLHttpRequest();
+                var url = "result";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(data);
+                console.log("JSON file has been sent");
+            }
+
+           else if(document.getElementById("knnCB").checked == false){
+                var data = JSON.stringify({
+                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
+                    "runMalanohbis": "true", "lofKRange": lofKRange, "ifRange": ifRange,
+                });
+                var xhr = new XMLHttpRequest();
+                var url = "result";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(data);
+                console.log("JSON file has been sent");
+            }
+
+            else if(document.getElementById("ifCB").checked == false){
+                var data = JSON.stringify({
+                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
+                    "runMalanohbis": "true", "lofKRange": lofKRange, "knnKRange": knnKRange,
+            });
+                var xhr = new XMLHttpRequest();
+                var url = "result";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(data);
+                console.log("JSON file has been sent");
+
+            }
+
+            else if(document.getElementById("mCB").checked == false){
+                var data = JSON.stringify({
+                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
+                    "runMalanohbis": "false","lofKRange": lofKRange, "knnKRange": knnKRange, "ifRange": ifRange
+                });
+                var xhr = new XMLHttpRequest();
+                var url = "result";
+                xhr.open("POST", url, true);
+                r.setRequestHeader("Content-Type", "application/json");
+                xhr.send(data);
+                console.log("JSON file has been sent");
+            }
+            else{
+                var data = JSON.stringify({
+                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
+                    "runMalanohbis": "true", "lofKRange": lofKRange, "knnKRange": knnKRange, "ifRange": ifRange,
+                });
+                var xhr = new XMLHttpRequest();
+                var url = "result";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(data);
+                console.log("JSON file has been sent");
+            }
+        }
+
     </script>
 </head>
 
@@ -195,13 +345,129 @@
         </div>
     </div>
     <div>
-        <button id="resetButton"><b>Reset</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
+        <button id="submitBtn" onclick="sendJSONData()"><b>Rerun</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
+
     </div>
 </div>
 
 <div id=popup_chart>
     <div id="barplot"></div>
     <div id="barplot2"></div>
+</div>
+
+
+<div id="rerun_holder">
+    <button onclick="openReRunSettings()">Re-Run Settings</button>
+</div>
+
+<div id="settings_holder">
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close1" onclick="closeReRunSettings()">&times;</span>
+            <div id="rerun">
+                <div class="home-container">
+                    <div data-thq="thq-dropdown" class="home-thq-dropdown list-item">
+                        <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle">
+                            <span class="home-text">Re-Run Settings</span>
+                            <div data-thq="thq-dropdown-arrow" class="home-dropdown-arrow">
+                                <svg viewBox="0 0 1024 1024" class="home-icon">
+                                    <path d="M426 726v-428l214 214z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <ul data-thq="thq-dropdown-list" class="home-dropdown-list">
+                            <br>
+                            <li data-thq="thq-dropdown" class="home-dropdown list-item">
+                                <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle1">
+                                    <span class="home-text1">Range for all models</span><br>
+                                    <span class="home-text1">Global minOutlier</span>
+                                    <input type="text" id="globalMinOutlier" name="globalMinOutlier" placeholder="5">
+                                    <br>
+                                    <span class="home-text1">Global maxOutlier</span>
+                                    <input type="text" id="globalMaxOutlier" name="globalMaxOutlier" placeholder="15">
+                                </div>
+                            </li>
+                            <li data-thq="thq-dropdown" class="home-dropdown list-item">
+                                <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle1">
+                                    <input type="checkbox" checked="true" id="lofCB"/>
+                                <span class="home-text1" onclick="displayModal1()">Local Outlier Factor</span>
+                                </div>
+                            </li>
+                            <li data-thq="thq-dropdown" class="home-dropdown1 list-item">
+                                <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle2">
+                                    <input type="checkbox" checked="true" id="knnCB"/>
+                                    <span class="home-text2" onclick="displayModal2()">knn-N-Neighbors</span>
+                                </div>
+                            </li>
+                            <li data-thq="thq-dropdown" class="home-dropdown2 list-item">
+                                <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle3">
+                                    <input type="checkbox" checked="true" id="ifCB"/>
+                                    <span class="home-text3" onclick="displayModal3()">Isloation Forest</span>
+                                </div>
+                            </li>
+                            <li data-thq="thq-dropdown" class="home-dropdown2 list-item">
+                                <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle3">
+                                    <input type="checkbox" checked="true" id="mCB"/>
+                                    <span class="home-text3">Mahalanobis</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal div -->
+
+<div id="modal_holder">
+    <!-- The Modal -->
+    <div id="myModal1" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close1" onclick="closeModal1()">&times;</span>
+            <p>Local Outlier Factor</p>
+            <br><br>
+            <form action="/action_page.php">
+                <label for="lofKRange">Enter K-Range for LOF:</label>
+                <input type="text" id="lofKRange" name="lofKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateLOFData()">
+                <br><br>
+            </form>
+        </div>
+    </div>
+    <!-- The Modal -->
+    <div id="myModal2" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close2" onclick="closeModal2()">&times;</span>
+            <p>k - Nearest - Neighbors Settings</p>
+            <br><br>
+            <form action="/action_page.php">
+                <label for="knnKRange">Enter K-Range for KNN:</label>
+                <input type="text" id="knnKRange" name="knnKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateKNNData()">
+                <br><br>
+            </form>
+        </div>
+    </div>
+    <!-- The Modal -->
+    <div id="myModal3" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close3" onclick="closeModal3()">&times;</span>
+            <p>Isolation Forest</p>
+            <br><br>
+            <form action="/action_page.php">
+                <label for="ifRange">Enter IF-Range for Isloation Forest:</label>
+                <input type="text" id="ifRange" name="ifRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateIFData()">
+                <br><br>
+            </form>
+        </div>
+    </div>
 </div>
 
 </html>
