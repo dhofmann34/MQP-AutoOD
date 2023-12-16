@@ -159,7 +159,7 @@ def new_session(id):
             conn.close()
             logger.info('Database connection closed, inserted successfully.')
 
-def new_run(id):
+def new_run(id, run_configuration):
     conn = None
     try:
         conn = psycopg2.connect(**get_db_config())
@@ -194,9 +194,9 @@ def new_run(id):
         result = [dict(zip(field_names, row)) for row in cur.fetchall()]
         cur.execute(f"{drop_reliable}")
         #print(json.dumps(result, cls=DecimalEncoder, indent=None))
-        sql_query= sql.NEW_RUN
+        sql_query = sql.NEW_RUN
         json_data_float = json.loads(json.dumps(result, cls=DecimalEncoder))
-        cur.execute(sql_query, (id, Json(json_data_float), id))
+        cur.execute(sql_query, (id, Json(json_data_float), Json(run_configuration), id))
         conn.commit()
         cur.close()
         conn.close()

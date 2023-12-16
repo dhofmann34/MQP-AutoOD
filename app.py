@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, request, render_template, flash, redirect, Response, send_file, session, url_for
 import uuid
 from werkzeug.utils import secure_filename
@@ -10,6 +12,7 @@ from flask import jsonify
 import config
 import sql_queries as sql
 from autood import prepare_autood_run, OutlierDetectionMethod, prepare_autood_run_from_params
+from autood_parameters import get_detection_parameters
 from config import get_db_config
 from tqdm import tqdm
 from connect import new_session, new_run
@@ -129,36 +132,34 @@ def autood_input():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
         else:
             flash('File type is not supported.')
             return redirect(request.url)
-
     else:
         filename = sample_file
-    # start autoOD computation
-    if app.config['ADDITIONAL_INPUTS']:
-        # Retrieve parameters from input page
-        parameters = request.data
-        parameters['index_col_name'] = request.form['indexColName']
-        parameters['label_col_name'] = request.form['labelColName']
-        detection_methods = get_detection_methods_from_params(parameters)
-    else:
-        index_col_name = request.form['indexColName']
-        label_col_name = request.form['labelColName']
-        outlier_range_min = float(request.form['outlierRangeMin'])
-        outlier_range_max = float(request.form['outlierRangeMax'])
-        detection_methods = get_detection_methods(request.form.getlist('detectionMethods'))
+
+    index_col_name = request.form['indexColName']
+    label_col_name = request.form['labelColName']
+    outlier_range_min = float(request.form['outlierRangeMin'])
+    outlier_range_max = float(request.form['outlierRangeMax'])
+    detection_methods = get_detection_methods(request.form.getlist('detectionMethods'))
+
     if not detection_methods:
         flash('Please choose at least one detection method.')
         return redirect(request.url)
-    if app.config['ADDITIONAL_INPUTS']:
-        results = call_autood_from_params(filename, parameters, detection_methods)
-    else:
-        results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name,
-                            label_col_name)
+
+    # Create dict for run configs
+    run_configuration = {'index_col_name': index_col_name, 'label_col_name': label_col_name}
+    run_configuration = get_default_run_configuration(run_configuration, detection_methods,
+                                                      outlier_range_min, outlier_range_max)
+
+    results = call_autood_from_params(filename, run_configuration, detection_methods)
+    # results = call_autood(filename, outlier_range_min, outlier_range_max, detection_methods, index_col_name,
+    #                     label_col_name)
+
+    # Update the DB with the new run results
     user_id = session.get('user_id')
-    new_run(user_id)
+    new_run(user_id, json.dumps(run_configuration))
     if results.error_message:
         flash(results.error_message)
         return redirect(request.url)
@@ -174,6 +175,7 @@ def autood_input():
                                 autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
                                 best_method=",".join(results.best_unsupervised_methods),
                                 final_results=results.results_file_name, training_log=final_log_filename)
+
 
 @app.route('/return-files/<filename>')
 def return_files_tut(filename):
@@ -193,13 +195,26 @@ def call_autood(filename, outlier_percentage_min, outlier_percentage_max, detect
 
 
 # Calling autood with additional user inputs for each detection method
-def call_autood_from_params(filename, parameters, detection_methods):
+def call_autood_from_params(filename, run_configuration, detection_methods):
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     logger.info(f"Start calling autood with file {filename}...indexColName = " +
-                f"{parameters['index_col_name']}, labelColName = {parameters['label_col_name']}")
-    #logger.info(
-    #     f"Parameters: outlier_percentage_min = {outlier_percentage_min}%, outlier_percentage_max = {outlier_percentage_max}%")
-    return prepare_autood_run_from_params(filepath, logger, parameters, detection_methods, get_db_config())
+                f"{run_configuration['index_col_name']}, labelColName = {run_configuration['label_col_name']}")
+    return prepare_autood_run_from_params(filepath, logger, run_configuration, detection_methods, get_db_config())
+
+
+# Get the dict for the run configuration that is expected by the DB
+def get_default_run_configuration(run_configuration, detection_methods, outlier_range_min, outlier_range_max):
+    if OutlierDetectionMethod.LOF in detection_methods:
+        run_configuration["lofKRange"] = ""
+    if OutlierDetectionMethod.KNN in detection_methods:
+        run_configuration["knnKRange"] = ""
+    if OutlierDetectionMethod.IsolationForest in detection_methods:
+        run_configuration["ifRange"] = ""
+    if OutlierDetectionMethod.Mahalanobis in detection_methods:
+        run_configuration["runMahalanobis"] = True
+    logger.info(
+        f"Parameters: outlier_percentage_min = {outlier_range_min}%, outlier_percentage_max = {outlier_range_max}%")
+    return get_detection_parameters(run_configuration, detection_methods, outlier_range_min, outlier_range_max)
 
 
 #### DH
@@ -232,6 +247,7 @@ def result_index():
     except:
         return render_template('index.html')
 
+
 @app.route('/data/<string:session_id>/<int:tab_index>')  # get data from DB as json
 def send_data(session_id, tab_index):
     conn = psycopg2.connect(**get_db_config())
@@ -243,6 +259,7 @@ def send_data(session_id, tab_index):
     conn.close()
     logger.info("Database connection closed successfully.")
     return jsonify(result)
+
 
 @app.route('/getRunCount', methods=['GET'])
 def get_run_count():
@@ -256,6 +273,7 @@ def get_run_count():
     conn.close()
     logger.info("Database connection closed successfully.")
     return jsonify(result)
+
 
 @app.route('/getSessionID', methods=['GET'])
 def get_session_id():

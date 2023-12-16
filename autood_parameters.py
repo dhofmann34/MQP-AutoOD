@@ -45,7 +45,7 @@ def get_default_parameters(dataset):
 def get_detector_instances(detector: str, outlier_min, outlier_max, **kwargs):
     detector_instances = []
     N_range = default_N_range
-    if outlier_min != '' and outlier_max != '':       # Use custom N range
+    if outlier_min is not None and outlier_max is not None:       # Use custom N range
         outlier_min_percent = float(outlier_min) * 0.01
         outlier_max_percent = float(outlier_max) * 0.01
         interval = (outlier_max_percent - outlier_min_percent) / 5
@@ -94,23 +94,29 @@ def get_detector_instances(detector: str, outlier_min, outlier_max, **kwargs):
 
 # Parse through input parameters and fill in missing values with defaults
 # Return a new dict that follows the correct JSON schema for the DB
-def get_detection_parameters(parameters, detection_methods: list):
-    detection_parameters = {"global_N_range": default_N_range,
+def get_detection_parameters(parameters, detection_methods: list, outlier_min=None, outlier_max=None):
+    global_N_range = default_N_range
+    if outlier_min is not None and outlier_max is not None:
+        outlier_min_percent = float(outlier_min) * 0.01
+        outlier_max_percent = float(outlier_max) * 0.01
+        interval = (outlier_max_percent - outlier_min_percent) / 5
+        global_N_range = [round(x, 5) for x in arange(outlier_min_percent, outlier_max_percent + interval, interval)]
+    detection_parameters = {"global_N_range": global_N_range,
                             "index_col_name": parameters['index_col_name'],
                             "label_col_name": parameters['label_col_name']}
     for method in detection_methods:
         if method == OutlierDetectionMethod.KNN:
-            detection_parameters['knn'] = get_detector_instances("KNN", default_outlier_min, default_outlier_max,
+            detection_parameters['knn'] = get_detector_instances("KNN", outlier_min, outlier_max,
                                                                  k_range=parameters['knnKRange'])
         elif method == OutlierDetectionMethod.LOF:
-            detection_parameters['local_outlier_factor'] = get_detector_instances("LOF", default_outlier_min,
-                                                                                  default_outlier_max,
+            detection_parameters['local_outlier_factor'] = get_detector_instances("LOF", outlier_min,
+                                                                                 outlier_max,
                                                                                   k_range=parameters['lofKRange'])
         elif method == OutlierDetectionMethod.IsolationForest:
-            detection_parameters['isolation_forest'] = get_detector_instances("IF", default_outlier_min,
-                                                                              default_outlier_max,
+            detection_parameters['isolation_forest'] = get_detector_instances("IF", outlier_min,
+                                                                              outlier_max,
                                                                               if_range=parameters['ifRange'])
         elif method == OutlierDetectionMethod.Mahalanobis:
-            detection_parameters['mahalanobis'] = get_detector_instances("MA", default_outlier_min, default_outlier_max)
+            detection_parameters['mahalanobis'] = get_detector_instances("MA", outlier_min, outlier_max)
 
     return detection_parameters

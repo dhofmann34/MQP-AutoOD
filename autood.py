@@ -1034,25 +1034,22 @@ def get_default_detection_method_list():
             OutlierDetectionMethod.Mahalanobis]
 
 
-def prepare_autood_run_from_params(filepath, logger, parameters, detection_methods, db_parameters_in):
+def prepare_autood_run_from_params(filepath, logger, run_configuration, detection_methods, db_parameters_in):
     dataset = Path(filepath).stem
     logger.info(f"Dataset Name = {dataset}")
     global db_parameters
     db_parameters = db_parameters_in
 
-    # Parse parameters, transform into schema expected by the DB
-    detection_parameters = get_detection_parameters(parameters, detection_methods)
-
     # Put parameters into the DB
     return AutoOD(AutoODParameters(
         filepath,
         detection_methods,
-        detection_method_parameters=detection_parameters,
+        detection_method_parameters=run_configuration,
         k_range=None,
         if_range=None,
         N_range=None,
-        index_col_name=parameters['index_col_name'],
-        label_col_name=parameters['label_col_name']
+        index_col_name=run_configuration['index_col_name'],
+        label_col_name=run_configuration['label_col_name']
     ), logger).run_autood(dataset)
 
 

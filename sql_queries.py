@@ -43,13 +43,15 @@ CREATE_RUN_TABLE = """
     """
 
 NEW_RUN = """
-                INSERT INTO run (id, json, session_id)
+                INSERT INTO run (id, json, run_configuration, session_id)
                 VALUES (
                     (SELECT COUNT(*) FROM run WHERE session_id = %s) + 1,
+                    %s,
                     %s,
                     %s
                 )
             """
+
 
 def get_json(session_id, run_id):
     query = f"SELECT json FROM run WHERE session_id = '{session_id}' AND id = {run_id};"
