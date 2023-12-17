@@ -94,7 +94,7 @@
             }
             evt.currentTarget.className += " active";
             document.getElementById("history_header").innerHTML = runHistory;
-            fetch('http://localhost:8080/getSessionID')
+            fetch('http://localhost:8081/getSessionID')
                 .then(response => response.text())
                 .then(session_id => {
                     var tabIndex = parseInt(runHistory.replace("Run", ""));
@@ -164,6 +164,13 @@
         //LOF Data
         var globalMinOutlier = "5";
         var globalMaxOutlier = "15";
+
+        function updateOutlierData() {
+            globalMinOutlier = document.querySelector('#globalMinOutlier').value;
+            globalMaxOutlier = document.querySelector('#globalMaxOutlier').value;
+            console.log("OutlierMinMaxData updated");
+        }
+
 
         var lofKRange = "[10,20,30,40,50,60,70,80,90,100]";
 
@@ -381,10 +388,10 @@
                                 <div data-thq="thq-dropdown-toggle" class="home-dropdown-toggle1">
                                     <span class="home-text1">Range for all models</span><br>
                                     <span class="home-text1">Global minOutlier</span>
-                                    <input type="text" id="globalMinOutlier" name="globalMinOutlier" placeholder="5">
+                                    <input type="text" id="globalMinOutlier" name="globalMinOutlier" placeholder="5" onfocusout="updateOutlierData()">
                                     <br>
                                     <span class="home-text1">Global maxOutlier</span>
-                                    <input type="text" id="globalMaxOutlier" name="globalMaxOutlier" placeholder="15">
+                                    <input type="text" id="globalMaxOutlier" name="globalMaxOutlier" placeholder="15" onfocusout="updateOutlierData()">
                                 </div>
                             </li>
                             <li data-thq="thq-dropdown" class="home-dropdown list-item">
