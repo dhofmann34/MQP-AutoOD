@@ -124,8 +124,6 @@ def autood_rerun():
     index_col_name = first_run_config['index_col_name']
     label_col_name = first_run_config['label_col_name']
 
-    print(rerun_params)
-
     detection_methods = get_detection_methods_from_params(rerun_params)
     if detection_methods is not []:
         rerun_params['index_col_name'] = index_col_name
