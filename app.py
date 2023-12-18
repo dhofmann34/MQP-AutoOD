@@ -211,10 +211,11 @@ def autood_input():
         global results_global, final_log_filename_global
         results_global = results
         final_log_filename_global = final_log_filename
-        return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
-                               autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
-                               best_method=",".join(results.best_unsupervised_methods),
-                               final_results=results.results_file_name, training_log=final_log_filename)
+        return redirect('/autood/result')
+        # return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
+        #                        autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
+        #                        best_method=",".join(results.best_unsupervised_methods),
+        #                        final_results=results.results_file_name, training_log=final_log_filename)
 
 
 @app.route('/return-files/<filename>')
