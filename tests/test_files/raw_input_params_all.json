@@ -1,0 +1,13 @@
+{
+  "lofKRange": "[10,20,30,40]",
+  "lofMinOutlier": "5",
+  "lofMaxOutlier": "15",
+  "knnKRange": "[15,25,35]",
+  "knnMinOutlier": "2",
+  "knnMaxOutlier": "10",
+  "ifRange": "[0.2,0.3,0.4,1.0]",
+  "ifMinOutlier": "5",
+  "ifMaxOutlier": "15",
+  "mMinOutlier": "2",
+  "mMaxOutlier": "10"
+}

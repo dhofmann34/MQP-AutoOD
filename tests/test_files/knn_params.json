@@ -1,0 +1,5 @@
+{
+  "knnKRange": "[10,20]",
+  "knnMinOutlier": "5",
+  "knnMaxOutlier": "15"
+}

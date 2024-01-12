@@ -40,6 +40,7 @@
         e.preventDefault();
         return false;
     });
+
     $(document).ready(function () {
         var output = document.getElementById('output');
         var xhr = new XMLHttpRequest();
@@ -94,9 +95,11 @@
 
     // Clear button for file - START
     function clearInputFile(){
-        const file =
-            document.querySelector('.file');
-            file.value = '';
+        //const file =
+        //    document.querySelector('.file');
+        //    file.value = '';
+
+        document.getElementById('selectedDataset').value = '';
     }
     // Clear button for file - END
 
@@ -112,7 +115,7 @@
 
     window.addEventListener("DOMContentLoaded", (event) => {
         document.getElementById('radioButton1').addEventListener('click', function () {
-            document.getElementById('selectedDataset').value = 'thyroid.csv';
+            document.getElementById('selectedDataset').value = 'pima.csv';
         });
 
         document.getElementById('radioButton2').addEventListener('click', function () {
@@ -120,33 +123,89 @@
         });
 
         document.getElementById('radioButton3').addEventListener('click', function () {
-            document.getElementById('selectedDataset').value = 'musk.csv';
+            document.getElementById('selectedDataset').value = 'shuttle.csv';
         });
     });
-    var progressBarCount = 0;
+
+
     function updateProgressBar() {
+        var progressBarCount = 0;
         if (progressBarCount == 0) {
             progressBarCount = 1;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', "{{ url_for('running_logs') }}", true);
+            xhr.send();
             var elem = document.getElementById("myBar");
             var width = 1;
             var id = setInterval(frame, 10);
             function frame() {
-            if (width >= 100) {
-                clearInterval(id);
-                i = 0;
-            } else {
-                width++;
-                elem.style.width = width + "%";
-            }
+                if (width >= 100) {
+                    clearInterval(id);
+                    i = 0;
+                } else {
+                    if (xhr.responseText.includes("Dataset Name")) {
+                        width = 5;
+                    }
+                    if (xhr.responseText.includes("Dataset size")) {
+                        width = 15;
+                    }
+                    if (xhr.responseText.includes("Best Unsupervised F-1 Score")) {
+                        width = 30;
+                    }
+                    if (xhr.responseText.includes("Start First-round AutoOD training")) {
+                        width = 35;
+                    }
+                    if (xhr.responseText.includes("Start Second-round AutoOD training")) {
+                        width = 70;
+                    }
+                    if (xhr.responseText.includes("Database connection closed successfully.")) {
+                        width = 90;
+                    }
+                    elem.style.width = width + "%";
+                }
             }
         }
-
-        setTimeout(sendRadioValue, 10000);
     }
 
 </script>
 
 <body>
+    <div class="header" style="text-align:center">
+        <h1>AutoOD: Automatic Outlier Detection</h1>
+    </div>
+    <center>
+        <h3>Enter Input File and Parameters</h3>
+        <form action="/autood/index" method="post" enctype=multipart/form-data>
+            <table border="0">
+                <tr>
+                    <td>Input File</td>
+                    <td>
+                        <form action="/action_page.php">
+                            <p>Enter your own:</p>
+                            <div class="inputfile-box">
+                                <input class="button" type="file" id="file" name="file" class="inputfile"
+                                    onchange='uploadFile()'>
+                                <label for="file" value="{{file}}">
+                                    <span id="file-name" value="{{file}}" class="file-box"></span>
+                                    <span class="file-button">
+                                        <i class="fa fa-upload" aria-hidden="true"></i> Select File
+                                    </span>
+                                </label>
+                            </div>
+                            <div>
+                                <p>Or select one of ours:</p>
+                                <input type="radio" id="radioButton1" name="dataset">
+                                <label for="thyroid">Thyroid</label><br>
+                                <input type="radio" id="radioButton2" name="dataset">
+                                <label for="cardio">Cardio</label><br>
+                                <input type="radio" id="radioButton3" name="dataset">
+                                <label for="shuttle">Musk</label>
+                            </div>
+                            <input type="reset" id="ClearButtonRadio" value="Clear" onchange="clearInputFile()">
+                        </form>
+                    </td>
+                </tr>
+                <!-- <tr>  THIS PART WAS USED TO CREATE THE CUSTOM DETECTOR FILE INPUT
 <div class="header" style="text-align:center">
     <h1>AutoOD: Automatic Outlier Detection</h1>
 </div>
@@ -170,14 +229,15 @@
                     </div>
                     <div>
                         <p>Or select one of ours:</p>
-                        <input type="radio" id="radioButton1" name="dataset">
-                        <label for="pima">Thyroid</label><br>
-                        <input type="radio" id="radioButton2" name="dataset">
+                        <input type="radio" id="radioButton1" name="dataset" value="thyroid.csv">
+                        <label for="thyroid">Thyroid</label><br>
+                        <input type="radio" id="radioButton2" name="dataset" value="cardio.csv">
                         <label for="cardio">Cardio</label><br>
-                        <input type="radio" id="radioButton3" name="dataset">
-                        <label for="shuttle">Musk</label>
+                        <input type="radio" id="radioButton3" name="dataset" value="musk.csv">
+                        <label for="musk">Musk</label>
+                        <input type="hidden" id="selectedDataset" name="selectedDataset" value="">
                     </div>
-                    <input type="reset" id="ClearButtonRadio" value = "Clear" onchange="clearInputFile()">
+                    <input type="reset" id="ClearButtonRadio" value = "Clear" onclick="clearInputFile()">
                 </form>
                 </td>
             </tr>
@@ -242,7 +302,9 @@
         {% endif %}
         {% endwith %}
         <!-- Progress Bar -->
-        <!-- <div id="myProgress">Uploading files<div id="myBar"></div></div> -->
+        <div id="myProgress">
+            <div id="myBar"></div>
+        </div>
         <!-- Progress Bar -->
         <div class="row">
             <h3 align="center">Log Messages:</h3>
