@@ -53,7 +53,7 @@
 
         async function updateRunNumber() {
             try {
-                const response = await fetch('http://localhost:8080/getRunCount');
+                const response = await fetch('http://localhost:8081/getRunCount');
                 const runCount = await response.text();
                 return runCount;
             } catch (error) {
@@ -94,18 +94,21 @@
             }
             evt.currentTarget.className += " active";
             document.getElementById("history_header").innerHTML = runHistory;
-            fetch('http://localhost:8080/getSessionID')
+            fetch('http://localhost:8081/getSessionID')
                 .then(response => response.text())
                 .then(session_id => {
                     var tabIndex = parseInt(runHistory.replace("Run", ""));
-                    var local_data_path = `http://localhost:8080/data/${session_id}/${tabIndex}`;
+                    var local_data_path = `http://localhost:8081 /data/${session_id}/${tabIndex}`;
                     console.log(local_data_path)
                     fetchDataAndUpdateVisualization(local_data_path);
                 })
                 .catch(error => console.error('Error fetching session_id:', error));
 
         }
-        // Get the modal
+
+        //Below is all Rerun settings code, indcluding: modals and JSON Object
+
+        // Get all modals
         var modal1 = document.getElementById("myModal1");
         var modal2 = document.getElementById("myModal2");
         var modal3 = document.getElementById("myModal3");
@@ -127,7 +130,6 @@
         function displayModal3(){
             document.getElementById("myModal3").style.display = "block";
         }
-
 
         function closeModal1() {
             document.getElementById("myModal1").style.display = "none";
@@ -159,104 +161,96 @@
         //         closeAllModals();
         //     }
         // }
-
-        //Making JSON Object
-        //LOF Data
+        
+        //Default Min Value
         var globalMinOutlier = "5";
+        //Default Max Value
         var globalMaxOutlier = "15";
-
+        
+        //Update Min and Max Outlier Values
         function updateOutlierData() {
             globalMinOutlier = document.querySelector('#globalMinOutlier').value;
             globalMaxOutlier = document.querySelector('#globalMaxOutlier').value;
             console.log("OutlierMinMaxData updated");
         }
 
-
+        //LOF Data
         var lofKRange = "[10,20,30,40,50,60,70,80,90,100]";
 
-        function updateLOFData() {
+        function updateLOFData() { //Update LOF Range
             lofKRange = document.querySelector('#lofKRange').value;
             console.log("LOFData updated");
         }
         //KNN Data
         var knnKRange = "[10,20,30,40,50,60,70,80,90,100]";
 
-        function updateKNNData() {
+        function updateKNNData() { //Update KNN Range
             knnKRange = document.querySelector('#knnKRange').value;
             console.log("KNNData updated");
         }
-        //Isolation Forest Data
+        //Isolation Forest Default Data
         var ifRange = "[0.5,0.6,0.7,0.8,0.9]"
 
-        function updateIFData() {
+        function updateIFData() { //Update IF Range 
             ifRange = document.querySelector('#ifRange').value;
             console.log("IFData updated");
         }
         function sendJSONData() {
-            if(document.getElementById("lofCB").checked == false){
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "true", "knnKRange": knnKRange, "ifRange": ifRange,
-                });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.send(data);
-                console.log("JSON file has been sent");
+            var lofJSON = "";
+            var knnJSON = "";
+            var ifJSON = "";
+            var mJSON = "";
+            //If user wants to run LOF, create JSON object for it
+            if(document.getElementById("lofCB").checked == true){
+                lofJSON = {lofKRange: lofKRange};
+            }
+            //If user wants to run KNN, create JSON object for it
+           if(document.getElementById("knnCB").checked == true){
+                knnJSON = {knnKRange: knnKRange};
+            }
+            //If user wants to run Isolation Forest, create JSON object for it
+            if(document.getElementById("ifCB").checked == true){
+                ifJSON = {ifRange: ifRange};
+            }
+            //If user wants to run Malanohbis, create JSON object for it
+            if(document.getElementById("mCB").checked == true){
+                mJSON = {runMalanohbis: "true"};                    
+    
             }
 
-           else if(document.getElementById("knnCB").checked == false){
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "true", "lofKRange": lofKRange, "ifRange": ifRange,
-                });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.send(data);
-                console.log("JSON file has been sent");
+            //If user wants to run Malanohbis, create JSON object for it
+            if(document.getElementById("mCB").checked == false){
+                mJSON = {runMalanohbis: "false"};                    
+    
             }
+            //Creates base JSON objects with global min and max outliers
+            var data = {globalMinOutlier: globalMinOutlier, globalMaxOutlier: globalMaxOutlier};
 
-            else if(document.getElementById("ifCB").checked == false){
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "true", "lofKRange": lofKRange, "knnKRange": knnKRange,
-            });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.send(data);
-                console.log("JSON file has been sent");
+            //If lofJSON has been set, merge it with data
+            if(lofJSON !== ""){
+                data = Object.assign({}, data, lofJSON);
+            }
+            //If knnJSON has been set, merge it with data
+            if(knnJSON !== ""){
+                data = Object.assign({}, data, knnJSON);
+            }
+            //If ifJSON has been set, merge it with data
+            if(ifJSON !== ""){
+                data = Object.assign({}, data, ifJSON);
+            }
+            //If mJSON has been set, merge it with data
+            if(mJSON !== ""){
+                data = Object.assign({}, data, mJSON);
+            }
+            var sendData = JSON.stringify(data);
 
-            }
-
-            else if(document.getElementById("mCB").checked == false){
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "false","lofKRange": lofKRange, "knnKRange": knnKRange, "ifRange": ifRange
-                });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.send(data);
-                console.log("JSON file has been sent");
-            }
-            else{
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "true", "lofKRange": lofKRange, "knnKRange": knnKRange, "ifRange": ifRange,
-                });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.send(data);
-                console.log("JSON file has been sent");
-            }
+            var xhr = new XMLHttpRequest();
+            var url = "result";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            console.log(sendData);
+            xhr.send(sendData);
+            console.log("JSON file has been sent");
         }
 
     </script>
