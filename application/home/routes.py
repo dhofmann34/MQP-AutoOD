@@ -1,5 +1,4 @@
 import uuid
-
 from application.home import bp
 from connect import create_session_run_tables, new_session
 from flask import session, redirect, render_template
@@ -7,6 +6,9 @@ from flask import session, redirect, render_template
 
 @bp.route('/', methods=['GET', 'POST'])
 def home():
+    """Create a user ID tied to the user's browser session.
+    User will use pre-existing ID if one exists.
+    """
     create_session_run_tables
     if 'user_id' in session:
         user_id = session['user_id']

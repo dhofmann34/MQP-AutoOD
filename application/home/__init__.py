@@ -1,5 +1,4 @@
-"""''The home blueprint includes / route. It also includes routes not exposed to the end user.
-See routes.py for more details."""
+"""The home blueprint includes / route. It also includes the about page."""
 
 from flask import Blueprint
 
