@@ -4,7 +4,7 @@ from shutil import copyfile
 from flask import render_template, request, flash, redirect, session, current_app
 from werkzeug.utils import secure_filename
 from autoOD.input import input_bp
-from autoOD.input.input_processing import allowed_file
+from autoOD.input.input_processing import allowed_file, get_detection_methods, get_default_run_configuration
 from connect import new_run
 import json
 

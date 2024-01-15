@@ -1,0 +1,509 @@
+#body_results {
+    background-color: #EFEEF1;
+    z-index: 100;
+}
+
+html {
+    /* font-family: 'Open Sans', sans-serif; */
+}
+
+
+h1 {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 700px;
+    font-family: 'Open Sans', sans-serif;
+    padding-left: .5%;
+    top: 2.5%;
+}
+
+center {
+    position: absolute;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    top: 10%;
+}
+
+/* Main tsne chart */
+#dataviz_axisZoom {
+    height: 500px;
+    width: 700px;
+    z-index: 1;
+}
+
+#dataviz_axisZoom svg {
+    position: relative;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    height: 550px;
+}
+
+#pred_but {
+    position: absolute;
+    left: 22px;
+    bottom: 50px;
+    font-size: 17px;
+}
+
+/* autoOD pred filter button */
+#metric {
+    position: absolute;
+    width: 175px;
+    height: 30px;
+    border-radius: 5px;
+    left: 0px;
+    bottom: -30px;
+    font-size: 15px;
+}
+
+#correct_but {
+    position: absolute;
+    left: 576px;
+    bottom: 50px;
+    font-size: 17px;
+}
+
+/* Correct filter button */
+#selectButton_correct {
+    position: absolute;
+    left: 0px;
+    bottom: -30px;
+    width: 175px;
+    height: 30px;
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+#label_but {
+    position: absolute;
+    left: 298px;
+    bottom: 50px;
+    font-size: 17px;
+}
+
+/* Ground truth filter button */
+#selectButton_label {
+    position: absolute;
+    width: 175px;
+    height: 30px;
+    border-radius: 5px;
+    left: 0px;
+    bottom: -30px;
+    font-size: 15px;
+}
+
+/* round relibale labels filter button */
+#selectButton_round {
+    width: 75px;
+    border-radius: 5px;
+}
+
+/* Slider for reliable labels */
+#slider-step {}
+
+#popup_chart {
+    position: relative;
+    left: 1040px;
+    bottom: -145px;
+    width: 760px;
+}
+
+/* barplot for param. */
+#barplot {
+    height: 715px;
+    float: right;
+    left: 400px;
+    bottom: -304px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+#barplot2 {
+    height: 715px;
+    float: left;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+#temp {
+    position: relative;
+    left: -5px;
+    bottom: 5px;
+    width: 1790px;
+}
+
+/* table for each data point att. */
+#table_wrapper {
+    position: absolute;
+    left: 1500px;
+    bottom: -790px;
+    width: 15%;
+    z-index: 10;
+}
+
+#table2_wrapper {
+    position: absolute;
+    left: 1100px;
+    bottom: -790px;
+    width: 15%;
+    z-index: 10;
+}
+
+/* Control panel (filter dropdowns) */
+#filter {
+    position: absolute;
+    left: 15px;
+    top: 6%;
+    background-color: white;
+    width: 760px;
+    height: 100px;
+    border-radius: 10px;
+    padding-left: .5%;
+    padding-top: .2%;
+    padding-bottom: .2%;
+    font-family: 'Open Sans', sans-serif;
+    vertical-align: baseline;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+
+}
+
+#summary {
+    position: absolute;
+    left: 15px;
+    top: 1400px;
+    background-color: white;
+    width: 760px;
+    height: 80px;
+    border-radius: 10px;
+    padding-left: .5%;
+    padding-top: .2%;
+    padding-bottom: .2%;
+    font-family: 'Open Sans', sans-serif;
+    vertical-align: baseline;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+#submitBtn {
+    display: block;
+    background-color: inherit;
+    color: black;
+    padding: 22px 16px;
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    outline: none;
+    text-align: center;
+    transition: 0.3s;
+}
+
+#submitBtn:hover {
+    background-color: lightgray;
+}
+
+#submitBtn:active {
+    background-color: #800000;
+    color: rgb(255, 255, 255);
+}
+
+/* Loader animation - START*/
+
+#loader {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    z-index: 10;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid maroon;
+    width: 240px;
+    height: 240px;
+    opacity: 0;
+}
+
+.animate {
+    opacity: 1;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Loader animation - END*/
+
+#reliable_inout_div {
+    font-family: 'Open Sans', sans-serif;
+
+}
+
+#reliable_inout {
+    width: 140px;
+    border-radius: 5px;
+}
+
+#filtertitle {
+    font-size: 21px;
+    font-family: 'Open Sans', sans-serif;
+
+}
+
+#reliable_output {
+    position: absolute;
+    left: 485px;
+    top: 12%;
+}
+
+#reliable_labels {
+    font-family: 'Open Sans', sans-serif;
+    position: absolute;
+    left: 15px;
+    top: 1240px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    width: 760px;
+    padding-left: .5%;
+    padding-top: .2%;
+    padding-bottom: .2%;
+    height: 130px;
+
+}
+
+select {
+    font-family: 'Open Sans', sans-serif;
+}
+
+/* hor. line */
+/* .vl{
+    border-left: 1px solid black;
+    height: 900px;
+    position: absolute;
+    left: 800px;
+    top: 35px;
+    z-index: -3;
+} */
+
+
+.legend {
+    list-style: none;
+    position: absolute;
+    left: 804px;
+    top: 263px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 15px;
+    background-color: white;
+    width: 112px;
+    height: 50px;
+    border-radius: 12px;
+    padding-left: .5%;
+    padding-top: .2%;
+    padding-bottom: .2%;
+    z-index: 1;
+    opacity: 0.9;
+    /* box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); */
+    vertical-align: baseline;
+
+}
+
+.legend li {
+    float: left;
+    margin-right: 10px;
+}
+
+.legend span {
+    border: 1px solid #ccc;
+    float: left;
+    width: 12px;
+    height: 12px;
+    margin: 5px;
+}
+
+.legend .inlier {
+    background-color: SteelBlue;
+    width: 10px;
+    height: 10px;
+    border-radius: 50px;
+}
+
+.legend .outlier {
+    background-color: #FFA500;
+    width: 10px;
+    height: 10px;
+    border-radius: 50px;
+}
+
+.legend .incorrect {
+    border-color: black;
+    width: 17px;
+    height: 17px;
+    border-radius: 50px;
+}
+
+/* li{
+    font-size: 15px;
+} */
+
+ul {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+    padding-bottom: .5%;
+    padding-top: .5%;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    z-index: 3
+}
+
+li {
+    display: inline;
+}
+
+li a {
+    color: white;
+    padding: 14px 16px;
+    text-decoration: none;
+
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+    background-color: #111;
+}
+
+.active {
+    background-color: maroon;
+    padding-bottom: .5%;
+    padding-top: .5%;
+}
+
+
+.tab_holder {
+    position: absolute;
+    left: 15px;
+    top: 190px;
+    width: 1000px;
+    background-color: white;
+    border-radius: 12px;
+}
+
+.tab {
+    all: unset;
+    height: 650px;
+    width: 15%;
+    float: left;
+    overflow-y: scroll;
+}
+
+.tab button {
+    display: block;
+    background-color: inherit;
+    color: black;
+    padding: 22px 16px;
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    outline: none;
+    text-align: center;
+    transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current "tab button" class */
+.tab button.active {
+    background-color: maroon;
+    color: white;
+}
+
+.tabcontent_holder {
+    margin-left: 15%;
+}
+
+/* Style the tab content */
+.tabcontent {
+    float: left;
+    padding: 0px 12px;
+    border-radius: 12px;
+    border: 1px black;
+    width: 800px;
+    height: 650px;
+}
+
+#rerun_holder {
+    position: absolute;
+    left: 15px;
+    top: 920px;
+    background-color: white;
+    width: 290px;
+    height: auto;
+    border-radius: 10px;
+    padding-left: .5%;
+    padding-top: .2%;
+    padding-bottom: .2%;
+    font-family: 'Open Sans', sans-serif;
+    vertical-align: baseline;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+#modal_holder {
+    position: absolute;
+    left: 320px;
+    top: 920px;
+    width: 700px;
+    height: 290px;
+    border-radius: 10px;
+    padding-left: .5%;
+    padding-top: .2%;
+    padding-bottom: .2%;
+    font-family: 'Open Sans', sans-serif;
+    vertical-align: baseline;
+}
+
+#settings_holder {
+    position: absolute;
+    left: 15px;
+    top: 970px;
+    width: 700px;
+    height: 290px;
+    border-radius: 10px;
+    padding-left: .5%;
+    padding-top: .2%;
+    padding-bottom: .2%;
+    font-family: 'Open Sans', sans-serif;
+    vertical-align: baseline;
+}

@@ -2,7 +2,7 @@ import uuid
 
 from autoOD.home import home_bp
 from connect import create_session_run_tables, new_session
-from flask import session, redirect
+from flask import session, redirect, render_template
 
 
 @home_bp.route('/', methods=['GET', 'POST'])
@@ -19,3 +19,10 @@ def home():
         new_session(user_id)
         return redirect('/autood/index')
         # return f'Hello new user! Your user ID is {user_id}'
+
+
+@home_bp.route('/autood/about', methods=['GET'])
+def about_form():
+    return render_template('about.html')
+
+
