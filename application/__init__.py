@@ -31,16 +31,16 @@ def create_app(config_file="configurations.ini"):
         logger.add(app.config['LOGGING_PATH'], format="{time} - {message}")
 
         # Blueprints
-        from autoOD.home import bp as home_bp
+        from application.home import bp as home_bp
         app.register_blueprint(home_bp, url_prefix='/')
 
-        from autoOD.input import input_bp
+        from application.input import input_bp
         app.register_blueprint(input_bp, url_prefix='/')
 
-        from autoOD.results import results_bp
+        from application.results import results_bp
         app.register_blueprint(results_bp, url_prefix='/')
 
-        from autoOD.logs import logs_bp
+        from application.logs import logs_bp
         app.register_blueprint(logs_bp, url_prefix='/')
 
         print(app.url_map)

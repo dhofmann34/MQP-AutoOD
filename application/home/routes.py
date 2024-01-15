@@ -1,6 +1,6 @@
 import uuid
 
-from autoOD.home import bp
+from application.home import bp
 from connect import create_session_run_tables, new_session
 from flask import session, redirect, render_template
 

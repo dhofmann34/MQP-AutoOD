@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, request, render_template, flash, redirect, Response, send_file, session, url_for
+from flask import Flask, request, render_template, flash, redirect, Response, send_file, session
 import uuid
 from werkzeug.utils import secure_filename
 import os
@@ -11,11 +11,10 @@ import psycopg2
 from flask import jsonify
 import config
 import sql_queries as sql
-from autood import OutlierDetectionMethod, prepare_autood_run_from_params
-from autood_parameters import get_detection_parameters
+from autoOD.autood import OutlierDetectionMethod, prepare_autood_run_from_params
+from autoOD.autood_parameters import get_detection_parameters
 from config import get_db_config
-from tqdm import tqdm
-from connect import new_session, new_run, DecimalEncoder
+from connect import new_session, new_run
 from connect import create_session_run_tables
 import collections
 

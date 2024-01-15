@@ -3,12 +3,12 @@ import unittest
 
 import pandas as pd
 from loguru import logger
-from autood import prepare_autood_run_from_params
-from autood_parameters import get_detection_parameters
+from autoOD.autood import prepare_autood_run_from_params
+from autoOD.autood_parameters import get_detection_parameters
 import json
 
 from config import get_db_config
-from outlier_detection_methods import OutlierDetectionMethod
+from autoOD.outlier_detection_methods import OutlierDetectionMethod
 
 
 def input_params_suite_setup():

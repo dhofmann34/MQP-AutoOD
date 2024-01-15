@@ -5,4 +5,4 @@ from flask import Blueprint
 
 bp = Blueprint('home', __name__, url_prefix='/')
 
-from autoOD.home import routes
+from application.home import routes

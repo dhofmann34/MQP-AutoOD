@@ -2,12 +2,12 @@ import time
 
 from flask import render_template, Response, current_app
 
-from autoOD.logs import logs_bp
+from application.logs import logs_bp
 
 
-def flask_logger():
+def flask_logger(logging_path):
     """creates logging information"""
-    with open(current_app['LOGGING_PATH']) as log_info:
+    with open(logging_path) as log_info:
         while True:
             data = log_info.read()
             yield data.encode()
@@ -22,4 +22,4 @@ def autood_logs():
 @logs_bp.route("/running_logs", methods=["GET"])
 def running_logs():
     """returns logging information"""
-    return Response(flask_logger(), mimetype="text/plain", content_type="text/event-stream")
+    return Response(flask_logger(current_app.config['LOGGING_PATH']), mimetype="text/plain", content_type="text/event-stream")

@@ -1,5 +1,5 @@
 """'Run this code to start the server. Imports necessary packages if not using venv.'"""
-from autoOD import create_app
+from application import create_app
 import config
 
 app = create_app("configurations.ini")
