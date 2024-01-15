@@ -1,10 +1,10 @@
 import json
+import os
+import time
 from shutil import copyfile
-
 import psycopg2
 from flask import session, jsonify, render_template, request, flash, redirect, current_app
 from loguru import logger
-
 import sql_queries
 from application.input.input_processing import call_autood_from_params
 from application.results import results_bp
@@ -13,18 +13,21 @@ from autoOD.autood_parameters import get_detection_parameters
 from config import get_db_config
 from connect import new_run
 
+global results_global, final_log_filename_global
+
 
 @results_bp.route('/autood/result', methods=['GET'])
 def result_index():
-    results = results_global
-    final_log_filename = final_log_filename_global
     try:
+        results = results_global
+        final_log_filename = final_log_filename_global
         return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
                                autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
                                best_method=",".join(results.best_unsupervised_methods),
                                final_results=results.results_file_name, training_log=final_log_filename)
     except:
         return render_template('index.html')
+
 
 @results_bp.route('/autood/result', methods=['POST'])
 def autood_rerun():
@@ -44,7 +47,6 @@ def autood_rerun():
         rerun_params['label_col_name'] = label_col_name
         run_configuration = get_detection_parameters(rerun_params, detection_methods, outlier_min, outlier_max)
         run_configuration['filename'] = filename
-        print(run_configuration)
         results = call_autood_from_params(filename, run_configuration, detection_methods)
 
         # Update the DB with the new run results
@@ -56,7 +58,8 @@ def autood_rerun():
         else:
             # Create empty job.log, old logging will be deleted
             final_log_filename = f"log_{filename.replace('.', '_')}_{int(time.time())}"
-            copyfile(current_app.config['LOGGING_PATH'], current_app.config['DOWNLOAD_FOLDER'] + final_log_filename)
+            output_dir = os.path.join("..", current_app.config['DOWNLOAD_FOLDER'] + final_log_filename)
+            copyfile(current_app.config['LOGGING_PATH'], output_dir)
             open(current_app.config['LOGGING_PATH'], 'w').close()
             global results_global, final_log_filename_global
             results_global = results

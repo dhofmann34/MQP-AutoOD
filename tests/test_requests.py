@@ -18,7 +18,7 @@ def get_file(path, file_type='log'):
 
 
 # Absolute path to results folder
-absolute_path = "..\\results\\"
+absolute_path = "..\\output\\"
 filepaths = {'knn_logs': absolute_path,
              'all_logs': absolute_path,
              'knn_results': absolute_path,

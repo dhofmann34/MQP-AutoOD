@@ -104,7 +104,7 @@ class DetectorMethodsKNN(unittest.TestCase):
 
     def check_run_KNN(self):
         self.assertIsNotNone(self.results)
-        knn_pima_df = pd.read_csv("results\\" + self.results.results_file_name)
+        knn_pima_df = pd.read_csv("output\\" + self.results.results_file_name)
         self.assertEqual(len(knn_pima_df), 768)
         self.assertEqual(self.results.error_message, "")
         self.assertNotEqual(self.results.autood_f1_score, 0)
@@ -127,7 +127,7 @@ class DetectorMethodsLOF(unittest.TestCase):
 
     def check_run_LOF(self):
         self.assertIsNotNone(self.results)
-        lof_pima_df = pd.read_csv("results\\" + self.results.results_file_name)
+        lof_pima_df = pd.read_csv("output\\" + self.results.results_file_name)
         self.assertEqual(len(lof_pima_df), 768)
         self.assertEqual(self.results.error_message, "")
         self.assertNotEqual(self.results.autood_f1_score, 0)
@@ -150,7 +150,7 @@ class DetectorMethodsIF(unittest.TestCase):
 
     def check_run_IF(self):
         self.assertIsNotNone(self.results)
-        if_pima_df = pd.read_csv("results\\" + self.results.results_file_name)
+        if_pima_df = pd.read_csv("output\\" + self.results.results_file_name)
         self.assertEqual(len(if_pima_df), 768)
         self.assertEqual(self.results.error_message, "")
         self.assertNotEqual(self.results.autood_f1_score, 0)
@@ -173,7 +173,7 @@ class DetectorMethodsMA(unittest.TestCase):
 
     def check_run_MA(self):
         self.assertIsNotNone(self.results)
-        if_pima_df = pd.read_csv("results\\" + self.results.results_file_name)
+        if_pima_df = pd.read_csv("output\\" + self.results.results_file_name)
         self.assertEqual(len(if_pima_df), 768)
         self.assertEqual(self.results.error_message, "")
         self.assertNotEqual(self.results.autood_f1_score, 0)

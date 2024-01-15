@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass
 from typing import List
 from numpy import arange
-from outlier_detection_methods import OutlierDetectionMethod
+from autoOD.outlier_detection_methods import OutlierDetectionMethod
 
 # Default detection parameters
 default_N_range = [0.05, 0.07, 0.09, 0.11, 0.13, 0.15]
