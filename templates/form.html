@@ -99,6 +99,7 @@
         //    document.querySelector('.file');
         //    file.value = '';
 
+
         document.getElementById('selectedDataset').value = '';
     }
     // Clear button for file - END
@@ -202,7 +203,7 @@
                                 <label for="musk">Musk</label>
                                 <input type="hidden" id="selectedDataset" name="selectedDataset" value="">
                             </div>
-                            <input type="reset" id="ClearButtonRadio" value="Clear" onchange="clearInputFile()">
+                            <input type="reset" id="ClearButtonRadio" value="Clear" onclick="clearInputFile()">
                         </form>
                     </td>
                 </tr>
