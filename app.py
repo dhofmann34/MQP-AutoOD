@@ -282,8 +282,6 @@ def result_index():
 def send_data(session_id, tab_index):
     conn = psycopg2.connect(**get_db_config())
     cur = conn.cursor()
-    print(session_id)
-    print(tab_index)
     sql_query = sql.get_json(session_id, tab_index)
     cur.execute(sql_query)
     result = cur.fetchone()[0]
