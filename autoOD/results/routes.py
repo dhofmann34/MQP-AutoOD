@@ -2,7 +2,8 @@ import json
 import psycopg2
 from flask import session, jsonify, render_template
 from loguru import logger
-from psycopg2 import sql
+
+import sql_queries
 from autoOD.input.routes import results_global, final_log_filename_global
 from autoOD.results import results_bp
 from config import get_db_config
@@ -26,7 +27,7 @@ def get_run_count():
     user_id = session.get('user_id')
     conn = psycopg2.connect(**get_db_config())
     cur = conn.cursor()
-    sql_query = sql.get_count(user_id)
+    sql_query = sql_queries.get_count(user_id)
     cur.execute(sql_query)
     result = cur.fetchone()[0]
     cur.close()
@@ -45,7 +46,7 @@ def get_session_id():
 def send_data(session_id, tab_index):
     conn = psycopg2.connect(**get_db_config())
     cur = conn.cursor()
-    sql_query = sql.get_json(session_id, tab_index)
+    sql_query = sql_queries.get_json(session_id, tab_index)
     cur.execute(sql_query)
     result = cur.fetchone()[0]
     cur.close()
@@ -57,7 +58,7 @@ def send_data(session_id, tab_index):
 def get_first_run_info():
     conn = psycopg2.connect(**get_db_config())
     cur = conn.cursor()
-    sql_query = sql.get_run_configs(session.get('user_id'), 1)
+    sql_query = sql_queries.get_run_configs(session.get('user_id'), 1)
     cur.execute(sql_query)
     result = cur.fetchone()[0]
     cur.close()
