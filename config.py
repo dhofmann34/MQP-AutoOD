@@ -68,7 +68,8 @@ def app_config(app, filename='configurations.ini'):
     app.config['DOWNLOAD_FOLDER'] = app_configs["download-folder"]
     app.config['DEBUG'] = app_configs["debug-mode"] == 'True'
     app.config['ALLOWED_EXTENSIONS'] = app_configs["allowed-extensions"].split(",")
+    app.config['LOGGING_PATH'] = app_configs["logging-path"]
     app.config['HOST'] = db_configs['host']
     app.secret_key = "super secret key"
 
-    return app, app_configs["logging-path"]
+    return app

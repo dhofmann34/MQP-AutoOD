@@ -28,7 +28,8 @@ final_log_filename_global = None
 config.configure_packages()  # not needed when using virtual env
 app = Flask(__name__)
 app.secret_key = 'secret_key'
-app, LOGGING_PATH = config.app_config(app)
+app = config.app_config(app)
+LOGGING_PATH = app.config['LOGGING_PATH']
 logger.add(LOGGING_PATH, format="{time} - {message}")
 
 from flask_cors import CORS
