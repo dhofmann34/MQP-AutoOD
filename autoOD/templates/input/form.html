@@ -44,7 +44,7 @@
     $(document).ready(function () {
         var output = document.getElementById('output');
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', "{{ url_for('running_logs') }}", true);
+        xhr.open('GET', "{{ url_for('logs.running_logs') }}", true);
         xhr.send();
         setInterval(function () {
             output.textContent = xhr.responseText;
@@ -133,7 +133,7 @@
         if (progressBarCount == 0) {
             progressBarCount = 1;
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', "{{ url_for('running_logs') }}", true);
+            xhr.open('GET', "{{ url_for('logs.running_logs') }}", true);
             xhr.send();
             var elem = document.getElementById("myBar");
             var width = 1;

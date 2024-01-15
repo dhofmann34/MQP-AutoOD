@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-results_bp = Blueprint('results', __name__, url_prefix='/autood/results')
+results_bp = Blueprint('results', __name__, url_prefix='/')
 
 from autoOD.results import routes

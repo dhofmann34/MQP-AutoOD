@@ -4,7 +4,8 @@ from shutil import copyfile
 from flask import render_template, request, flash, redirect, session, current_app
 from werkzeug.utils import secure_filename
 from autoOD.input import input_bp
-from autoOD.input.input_processing import allowed_file, get_detection_methods, get_default_run_configuration
+from autoOD.input.input_processing import allowed_file, get_detection_methods, get_default_run_configuration, \
+    call_autood_from_params
 from connect import new_run
 import json
 
@@ -14,7 +15,7 @@ final_log_filename_global = None
 
 @input_bp.route('/autood/index', methods=['GET'])
 def autood_form():
-    return render_template('form.html')
+    return render_template('input/form.html')
 
 
 @input_bp.route('/autood/index', methods=['POST'])

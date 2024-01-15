@@ -2,7 +2,7 @@
 from autoOD import create_app
 import config
 
-app = create_app("configuration.ini")
+app = create_app("configurations.ini")
 
 if __name__ == '__main__':
     config.configure_packages()
