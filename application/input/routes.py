@@ -15,7 +15,7 @@ final_log_filename_global = None
 
 @input_bp.route('/autood/index', methods=['GET'])
 def autood_form():
-    return render_template('input/form.html')
+    return render_template('form.html')
 
 
 @input_bp.route('/autood/index', methods=['POST'])
