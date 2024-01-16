@@ -6,7 +6,7 @@ from loguru import logger
 
 import sql_queries
 from autoOD.outlier_detection_methods import OutlierDetectionMethod
-from config import get_db_config
+from application.config import get_db_config
 
 
 def get_detection_methods_from_params(parameters: dict):

@@ -10,7 +10,7 @@ from application.input.input_processing import call_autood_from_params
 from application.results import results_bp
 from application.results.input_processing import get_detection_methods_from_params, get_first_run_info
 from autoOD.autood_parameters import get_detection_parameters
-from config import get_db_config
+from application.config import get_db_config
 from connect import new_run
 
 global results_global, final_log_filename_global

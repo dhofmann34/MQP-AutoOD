@@ -3,7 +3,7 @@ The code to run the application can be found in wgsi.py.
 The default configuration file is configurations.ini.'"""
 
 from flask import Flask
-import config
+from application import config
 from loguru import logger
 import collections
 

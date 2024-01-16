@@ -1,6 +1,5 @@
 """'Run this code to start the server. Imports necessary packages if not using venv.'"""
-from application import create_app
-import config
+from application import create_app, config
 
 app = create_app("configurations.ini")
 

@@ -7,7 +7,7 @@ from autoOD.autood import prepare_autood_run_from_params
 from autoOD.autood_parameters import get_detection_parameters
 import json
 
-from config import get_db_config
+from application.config import get_db_config
 from autoOD.outlier_detection_methods import OutlierDetectionMethod
 
 
