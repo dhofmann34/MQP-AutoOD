@@ -1,5 +1,5 @@
 """' This code creates the AutoOD website application.
-The code to run the application can be found in wgsi.py.
+The code to run the application can be found in wsgi.py.
 The default configuration file is configurations.ini.'"""
 
 from flask import Flask
