@@ -31,7 +31,7 @@ def create_app(config_file="configurations.ini"):
         logger.add(app.config['LOGGING_PATH'], format="{time} - {message}")
 
         # Blueprints
-        from application.home import bp as home_bp
+        from application.home import home_bp
         app.register_blueprint(home_bp, url_prefix='/')
 
         from application.input import input_bp
@@ -42,7 +42,5 @@ def create_app(config_file="configurations.ini"):
 
         from application.logs import logs_bp
         app.register_blueprint(logs_bp, url_prefix='/')
-
-        print(app.url_map)
 
         return app

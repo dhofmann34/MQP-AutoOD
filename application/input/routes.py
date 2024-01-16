@@ -20,6 +20,8 @@ def autood_form():
 
 @input_bp.route('/autood/index', methods=['POST'])
 def autood_input():
+    """Verifies the form input and return error messages if invalid.
+    Checks if a pre-existing dataset has been selected. Runs AutoOD."""
     sample_file = None
     if 'selectedDataset' in request.form:
         sample_file = request.form['selectedDataset']

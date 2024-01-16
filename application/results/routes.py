@@ -8,7 +8,7 @@ from loguru import logger
 import sql_queries
 from application.input.input_processing import call_autood_from_params
 from application.results import results_bp
-from application.results.input_processing import get_detection_methods_from_params
+from application.results.input_processing import get_detection_methods_from_params, get_first_run_info
 from autoOD.autood_parameters import get_detection_parameters
 from config import get_db_config
 from connect import new_run
@@ -18,6 +18,7 @@ global results_global, final_log_filename_global
 
 @results_bp.route('/autood/result', methods=['GET'])
 def result_index():
+    """If results exist, returns the results."""
     try:
         results = results_global
         final_log_filename = final_log_filename_global
@@ -31,6 +32,7 @@ def result_index():
 
 @results_bp.route('/autood/result', methods=['POST'])
 def autood_rerun():
+    """Re-runs AutoOD with dataset from original run and any new input parameters."""
     rerun_params = request.get_json()
     outlier_min = rerun_params['globalMinOutlier']
     outlier_max = rerun_params['globalMaxOutlier']
@@ -94,6 +96,7 @@ def get_session_id():
 
 @results_bp.route('/data/<string:session_id>/<int:tab_index>', methods=['GET'])  # get data from DB as json
 def send_data(session_id, tab_index):
+    """Returns the run data for specified tab as a json file."""
     conn = psycopg2.connect(**get_db_config())
     cur = conn.cursor()
     sql_query = sql_queries.get_json(session_id, tab_index)
@@ -103,15 +106,3 @@ def send_data(session_id, tab_index):
     conn.close()
     logger.info("Database connection closed successfully.")
     return jsonify(result)
-
-
-def get_first_run_info():
-    conn = psycopg2.connect(**get_db_config())
-    cur = conn.cursor()
-    sql_query = sql_queries.get_run_configs(session.get('user_id'), 1)
-    cur.execute(sql_query)
-    result = cur.fetchone()[0]
-    cur.close()
-    conn.close()
-    logger.info("Database connection closed successfully.")
-    return json.loads(result)

@@ -1,10 +1,10 @@
 import uuid
-from application.home import bp
+from application.home import home_bp
 from connect import create_session_run_tables, new_session
-from flask import session, redirect, render_template
+from flask import session, redirect, render_template, current_app, send_file
 
 
-@bp.route('/', methods=['GET', 'POST'])
+@home_bp.route('/', methods=['GET', 'POST'])
 def home():
     """Create a user ID tied to the user's browser session.
     User will use pre-existing ID if one exists.
@@ -23,8 +23,12 @@ def home():
         # return f'Hello new user! Your user ID is {user_id}'
 
 
-@bp.route('/autood/about', methods=['GET'])
+@home_bp.route('/autood/about', methods=['GET'])
 def about_form():
     return render_template('about.html')
 
 
+@home_bp.route('/return-files/<filename>')
+def return_files_tut(filename):
+    file_path = current_app.config['DOWNLOAD_FOLDER'] + filename
+    return send_file(file_path, as_attachment=False, attachment_filename='')
