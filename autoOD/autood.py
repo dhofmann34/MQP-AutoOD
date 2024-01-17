@@ -976,7 +976,7 @@ class AutoOD:
             final_df = final_df.convert_dtypes()
             insert_input("predictions", final_df)
         result_filename = f"results_{dataset}_{int(time.time())}.csv"
-        pd.DataFrame(prediction_results).to_csv(f"../output/{result_filename}")
+        pd.DataFrame(prediction_results).to_csv(f"output/{result_filename}")
         self.logger.info(f"Length of prediction results = {len(prediction_results)}")
 
         end_time = time.time()

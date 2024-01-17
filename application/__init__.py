@@ -3,7 +3,7 @@ The code to run the application can be found in wsgi.py.
 The default configuration file is configurations.ini.'"""
 
 from flask import Flask
-from application import config
+import config
 from loguru import logger
 import collections
 
@@ -15,7 +15,7 @@ from flask_navigation import Navigation
 
 def create_app(config_file="configurations.ini"):
     app = Flask(__name__)
-    app = config.app_config(app)
+    app = config.app_config(app, config_file)
 
     with app.app_context():
         # Navigation bar

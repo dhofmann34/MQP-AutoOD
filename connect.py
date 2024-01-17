@@ -2,7 +2,7 @@ import pandas as pd
 import psycopg2
 from psycopg2.extras import Json
 from loguru import logger
-from application.config import get_db_config
+from config import get_db_config
 from sklearn.manifold import TSNE
 import sql_queries as sql
 import json

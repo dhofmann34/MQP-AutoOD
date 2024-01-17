@@ -3,7 +3,7 @@ from flask import current_app
 from loguru import logger
 from autoOD.autood import prepare_autood_run_from_params
 from autoOD.autood_parameters import get_detection_parameters
-from application.config import get_db_config
+from config import get_db_config
 from autoOD.outlier_detection_methods import OutlierDetectionMethod
 
 
