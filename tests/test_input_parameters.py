@@ -3,12 +3,12 @@ import unittest
 
 import pandas as pd
 from loguru import logger
-from autood import prepare_autood_run_from_params
-from autood_parameters import get_detection_parameters
+from autoOD.autood import prepare_autood_run_from_params
+from autoOD.autood_parameters import get_detection_parameters
 import json
 
-from config import get_db_config
-from outlier_detection_methods import OutlierDetectionMethod
+from application.config import get_db_config
+from autoOD.outlier_detection_methods import OutlierDetectionMethod
 
 
 def input_params_suite_setup():
@@ -104,7 +104,7 @@ class DetectorMethodsKNN(unittest.TestCase):
 
     def check_run_KNN(self):
         self.assertIsNotNone(self.results)
-        knn_pima_df = pd.read_csv("results\\" + self.results.results_file_name)
+        knn_pima_df = pd.read_csv("output\\" + self.results.results_file_name)
         self.assertEqual(len(knn_pima_df), 768)
         self.assertEqual(self.results.error_message, "")
         self.assertNotEqual(self.results.autood_f1_score, 0)
@@ -127,7 +127,7 @@ class DetectorMethodsLOF(unittest.TestCase):
 
     def check_run_LOF(self):
         self.assertIsNotNone(self.results)
-        lof_pima_df = pd.read_csv("results\\" + self.results.results_file_name)
+        lof_pima_df = pd.read_csv("output\\" + self.results.results_file_name)
         self.assertEqual(len(lof_pima_df), 768)
         self.assertEqual(self.results.error_message, "")
         self.assertNotEqual(self.results.autood_f1_score, 0)
@@ -150,7 +150,7 @@ class DetectorMethodsIF(unittest.TestCase):
 
     def check_run_IF(self):
         self.assertIsNotNone(self.results)
-        if_pima_df = pd.read_csv("results\\" + self.results.results_file_name)
+        if_pima_df = pd.read_csv("output\\" + self.results.results_file_name)
         self.assertEqual(len(if_pima_df), 768)
         self.assertEqual(self.results.error_message, "")
         self.assertNotEqual(self.results.autood_f1_score, 0)
@@ -173,7 +173,7 @@ class DetectorMethodsMA(unittest.TestCase):
 
     def check_run_MA(self):
         self.assertIsNotNone(self.results)
-        if_pima_df = pd.read_csv("results\\" + self.results.results_file_name)
+        if_pima_df = pd.read_csv("output\\" + self.results.results_file_name)
         self.assertEqual(len(if_pima_df), 768)
         self.assertEqual(self.results.error_message, "")
         self.assertNotEqual(self.results.autood_f1_score, 0)
