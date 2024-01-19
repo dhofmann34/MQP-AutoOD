@@ -71,7 +71,7 @@ def autood_input():
     else:
         # Create empty job.log, old logging will be deleted
         final_log_filename = f"log_{filename.replace('.', '_')}_{int(time.time())}"
-        output_dir = os.path.join("..", current_app.config['DOWNLOAD_FOLDER'] + final_log_filename)
+        output_dir = os.path.join(current_app.config['DOWNLOAD_FOLDER'] + final_log_filename)
         copyfile(current_app.config['LOGGING_PATH'], output_dir)
         open(current_app.config['LOGGING_PATH'], 'w').close()
         global results_global, final_log_filename_global

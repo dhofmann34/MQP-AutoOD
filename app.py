@@ -9,11 +9,11 @@ import time
 from shutil import copyfile
 import psycopg2
 from flask import jsonify
-from application import config
+import config
 import sql_queries as sql
 from autoOD.autood import OutlierDetectionMethod, prepare_autood_run_from_params
 from autoOD.autood_parameters import get_detection_parameters
-from application.config import get_db_config
+from config import get_db_config
 from connect import new_session, new_run
 from connect import create_session_run_tables
 import collections
