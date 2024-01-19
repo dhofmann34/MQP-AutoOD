@@ -1,0 +1,48 @@
+.reset {
+    all: unset;
+}
+
+#desc_holder {
+    width: 85%;
+    margin: auto;
+    margin-top: 80px;
+    padding: 1rem;
+    background-color: white;
+}
+
+#header{
+    font-weight: 700;
+    font-size: 40px;
+    text-align: center;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    padding: 10px;
+  }
+
+  .grid-item {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .grid-item > img {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    margin-bottom: 1rem;
+  }
+
+  .title {
+    color: maroon;
+    font-weight: 700;
+  }
