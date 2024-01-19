@@ -17,6 +17,7 @@ CREATE_SESSION_RUN_TABLE = """
     CREATE TABLE IF NOT EXISTS run (
         id integer,
         json JSONB,
+        run_configuration JSONB,
         session_id uuid NOT NULL REFERENCES session(id) ON UPDATE CASCADE,
         PRIMARY KEY (id, session_id)
     );
