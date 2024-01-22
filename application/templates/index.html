@@ -202,6 +202,16 @@
                 var url = "result";
                 xhr.open("POST", url, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
+                
+                //Reload the page after rerun
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        location.reload();
+                    } else {
+                        console.error("Error processing the JSON file");
+                    }
+                };
+
                 xhr.send(data);
                 console.log("JSON file has been sent");
             }
@@ -215,6 +225,16 @@
                 var url = "result";
                 xhr.open("POST", url, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
+                
+                //Reload the page after rerun
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        location.reload();
+                    } else {
+                        console.error("Error processing the JSON file");
+                    }
+                };
+
                 xhr.send(data);
                 console.log("JSON file has been sent");
             }
@@ -228,6 +248,16 @@
                 var url = "result";
                 xhr.open("POST", url, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
+
+                //Reload the page after rerun
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        location.reload();
+                    } else {
+                        console.error("Error processing the JSON file");
+                    }
+                };
+
                 xhr.send(data);
                 console.log("JSON file has been sent");
 
@@ -242,6 +272,16 @@
                 var url = "result";
                 xhr.open("POST", url, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
+
+                //Reload the page after rerun
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        location.reload();
+                    } else {
+                        console.error("Error processing the JSON file");
+                    }
+                };
+
                 xhr.send(data);
                 console.log("JSON file has been sent");
             }
@@ -254,6 +294,16 @@
                 var url = "result";
                 xhr.open("POST", url, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
+
+                //Reload the page after rerun
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        location.reload();
+                    } else {
+                        console.error("Error processing the JSON file");
+                    }
+                };
+
                 xhr.send(data);
                 console.log("JSON file has been sent");
             }
