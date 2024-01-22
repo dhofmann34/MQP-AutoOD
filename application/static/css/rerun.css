@@ -340,3 +340,21 @@ input {
   padding-right: var(--dl-space-space-unit);
   padding-bottom: var(--dl-space-space-halfunit);
 }
+
+#settingsModal {
+  height: 500px;
+  width: 800px;
+}
+
+#settingsBtn {
+  display: block;
+  background-color: inherit;
+  color: black;
+  padding: 22px 16px;
+  width: 25%;
+  border: none;
+  border-radius: 12px;
+  outline: none;
+  text-align: center;
+  transition: 0.3s;
+}
