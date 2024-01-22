@@ -53,7 +53,7 @@
 
         async function updateRunNumber() {
             try {
-                const response = await fetch('http://localhost:8081/getRunCount');
+                const response = await fetch('http://localhost:8080/getRunCount');
                 const runCount = await response.text();
                 return runCount;
             } catch (error) {
@@ -94,11 +94,11 @@
             }
             evt.currentTarget.className += " active";
             document.getElementById("history_header").innerHTML = runHistory;
-            fetch('http://localhost:8081/getSessionID')
+            fetch('http://localhost:8080/getSessionID')
                 .then(response => response.text())
                 .then(session_id => {
                     var tabIndex = parseInt(runHistory.replace("Run", ""));
-                    var local_data_path = `http://localhost:8081/data/${session_id}/${tabIndex}`;
+                    var local_data_path = `http://localhost:8080/data/${session_id}/${tabIndex}`;
                     console.log(local_data_path)
                     fetchDataAndUpdateVisualization(local_data_path);
                 })
