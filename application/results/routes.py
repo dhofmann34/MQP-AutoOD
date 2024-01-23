@@ -18,6 +18,7 @@ global results_global, final_log_filename_global
 
 @results_bp.route('/autood/result', methods=['GET'])
 def result_index():
+    session['tab_index'] = 1
     """If results exist, returns the results."""
     try:
         results = results_global
