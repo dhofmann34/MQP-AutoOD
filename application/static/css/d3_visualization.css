@@ -507,3 +507,9 @@ li a:hover {
     font-family: 'Open Sans', sans-serif;
     vertical-align: baseline;
 }
+
+#error_dialog{
+    position: absolute;
+left: 50%;
+transform: translateX(-50%);
+}

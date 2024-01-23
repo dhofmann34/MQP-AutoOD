@@ -256,14 +256,18 @@ nav.Bar('top', [
     nav.Item('Input Page', 'autood_form'),
     nav.Item('Result Page', 'result_index'),
     nav.Item('About', 'about_form'),
-    nav.Item('Logs', 'autood_logs')
+    nav.Item('Logs', 'autood_logs'),
+    nav.Item('Error', 'error_dialog'),
 ])
 
+#TODO:DELETE LATER
+@app.route('/autood/error', methods=['GET'])
+def error_dialog():
+    return render_template('error.html')
 
 @app.route('/autood/about', methods=['GET'])
 def about_form():
     return render_template('about.html')
-
 
 @app.route('/autood/result', methods=['GET'])
 def result_index():
