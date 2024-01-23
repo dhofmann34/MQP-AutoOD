@@ -27,10 +27,10 @@ def get_detection_methods_from_params(parameters: dict):
     return selected_methods
 
 
-def get_first_run_info():
+def get_first_run_info(current_run):
     conn = psycopg2.connect(**get_db_config())
     cur = conn.cursor()
-    sql_query = sql_queries.get_run_configs(session.get('user_id'), 1)
+    sql_query = sql_queries.get_run_configs(session.get('user_id'), current_run)
     cur.execute(sql_query)
     result = cur.fetchone()[0]
     cur.close()
