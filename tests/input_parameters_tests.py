@@ -10,6 +10,8 @@ import json
 from config import get_db_config
 from autoOD.outlier_detection_methods import OutlierDetectionMethod
 
+"""These are unit tests for input parameters."""
+
 
 def input_params_suite_setup():
     input_params_suite = unittest.TestSuite()

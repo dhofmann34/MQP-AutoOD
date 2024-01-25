@@ -45,7 +45,6 @@ def test_knn_job_log(client):
     knn_logs_dict, knn_log_statements = process_logs(knn_logs)
     assert knn_logs_dict is not None
     assert knn_log_statements is not None
-    print(knn_log_statements)
 
     # Check correct inputs and detection method running
     assert knn_logs_dict['selected methods'] == "['knn']"
