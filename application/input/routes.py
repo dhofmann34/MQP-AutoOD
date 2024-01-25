@@ -70,7 +70,8 @@ def autood_input():
         return redirect(request.url)
     else:
         # Download logging
-        final_log_filename = f"log_{filename.replace('.', '_')}_{int(time.time())}"
+        user_id = session.get('user_id')
+        final_log_filename = f"log_{filename.replace('.', '_')}_{int(time.time())}_{user_id}"
         output_dir = os.path.join(current_app.config['DOWNLOAD_FOLDER'], final_log_filename)
         copyfile(current_app.config['LOGGING_PATH'], output_dir)
         open(current_app.config['LOGGING_PATH'], 'w').close()
