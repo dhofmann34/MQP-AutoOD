@@ -7,7 +7,10 @@ from application import create_app
 @pytest.fixture()
 def app():
     app = create_app("tests/test_configurations.ini")
+    context = app.test_request_context()
+    context.push()
     yield app
+    context.pop()
 
 
 @pytest.fixture()
