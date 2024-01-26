@@ -1,0 +1,13 @@
+#logging_window {
+    padding: 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 80%;
+    margin: auto;
+    margin-top: 160px;
+}
+
+#file-list {
+    all: initial;
+}
