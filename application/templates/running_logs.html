@@ -11,23 +11,23 @@
 </body>
   <head>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/logs.css') }}"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome-4.7.0/css/font-awesome.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/d3_visualization.css') }}"> 
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/logs.css') }}"/>
 
     <title>AutoOD: Automatic Outlier Detection</title>
 
   </head>
-  <body id="main">
+  <body>
+    <h2>Files for View</h2>
       <div class="logging_window">
-        <h2>Files for View</h2>
-        <ul id="file-list">
+        <ul id="file-list" class="grid-item">
             {% for file in files %}
-                <li><a href="#" onclick="loadFile('{{ url_for('logs.view_file', filename=file) }}')">{{ file }}</a></li>
+                <li class="list_item"><a href="#" onclick="loadFile('{{ url_for('logs.view_file', filename=file) }}')">{{ file }}</a></li>
             {% endfor %}
         </ul>
 
-        <div id="file-content-container"></div>
+        <div id="file-content-container" class="grid-item"></div>
 
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script>
@@ -37,5 +37,6 @@
                 });
             }
         </script>
+      </div>
   </body>
 </html> 

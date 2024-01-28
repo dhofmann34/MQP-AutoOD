@@ -5,7 +5,7 @@ from application.logs import logs_bp
 
 import os
 
-ALLOWED_EXTENSIONS = {'txt'}
+ALLOWED_EXTENSIONS = {'csv'}
 
 def flask_logger(logging_path):
     """creates logging information"""

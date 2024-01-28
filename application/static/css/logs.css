@@ -1,13 +1,41 @@
-#logging_window {
+.logging_window {
     padding: 10px;
-    background-color: #f5f5f5;
+    /* background-color: #f5f5f5; */
     border: 1px solid #ccc;
     border-radius: 4px;
     width: 80%;
     margin: auto;
     margin-top: 160px;
+
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 50px;
 }
 
 #file-list {
-    all: initial;
+    all: revert;
+    position: relative;
+    list-style-type: circle;
+}
+
+.list_item {
+    all :revert;
+    display: block;
+}
+
+.list_item a {
+    all: revert;
+    text-decoration: none;
+}
+
+.list_item a:hover {
+    background-color: maroon;
+    color: white;
+}
+
+.grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  text-align: center;
 }
