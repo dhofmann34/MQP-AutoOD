@@ -1,11 +1,11 @@
 import time
 
-from flask import render_template, Response, current_app, send_from_directory, abort
+from flask import render_template, Response, current_app, send_from_directory, abort, send_file, request
 from application.logs import logs_bp
 
 import os
 
-ALLOWED_EXTENSIONS = {'csv'}
+ALLOWED_EXTENSIONS = {'txt'}
 
 def flask_logger(logging_path):
     """creates logging information"""
@@ -16,7 +16,9 @@ def flask_logger(logging_path):
             time.sleep(1)
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    if '.' not in filename:
+        return True
+    return filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @logs_bp.route('/autood/logs', methods=['GET'])
 def autood_logs():
@@ -24,9 +26,17 @@ def autood_logs():
     file_names = [f for f in os.listdir(files_directory) if allowed_file(f) and os.path.isfile(os.path.join(files_directory, f))]
     return render_template('running_logs.html', files=file_names)
 
-# @logs_bp.route('/download/<filename>')
-# def download(filename):
-#     return send_from_directory(current_app.config['DOWNLOAD_FOLDER'], filename, as_attachment=True)
+@logs_bp.route('/download_active')
+def download_active():
+    active_filename = request.args.get('active_filename')
+
+    if active_filename and allowed_file(active_filename):
+        files_directory = current_app.config['DOWNLOAD_FOLDER']
+        file_path = os.path.join(files_directory, active_filename)
+        return send_file(file_path, as_attachment=True)
+
+    abort(404)
+
 
 @logs_bp.route('/view/<filename>')
 def view_file(filename):

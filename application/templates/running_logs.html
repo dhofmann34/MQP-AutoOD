@@ -15,28 +15,54 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/d3_visualization.css') }}"> 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/logs.css') }}"/>
 
-    <title>AutoOD: Automatic Outlier Detection</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+      var activeFilename = null;
+
+      function loadFile(element,url) {
+        // Remove "active" class from all list items
+        $('#file-list li').removeClass('active');
+        
+        // Add "active" class to the clicked list item
+        $(element).parent().addClass('active');
+
+        // Set the active filename
+        activeFilename = $(element).text();
+
+        $.get(url, function(data) {
+              $('#file-content-container').html(data);
+          });
+
+        $('#download_link').attr('href', 'output/' + activeFilename);
+      }
+
+      function downloadActive() {
+        if (activeFilename) {
+            window.location.href = '{{ url_for('logs.download_active') }}?active_filename=' + activeFilename; // Ignore Error
+        } else {
+            alert('No active file selected.');
+        }
+      }
+
+  </script>
+
+  <title>AutoOD: Automatic Outlier Detection</title>
 
   </head>
   <body>
-    <h2>Files for View</h2>
       <div class="logging_window">
         <ul id="file-list" class="grid-item">
             {% for file in files %}
-                <li class="list_item"><a href="#" onclick="loadFile('{{ url_for('logs.view_file', filename=file) }}')">{{ file }}</a></li>
+                <li class="list_item">
+                  <a href="#" onclick="loadFile(this, '{{ url_for('logs.view_file', filename=file) }}')">{{ file }} <!-- Ignore Error -->
+                  </a>
+                </li>
             {% endfor %}
         </ul>
 
         <div id="file-content-container" class="grid-item"></div>
-
-        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <script>
-            function loadFile(url) {
-                $.get(url, function(data) {
-                    $('#file-content-container').html(data);
-                });
-            }
-        </script>
       </div>
+      <!-- <button id="download-btn" onclick="downloadActive()">Download Active File</button>
+      <a id="download_link" href="#">Download File</a> -->
   </body>
 </html> 
