@@ -69,3 +69,21 @@ h1{
   padding: 20px;
   text-align: left;
 }
+
+#download-btn {
+    position: absolute;
+    width: 200;
+    height: 2em;
+    margin: 1em;
+    right: 5%;
+}
+
+#download-btn:hover {
+    background-color: maroon;
+    color: white;
+}
+
+#download-btn:active {
+    transform: translateY(2px);
+    background-color: rgb(90, 0, 0);
+}
