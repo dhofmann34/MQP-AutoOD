@@ -51,10 +51,12 @@
             });
         });
 
+        var currentRun = 1;
         async function updateRunNumber() {
             try {
                 const response = await fetch('http://localhost:8080/getRunCount');
                 const runCount = await response.text();
+                currentRun = runCount;
                 return runCount;
             } catch (error) {
                 console.error('Error fetching run count:', error);
@@ -147,9 +149,13 @@
         }
         function openReRunSettings(){
             document.getElementById("settingsModal").style.display = "block";
+            var r = document.querySelector(':root');
+            r.style.setProperty('--popup_height', '340px');
         }
         function closeReRunSettings(){
             document.getElementById("settingsModal").style.display = "none";
+            var r = document.querySelector(':root');
+            r.style.setProperty('--popup_height', '0px');
         }
 
         //Getting submit button
@@ -187,18 +193,70 @@
             console.log("IFData updated");
         }
         function sendJSONData() {
-            if(document.getElementById("lofCB").checked == false){
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "true", "knnKRange": knnKRange, "ifRange": ifRange,
-                });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                
-                //Reload the page after rerun
-                xhr.onload = function () {
+            var lofJSON = "";
+            var knnJSON = "";
+            var ifJSON = "";
+            var mJSON = "";
+
+            //If user wants to run LOF, create JSON object for it
+            if(document.getElementById("lofCB").checked == true){
+                lofJSON = {lofKRange: lofKRange};
+            }
+
+            //If user wants to run KNN, create JSON object for it
+            if(document.getElementById("knnCB").checked == true){
+                knnJSON = {knnKRange: knnKRange};
+            }
+
+            //If user wants to run Isolation Forest, create JSON object for it
+            if(document.getElementById("ifCB").checked == true){
+                ifJSON = {ifRange: ifRange};
+            }
+
+            //If user wants to run Malanohbis, create JSON object for it
+            if(document.getElementById("mCB").checked == true){
+                mJSON = {runMalanohbis: "true"};                    
+    
+            }
+
+            //If user wants to run Malanohbis, create JSON object for it
+            if(document.getElementById("mCB").checked == false){
+                mJSON = {runMalanohbis: "false"};                    
+    
+            }
+
+            //Creates base JSON objects with global min and max outliers
+            var data = {globalMinOutlier: globalMinOutlier, globalMaxOutlier: globalMaxOutlier,
+                        ReRun_Run: currentRun};
+
+            //If lofJSON has been set, merge it with data
+            if(lofJSON !== ""){
+                data = Object.assign({}, data, lofJSON);
+            }
+
+            //If knnJSON has been set, merge it with data
+            if(knnJSON !== ""){
+                data = Object.assign({}, data, knnJSON);
+            }
+
+            //If ifJSON has been set, merge it with data
+            if(ifJSON !== ""){
+                data = Object.assign({}, data, ifJSON);
+            }   
+
+            //If mJSON has been set, merge it with data
+            if(mJSON !== ""){
+                data = Object.assign({}, data, mJSON);
+            }
+
+            var sendData = JSON.stringify(data);
+            var xhr = new XMLHttpRequest();
+            var url = "result";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            //Reload the page after rerun
+            xhr.onload = function () {
                     if (xhr.status === 200) {
                         location.reload();
                     } else {
@@ -206,101 +264,9 @@
                     }
                 };
 
-                xhr.send(data);
-                console.log("JSON file has been sent");
-            }
-
-           else if(document.getElementById("knnCB").checked == false){
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "true", "lofKRange": lofKRange, "ifRange": ifRange,
-                });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                
-                //Reload the page after rerun
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        location.reload();
-                    } else {
-                        console.error("Error processing the JSON file");
-                    }
-                };
-
-                xhr.send(data);
-                console.log("JSON file has been sent");
-            }
-
-            else if(document.getElementById("ifCB").checked == false){
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "true", "lofKRange": lofKRange, "knnKRange": knnKRange,
-            });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-
-                //Reload the page after rerun
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        location.reload();
-                    } else {
-                        console.error("Error processing the JSON file");
-                    }
-                };
-
-                xhr.send(data);
-                console.log("JSON file has been sent");
-
-            }
-
-            else if(document.getElementById("mCB").checked == false){
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "false","lofKRange": lofKRange, "knnKRange": knnKRange, "ifRange": ifRange
-                });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-
-                //Reload the page after rerun
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        location.reload();
-                    } else {
-                        console.error("Error processing the JSON file");
-                    }
-                };
-
-                xhr.send(data);
-                console.log("JSON file has been sent");
-            }
-            else{
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "true", "lofKRange": lofKRange, "knnKRange": knnKRange, "ifRange": ifRange,
-                });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-
-                //Reload the page after rerun
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        location.reload();
-                    } else {
-                        console.error("Error processing the JSON file");
-                    }
-                };
-
-                xhr.send(data);
-                console.log("JSON file has been sent");
-            }
+            console.log(sendData);
+            xhr.send(sendData);
+            console.log("JSON file has been sent");
         }
 
     </script>
@@ -342,6 +308,8 @@
         <select id="selectButton_correct"></select>
     </div>
 </div>
+
+<button id="settingsBtn" onclick="openReRunSettings()"><b>Rerun Settings</b></button>
 
 <ul class="legend">
     <li><span class="inlier"></span id="in">Inlier</li>
@@ -396,8 +364,8 @@
         </div>
     </div>
     <div>
-        <button id="settingsBtn" onclick="openReRunSettings()">Re-Run Settings</button>
-        <button id="submitBtn" onclick="sendJSONData()"><b>Rerun</b></button> <!--onclick="setTimeout(window.location.reload(), 3000)"-->
+        <!--<button id="settingsBtn" onclick="openReRunSettings()">Re-Run Settings</button>-->
+         <!--onclick="setTimeout(window.location.reload(), 3000)"-->
     </div>
 </div>
 
@@ -406,86 +374,49 @@
     <div id="barplot2"></div>
 </div>
 
-
-<div id="rerun_holder">
-</div>
-
 <div id="settings_holder">
     <div id="settingsModal" class="modal">
         <div class="modal-content">
             <span class="close1" onclick="closeReRunSettings()">&times;</span>
-            <span class="home-text">Re-Run Settings</span>
+            <h3>Re-Run Settings</h3>
 
-            <span class="home-text1">Range for all models</span><br>
-            <span class="home-text1">Global minOutlier</span>
+            <label for="globalMinOutlier">Global Minimum Outlier</label>
             <input type="text" id="globalMinOutlier" name="globalMinOutlier" placeholder="5" onfocusout="updateOutlierData()">
-            <br>
-            <span class="home-text1">Global maxOutlier</span>
+            <p></p>
+            <label for="globalMaxOutlier">Global Maximum Outlier</label>
             <input type="text" id="globalMaxOutlier" name="globalMaxOutlier" placeholder="15" onfocusout="updateOutlierData()">
-            <br>
             
-            <span class="home-text1" onclick="displayModal1()">Local Outlier Factor</span>
-            <input type="checkbox" checked="true" id="lofCB"/>
-
-            <span class="home-text2" onclick="displayModal2()">knn-N-Neighbors</span>
-            <input type="checkbox" checked="true" id="knnCB"/>
-
-            <span class="home-text3" onclick="displayModal3()">Isloation Forest</span>
-            <input type="checkbox" checked="true" id="ifCB"/>
-
-            <span class="home-text3">Mahalanobis</span>
-            <input type="checkbox" checked="true" id="mCB"/>
+            <p></p>
+            <p></p>
             
-        </div>
-    </div>
-</div>
-
-<!-- Modal div -->
-
-<div id="modal_holder">
-    <!-- The Modal -->
-    <div id="myModal1" class="modal">
-
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close1" onclick="closeModal1()">&times;</span>
-            <p>Local Outlier Factor</p>
-            <br><br>
             <form action="/action_page.php">
                 <label for="lofKRange">Enter K-Range for LOF:</label>
                 <input type="text" id="lofKRange" name="lofKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateLOFData()">
-                <br><br>
+                <input type="checkbox" checked="true" id="lofCB"/>
             </form>
-        </div>
-    </div>
-    <!-- The Modal -->
-    <div id="myModal2" class="modal">
 
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close2" onclick="closeModal2()">&times;</span>
-            <p>k - Nearest - Neighbors Settings</p>
-            <br><br>
+            <p></p>
+
             <form action="/action_page.php">
                 <label for="knnKRange">Enter K-Range for KNN:</label>
                 <input type="text" id="knnKRange" name="knnKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateKNNData()">
-                <br><br>
+                <input type="checkbox" checked="true" id="knnCB"/>
             </form>
-        </div>
-    </div>
-    <!-- The Modal -->
-    <div id="myModal3" class="modal">
 
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close3" onclick="closeModal3()">&times;</span>
-            <p>Isolation Forest</p>
-            <br><br>
+            <p></p>
+
             <form action="/action_page.php">
                 <label for="ifRange">Enter IF-Range for Isloation Forest:</label>
                 <input type="text" id="ifRange" name="ifRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateIFData()">
-                <br><br>
+                <input type="checkbox" checked="true" id="ifCB"/>
             </form>
+
+            <p></p>
+            
+            <label for="ifmCB">Mahalanobis</label>
+            <input type="checkbox" checked="true" id="mCB"/>
+
+            <button id="submitBtn" onclick="sendJSONData()"><b>Start the Rerun</b></button>
         </div>
     </div>
 </div>
