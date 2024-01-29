@@ -254,123 +254,19 @@
             var url = "result";
             xhr.open("POST", url, true);
             xhr.setRequestHeader("Content-Type", "application/json");
+
+            //Reload the page after rerun
+            xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        location.reload();
+                    } else {
+                        console.error("Error processing the JSON file");
+                    }
+                };
+
             console.log(sendData);
             xhr.send(sendData);
             console.log("JSON file has been sent");
-            if(document.getElementById("lofCB").checked == false){
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "true", "knnKRange": knnKRange, "ifRange": ifRange,
-                });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                
-                //Reload the page after rerun
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        location.reload();
-                    } else {
-                        console.error("Error processing the JSON file");
-                    }
-                };
-
-                xhr.send(data);
-                console.log("JSON file has been sent");
-            }
-
-           else if(document.getElementById("knnCB").checked == false){
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "true", "lofKRange": lofKRange, "ifRange": ifRange,
-                });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                
-                //Reload the page after rerun
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        location.reload();
-                    } else {
-                        console.error("Error processing the JSON file");
-                    }
-                };
-
-                xhr.send(data);
-                console.log("JSON file has been sent");
-            }
-
-            else if(document.getElementById("ifCB").checked == false){
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "true", "lofKRange": lofKRange, "knnKRange": knnKRange,
-            });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-
-                //Reload the page after rerun
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        location.reload();
-                    } else {
-                        console.error("Error processing the JSON file");
-                    }
-                };
-
-                xhr.send(data);
-                console.log("JSON file has been sent");
-
-            }
-
-            else if(document.getElementById("mCB").checked == false){
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "false","lofKRange": lofKRange, "knnKRange": knnKRange, "ifRange": ifRange
-                });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-
-                //Reload the page after rerun
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        location.reload();
-                    } else {
-                        console.error("Error processing the JSON file");
-                    }
-                };
-
-                xhr.send(data);
-                console.log("JSON file has been sent");
-            }
-            else{
-                var data = JSON.stringify({
-                    "globalMinOutlier": globalMinOutlier, "globalMaxOutlier": globalMaxOutlier,
-                    "runMalanohbis": "true", "lofKRange": lofKRange, "knnKRange": knnKRange, "ifRange": ifRange,
-                });
-                var xhr = new XMLHttpRequest();
-                var url = "result";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-
-                //Reload the page after rerun
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        location.reload();
-                    } else {
-                        console.error("Error processing the JSON file");
-                    }
-                };
-
-                xhr.send(data);
-                console.log("JSON file has been sent");
-            }
         }
 
     </script>
