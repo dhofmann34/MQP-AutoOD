@@ -61,7 +61,7 @@ def autood_rerun():
             # Create empty job.log, old logging will be deleted
             user_id = session.get('user_id')
             final_log_filename = f"log_{filename.replace('.', '_')}_{int(time.time())}_{user_id}"
-            output_dir = os.path.join(current_app.config['DOWNLOAD_FOLDER'] + final_log_filename)
+            output_dir = os.path.join(current_app.config['DOWNLOAD_FOLDER'], final_log_filename)
             copyfile(current_app.config['LOGGING_PATH'], output_dir)
             open(current_app.config['LOGGING_PATH'], 'w').close()
             global results_global, final_log_filename_global
