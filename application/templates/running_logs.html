@@ -36,12 +36,20 @@
         $('#download_link').attr('href', 'output/' + activeFilename);
       }
 
-      function downloadActive() {
-        if (activeFilename) {
-            window.location.href = '{{ url_for('logs.download_active') }}?active_filename=' + activeFilename; // Ignore Error
-        } else {
-            alert('No active file selected.');
-        }
+      function download_file(){
+        // Get the content of the <pre> element within the div with id 'file-content'
+        var content = document.getElementById('file-content').querySelector('pre').innerText;
+
+        // Create a Blob containing the content
+        var blob = new Blob([content], { type: 'text/plain' });
+
+        var downloadLink = document.createElement('a');
+        downloadLink.href = window.URL.createObjectURL(blob);
+        downloadLink.download = 'log.txt';
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
       }
 
   </script>
@@ -62,7 +70,6 @@
 
         <div id="file-content-container" class="grid-item"></div>
       </div>
-      <!-- <button id="download-btn" onclick="downloadActive()">Download Active File</button>
-      <a id="download_link" href="#">Download File</a> -->
+      <button id="download-btn" onclick="download_file()">Download Active File</button>
   </body>
 </html> 

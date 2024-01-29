@@ -26,18 +26,6 @@ def autood_logs():
     file_names = [f for f in os.listdir(files_directory) if allowed_file(f) and os.path.isfile(os.path.join(files_directory, f))]
     return render_template('running_logs.html', files=file_names)
 
-@logs_bp.route('/download_active')
-def download_active():
-    active_filename = request.args.get('active_filename')
-
-    if active_filename and allowed_file(active_filename):
-        files_directory = current_app.config['DOWNLOAD_FOLDER']
-        file_path = os.path.join(files_directory, active_filename)
-        return send_file(file_path, as_attachment=True)
-
-    abort(404)
-
-
 @logs_bp.route('/view/<filename>')
 def view_file(filename):
     files_directory = current_app.config['DOWNLOAD_FOLDER']
