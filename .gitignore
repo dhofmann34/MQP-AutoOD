@@ -6,3 +6,5 @@ files/
 AutoOD_demo.code-workspace
 __pycache__/
 /output/
+tests/test_output
+application/static/job.log
