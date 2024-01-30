@@ -15,6 +15,7 @@ def test_rerun_all_request(client, cardio_file):
                 "runMahalanobis": "true", "globalMinOutlier": 2, "globalMaxOutlier": 10}
     with client.session_transaction() as session:
         session['user_id'] = rerun_user_id  # Test ID in the DB
+        session['tab_index'] = 1
 
     first_run = client.post("http://localhost:8080/autood/index",
                             data=form, content_type='multipart/form-data')
