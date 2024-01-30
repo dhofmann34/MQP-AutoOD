@@ -1,5 +1,5 @@
 :root {
-    --popup_height: 0px;
+    --popup_height: 0vw;
   }
 
 #body_results {
@@ -166,11 +166,11 @@ center {
 /* Control panel (filter dropdowns) */
 #filter {
     position: absolute;
-    left: 15px;
-    top: 150px;
+    left: 1vw;
+    top: 11vw;
     background-color: white;
-    width: 760px;
-    height: 100px;
+    width: 60vw;
+    height: 8vw;
     border-radius: 10px;
     padding-left: .5%;
     padding-top: .2%;
@@ -183,11 +183,11 @@ center {
 
 #summary {
     position: absolute;
-    left: 450px;
+    left: 36vw;
     top: 8%;
     background-color: white;
-    width: 400px;
-    height: 80px;
+    width: 32vw;
+    height: 6vw;
     border-radius: 10px;
     padding-left: .5%;
     padding-top: .2%;
@@ -204,8 +204,8 @@ center {
 
 #settingsBtn {
     position: absolute;
-    left: 15px;
-    top: 275px;
+    left: 1vw;
+    top: 21vw;
     display: block;
     background-color: white;
     color: black;
@@ -318,7 +318,7 @@ center {
 #reliable_labels {
     font-family: 'Open Sans', sans-serif;
     position: absolute;
-    left: 15px;
+    left: 1vw;
     top: 8%;
     background-color: white;
     border-radius: 12px;
@@ -326,8 +326,8 @@ center {
     padding-left: .5%;
     padding-top: .2%;
     padding-bottom: .2%;
-    height: 80px;
-    width: 400px;
+    width: 32vw;
+    height: 6vw;
 }
 
 select {
@@ -348,13 +348,13 @@ select {
 .legend {
     list-style: none;
     position: absolute;
-    left: 850px;
-    top: calc(375px + var(--popup_height));
+    left: 67vw;
+    top: calc(30vw + var(--popup_height));
     font-family: 'Open Sans', sans-serif;
     font-size: 15px;
     background-color: white;
-    width: 112px;
-    height: 50px;
+    width: 9vw;
+    height: 4vw;
     border-radius: 12px;
     padding-left: .5%;
     padding-top: .2%;
@@ -445,9 +445,9 @@ li a:hover {
 
 .tab_holder {
     position: absolute;
-    left: 15px;
-    top: calc(350px + var(--popup_height));
-    width: 1000px;
+    left: 1vw;
+    top: calc(27vw + var(--popup_height));
+    width: 76vw;
     background-color: white;
     border-radius: 12px;
 }
@@ -494,8 +494,8 @@ li a:hover {
     padding: 0px 12px;
     border-radius: 12px;
     border: 1px black;
-    width: 800px;
-    height: 650px;
+    width: 63vw;
+    height: 51vw;
 }
 
 #rerun_holder {
@@ -518,10 +518,10 @@ li a:hover {
 
 #settings_holder {
     position: absolute;
-    left: 300px;
-    top: 275px;
-    width: 700px;
-    height: 290px;
+    left: 24vw;
+    top: 21vw;
+    width: 55vw;
+    height: 23vw;
     border-radius: 10px;
     border-color: black;
     padding-left: .5%;

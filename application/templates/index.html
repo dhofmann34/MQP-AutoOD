@@ -54,7 +54,7 @@
         var currentRun = 1;
         async function updateRunNumber() {
             try {
-                const response = await fetch('http://localhost:8080/getRunCount');
+                const response = await fetch('http://localhost:8081/getRunCount');
                 const runCount = await response.text();
                 currentRun = runCount;
                 return runCount;
@@ -96,11 +96,11 @@
             }
             evt.currentTarget.className += " active";
             document.getElementById("history_header").innerHTML = runHistory;
-            fetch('http://localhost:8080/getSessionID')
+            fetch('http://localhost:8081/getSessionID')
                 .then(response => response.text())
                 .then(session_id => {
                     var tabIndex = parseInt(runHistory.replace("Run", ""));
-                    var local_data_path = `http://localhost:8080/data/${session_id}/${tabIndex}`;
+                    var local_data_path = `http://localhost:8081/data/${session_id}/${tabIndex}`;
                     console.log(local_data_path)
                     fetchDataAndUpdateVisualization(local_data_path);
                 })
@@ -150,12 +150,12 @@
         function openReRunSettings(){
             document.getElementById("settingsModal").style.display = "block";
             var r = document.querySelector(':root');
-            r.style.setProperty('--popup_height', '340px');
+            r.style.setProperty('--popup_height', '27vw');
         }
         function closeReRunSettings(){
             document.getElementById("settingsModal").style.display = "none";
             var r = document.querySelector(':root');
-            r.style.setProperty('--popup_height', '0px');
+            r.style.setProperty('--popup_height', '0vw');
         }
 
         //Getting submit button
