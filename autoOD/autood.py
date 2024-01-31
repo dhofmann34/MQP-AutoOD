@@ -1,5 +1,6 @@
 from typing import List, Optional
 import numpy as np
+from flask import current_app
 from scipy.io import arff
 import pandas as pd
 from sklearn.neighbors import LocalOutlierFactor
@@ -975,8 +976,9 @@ class AutoOD:
             final_df["correct"] = np.where(prediction_results == self.y, 1, 0)
             final_df = final_df.convert_dtypes()
             insert_input("predictions", final_df)
+        # Download results
         result_filename = f"results_{dataset}_{int(time.time())}.csv"
-        pd.DataFrame(prediction_results).to_csv(f"output/{result_filename}")
+        pd.DataFrame(prediction_results).to_csv(current_app.config['DOWNLOAD_FOLDER'] + f"/{result_filename}")
         self.logger.info(f"Length of prediction results = {len(prediction_results)}")
 
         end_time = time.time()
