@@ -264,27 +264,8 @@
 
 <!-- <div id="dataviz_axisZoom"></div> -->
 
-<div id="reliable_labels">
-    <div id="reliable_inout_div">
-        <label for="reliable_inout">Reliable Label:</label>
-        <select id="reliable_inout"></select>
-    </div>
-    <p id="reliable_output"> </p>
-    <div class="row align-items-center">
-        <div class="col-sm-2">
-            <p id="value-step"></p>
-        </div>
-        <label for="slider-step">Reliable labels by iteration </label>
-        <div class="col-sm">
-            <div id="slider-step"></div>
-        </div>
-    </div>
-</div>
-
 <div id="filter">
     <div id="filtertitle">Filtering:</div>
-
-    <br>
     <div id="pred_but">
         <label for="metric">Metric:</label>
         <select id="metric"></select>
@@ -299,13 +280,9 @@
     </div>
 </div>
 
-<button id="settingsBtn" onclick="openReRunSettings()"><b>Rerun Settings</b></button>
 
-<ul class="legend">
-    <li><span class="inlier"></span id="in">Inlier</li>
-    <li><span class="outlier"></span id="out">Outlier</li>
-    <!-- <li><span class="incorrect"></span id = "incorr">Incorrect Prediction</li> -->
-</ul>
+
+
 
 <div class="vl"></div>
 
@@ -320,20 +297,21 @@
 </div>
 
 <div id="summary">
+    <div id=""summary_Title><b>Results Summary</b></div>
     <form enctype=multipart/form-data>
         <table>
             <tr>
-                <td><b>F-1 of AutoOD</b></td>
+                <td>F-1 of AutoOD</td>
                 <td> </td>
                 <td>{{ autood_f1 }}</td>
             </tr>
             <tr>
-                <td><b>F-1 of Best Unsupervised Detector</b></td>
+                <td>F-1 of Best Unsupervised Detector</td>
                 <td> </td>
                 <td>{{ best_f1 }}</td>
             </tr>
             <tr>
-                <td><b>Best Unsupervised Detector</b></td>
+                <td>Best Unsupervised Detector</td>
                 <td> </td>
                 <td>{{best_method}}</td>
             </tr>
@@ -344,18 +322,53 @@
 <div id="loader"></div>
 
 <div class="tab_holder">
-    <ul class="tab" id="tab">
-        <li><button class="tablinks" onclick="updateTabContent(event, 'Run1')" id="defaultOpen">Run1</button></li>
-    </ul>
+    <div class="runlist_holder">
+        <ul class="tab" id="tab">
+            <li><button id="settingsBtn" onclick="openReRunSettings()">Rerun Settings</button></li>
+            <li><button class="tablinks" onclick="updateTabContent(event, 'Run1')" id="defaultOpen">Run1
+                <form enctype=multipart/form-data>
+                    <table>
+                        <tr>
+                            <td>F-1 = </td>
+                            <td> </td>
+                            <td>{{ autood_f1 }}</td>
+                        </tr>
+                    </table>
+                </form></button></li>
+        </ul>
+    </div>
+
     <div class="tabcontent_holder">
         <div id="Run1" class="tabcontent">
             <h3 id="history_header">Run1</h3>
+            <ul class="legend">
+                <li><span class="inlier"></span id="in">Inlier</li>
+                <li><span class="outlier"></span id="out">Outlier</li>
+                <!-- <li><span class="incorrect"></span id = "incorr">Incorrect Prediction</li> -->
+            </ul>
             <div id="dataviz_axisZoom"></div>
         </div>
     </div>
     <div>
         <!--<button id="settingsBtn" onclick="openReRunSettings()">Re-Run Settings</button>-->
          <!--onclick="setTimeout(window.location.reload(), 3000)"-->
+    </div>
+</div>
+
+<div id="reliable_labels">
+    <div id="reliable_inout_div">
+        <label for="reliable_inout">Reliable Label:</label>
+        <select id="reliable_inout"></select>
+    </div>
+    <p id="reliable_output"> </p>
+    <div class="row align-items-center">
+        <div class="col-sm-2">
+            <p id="value-step"></p>
+        </div>
+        <label for="slider-step">Reliable labels by iteration </label>
+        <div class="col-sm">
+            <div id="slider-step"></div>
+        </div>
     </div>
 </div>
 

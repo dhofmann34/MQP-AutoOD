@@ -52,7 +52,6 @@ center {
 
 #pred_but {
     position: absolute;
-    left: 22px;
     bottom: 50px;
     font-size: 17px;
 }
@@ -70,7 +69,7 @@ center {
 
 #correct_but {
     position: absolute;
-    left: 576px;
+    left: 23.5vw;
     bottom: 50px;
     font-size: 17px;
 }
@@ -88,7 +87,7 @@ center {
 
 #label_but {
     position: absolute;
-    left: 298px;
+    left: 12vw;
     bottom: 50px;
     font-size: 17px;
 }
@@ -164,13 +163,14 @@ center {
 }
 
 /* Control panel (filter dropdowns) */
+
 #filter {
     position: absolute;
-    left: 1vw;
-    top: 11vw;
+    left: 22vw;
+    top: 4vw;
     background-color: white;
-    width: 60vw;
-    height: 8vw;
+    width: 38.5vw;
+    height: 7vw;
     border-radius: 10px;
     padding-left: .5%;
     padding-top: .2%;
@@ -178,16 +178,15 @@ center {
     font-family: 'Open Sans', sans-serif;
     vertical-align: baseline;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-
 }
 
 #summary {
     position: absolute;
-    left: 36vw;
-    top: 8%;
+    left: 1vw;
+    top: 4vw;
     background-color: white;
-    width: 32vw;
-    height: 6vw;
+    width: 20vw;
+    height: 7vw;
     border-radius: 10px;
     padding-left: .5%;
     padding-top: .2%;
@@ -201,7 +200,7 @@ center {
     border-radius: 10px;
     border-color: black;
 }
-
+/*
 #settingsBtn {
     position: absolute;
     left: 1vw;
@@ -216,7 +215,7 @@ center {
     outline: none;
     text-align: center;
     transition: 0.3s;
-}
+}*/
 
 #settingsBtn:hover {
     background-color: lightgray;
@@ -319,7 +318,7 @@ center {
     font-family: 'Open Sans', sans-serif;
     position: absolute;
     left: 1vw;
-    top: 8%;
+    top: calc(53vw + var(--popup_height));
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
@@ -348,8 +347,8 @@ select {
 .legend {
     list-style: none;
     position: absolute;
-    left: 67vw;
-    top: calc(30vw + var(--popup_height));
+    left: 48.25vw;
+    top: calc(4vw + var(--popup_height));
     font-family: 'Open Sans', sans-serif;
     font-size: 15px;
     background-color: white;
@@ -446,12 +445,19 @@ li a:hover {
 .tab_holder {
     position: absolute;
     left: 1vw;
-    top: calc(27vw + var(--popup_height));
-    width: 76vw;
+    top: calc(12vw + var(--popup_height));
+    width: 60vw;
     background-color: white;
     border-radius: 12px;
 }
-
+/*
+.runlist_holder {
+    position: absolute;
+    top: 5vw;
+    width: 60vw;
+    background-color: white;
+    border-radius: 12px;
+}*/
 .tab {
     all: unset;
     height: 650px;
@@ -495,7 +501,7 @@ li a:hover {
     border-radius: 12px;
     border: 1px black;
     width: 63vw;
-    height: 51vw;
+    height: 40vw;
 }
 
 #rerun_holder {
@@ -518,8 +524,8 @@ li a:hover {
 
 #settings_holder {
     position: absolute;
-    left: 24vw;
-    top: 21vw;
+    left: 10vw;
+    top: 12vw;
     width: 55vw;
     height: 23vw;
     border-radius: 10px;
