@@ -1,13 +1,15 @@
 import psycopg2.extras as extras
 
-DROP_ALL_TABLES = """
+def DROP_ALL_TABLES(session_id): 
+    query = f"""
     DROP TABLE IF EXISTS
-    detectors,
-    predictions,
-    reliable,
-    tsne,
-    input
+    "detectors_{session_id}",
+    "predictions_{session_id}",
+    "reliable_{session_id}",
+    "tsne_{session_id}",
+    "input_{session_id}"
     """
+    return query
 
 CREATE_SESSION_RUN_TABLE = """
     CREATE TABLE IF NOT EXISTS session (
@@ -68,34 +70,90 @@ def get_count(session_id):
     query = f"SELECT COUNT(*) FROM run WHERE session_id = '{session_id}';"
     return query
 
-CREATE_DETECTORS_TABLE = """
-    CREATE TABLE detectors (id integer, detector text, k integer, n integer, prediction integer, score float);
+def create_detectors_table(session_id):
+    query = f"""
+        DO $$
+        BEGIN
+            IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'detectors_{session_id}') THEN
+                DROP TABLE "detectors_{session_id}";
+            END IF;
+            CREATE TABLE "detectors_{session_id}" (
+                id INTEGER,
+                detector TEXT,
+                k INTEGER,
+                n INTEGER,
+                prediction INTEGER,
+                score FLOAT
+            );
+        END $$;
     """
+    return query
+    
 
-CREATE_PREDICTIONS_TABLE = """
-    CREATE TABLE predictions (id integer, prediction integer, correct integer);
+def create_predictions_table(session_id):
+    query = f"""
+        DO $$
+        BEGIN
+            IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'predictions_{session_id}') THEN
+                DROP TABLE "predictions_{session_id}";
+            END IF;
+            CREATE TABLE "predictions_{session_id}" (
+                id INTEGER,
+                prediction INTEGER,
+                correct INTEGER
+            );
+        END $$;
     """
+    return query
 
-CREATE_RELIABLE_TABLE = """
-    CREATE TABLE reliable (id integer, iteration integer, reliable integer);
+def create_reliable_table(session_id):
+    query = f"""
+        DO $$
+        BEGIN
+            IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'reliable_{session_id}') THEN
+                DROP TABLE "reliable_{session_id}";
+            END IF;
+            CREATE TABLE "reliable_{session_id}" (
+                id INTEGER,
+                iteration INTEGER,
+                reliable INTEGER
+            );
+        END $$;
     """
+    return query
 
-CREATE_TSNE_TABLE = """
-    CREATE TABLE tsne (id integer, tsne1 float, tsne2 float);
+def create_tsne_table(session_id):
+    query = f"""
+        DO $$
+        BEGIN
+            IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tsne_{session_id}') THEN
+                DROP TABLE "tsne_{session_id}";
+            END IF;
+            CREATE TABLE "tsne_{session_id}" (
+                id INTEGER,
+                tsne1 FLOAT,
+                tsne2 FLOAT
+            );
+        END $$;
     """
+    return query
 
-def CREATE_INPUT_TABLE(columnName, columnDataType):
-    createTableStatement = 'CREATE TABLE IF NOT EXISTS input ('
+def CREATE_INPUT_TABLE(columnName, columnDataType, session_id):
+    createTableStatement = f'CREATE TABLE IF NOT EXISTS "input_{session_id}" ('
     for i in range(len(columnDataType)):
         createTableStatement = createTableStatement + str(columnName[i]) + ' ' + columnDataType[i] + ','
     createTableStatement = createTableStatement[:-1] + ' );'
     return createTableStatement
 
-def INSERT_VALUES(table, data, cur):
+def INSERT_VALUES(table, data, cur, id):
     cols = ','.join(list(data.columns))
-    query = "INSERT INTO {}({}) VALUES %s".format(table, cols)
+    query = 'INSERT INTO "{}_{}"({}) VALUES %s'.format(table, id, cols)
     tuples = [tuple(x) for x in data.to_numpy()]
     extras.execute_values(cur, query, tuples)
+
+def iterations_from_reliable_table(session_id):
+    query = f'SELECT MAX(iteration) FROM "reliable_{session_id}"'
+    return query
 
 ITERATIONS_FROM_RELIABLE_TABLE = "SELECT max(iteration) FROM reliable"
 
@@ -142,39 +200,71 @@ CREATE_TEMP_MAHALANOBIS_TABLE = """
     )
     """
 
-JOIN_ALL_TABLES = """  
-        SELECT *
-        FROM input 
-        FULL JOIN tsne using (id)
-        FULL JOIN temp_lof using (id)
-        FULL JOIN temp_knn using (id)
-        FULL JOIN temp_if using (id)
-        FULL JOIN temp_mahalanobis using (id)
-        FULL JOIN predictions using (id)
+def join_all_tables(iteration, session_id):
+    query = f"""
+    WITH temp_mahalanobis AS (
+        SELECT id, ROUND(AVG(prediction)) AS Prediction_mahalanobis, AVG(score) AS SCORE_mahalanobis
+        FROM "detectors_{session_id}"
+        WHERE detector = 'mahalanobis'
+        GROUP BY id
+    ),
+    temp_if AS (
+        SELECT id, ROUND(AVG(prediction)) AS Prediction_if, AVG(score) AS SCORE_if
+        FROM "detectors_{session_id}"
+        WHERE detector = 'IF'
+        GROUP BY id
+    ),
+    temp_knn AS (
+        SELECT id, ROUND(AVG(prediction)) AS Prediction_KNN, AVG(score) AS SCORE_KNN
+        FROM "detectors_{session_id}"
+        WHERE detector = 'KNN'
+        GROUP BY id
+    ),
+    temp_lof AS (
+        SELECT id, ROUND(AVG(prediction)) AS Prediction_LOF, AVG(score) AS SCORE_LOF
+        FROM "detectors_{session_id}"
+        WHERE detector = 'LOF'
+        GROUP BY id
+    )
+    SELECT *
+    FROM "input_{session_id}"
+    LEFT JOIN "tsne_{session_id}" ON "input_{session_id}".id = "tsne_{session_id}".id
+    LEFT JOIN temp_lof ON "input_{session_id}".id = temp_lof.id
+    LEFT JOIN temp_knn ON "input_{session_id}".id = temp_knn.id
+    LEFT JOIN temp_if ON "input_{session_id}".id = temp_if.id
+    LEFT JOIN temp_mahalanobis ON "input_{session_id}".id = temp_mahalanobis.id
+    LEFT JOIN "predictions_{session_id}" ON "input_{session_id}".id = "predictions_{session_id}".id
+    """
+
+    for i in range(iteration):
+        query += f"""
+        FULL JOIN "reliable_{session_id}_{i}" ON "input_{session_id}".id = "reliable_{session_id}_{i}".id
         """
 
-def CREATE_REALIABLE_TABLES(iteration):
+    return query
+
+def CREATE_REALIABLE_TABLES(iteration, session_id):
     createTableStatement = ""
     for i in range(iteration):
-        createTableStatement += """
-            CREATE TABLE reliable_{} AS (
-            SELECT id, reliable as reliable_{}
-            FROM reliable 
-            WHERE iteration = {}
+        createTableStatement += f"""
+            CREATE TABLE "reliable_{session_id}_{i}" AS (
+            SELECT id, reliable AS reliable_{i}
+            FROM "reliable_{session_id}"
+            WHERE iteration = {i}
             );
-        """.format(i, i, i)
+        """
     return createTableStatement
 
-def JOIN_RELIABLE_TABLES(iteration):
+def JOIN_RELIABLE_TABLES(iteration, session_id):
     join_reliable = ""  # join relibale labels
     for i in range(iteration):
-        join_reliable = f"{join_reliable} FULL JOIN reliable_{i} using (id)" 
+        join_reliable = f'{join_reliable} FULL JOIN "reliable_{session_id}_{i}" using (id)' 
     return join_reliable
 
-def DROP_REALIABLE_TABLES(iteration):
+def DROP_REALIABLE_TABLES(iteration, session_id):
     dropTableStatement = ""
     for i in range(iteration):
-        dropTableStatement += f"DROP TABLE IF EXISTS reliable_{i};\n"
+        dropTableStatement += f'DROP TABLE IF EXISTS "reliable_{session_id}_{i}";\n'
     return dropTableStatement
 
 TRUNCATE_ALL_TABLES = """
