@@ -238,7 +238,11 @@ def join_all_tables(iteration, session_id):
 
     for i in range(iteration):
         query += f"""
-        FULL JOIN "reliable_{session_id}_{i}" ON "input_{session_id}".id = "reliable_{session_id}_{i}".id
+        FULL JOIN (
+            SELECT id, reliable AS reliable_{i}
+            FROM "reliable_{session_id}"
+            WHERE iteration = {i}
+        ) AS reliable_{i} ON "input_{session_id}".id = reliable_{i}.id
         """
 
     return query

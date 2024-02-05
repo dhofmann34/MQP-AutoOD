@@ -180,7 +180,7 @@ def new_run(id, run_configuration):
 
        # cur.execute(sql.CREATE_TEMP_MAHALANOBIS_TABLE)
 
-        cur.execute(sql.CREATE_REALIABLE_TABLES(iteration,id))
+        #cur.execute(sql.CREATE_REALIABLE_TABLES(iteration,id))
 
         # Join all tables together
         SQL_statement = sql.join_all_tables(iteration, id)
