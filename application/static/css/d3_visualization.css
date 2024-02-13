@@ -1,7 +1,3 @@
-:root {
-    --popup_height: 0vw;
-  }
-
 #body_results {
     background-color: #EFEEF1;
     z-index: 100;
@@ -166,12 +162,12 @@ center {
 
 #filter {
     position: absolute;
-    left: 22vw;
+    left: 21vw;
     top: 4vw;
     background-color: white;
     width: 38.5vw;
     height: 7vw;
-    border-radius: 10px;
+    border-radius: 8px;
     padding-left: .5%;
     padding-top: .2%;
     padding-bottom: .2%;
@@ -182,12 +178,12 @@ center {
 
 #summary {
     position: absolute;
-    left: 1vw;
+    /*left: 1vw;*/
     top: 4vw;
     background-color: white;
-    width: 20vw;
+    width: 19vw;
     height: 7vw;
-    border-radius: 10px;
+    border-radius: 8px;
     padding-left: .5%;
     padding-top: .2%;
     padding-bottom: .2%;
@@ -196,26 +192,33 @@ center {
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
 }
 
+#above_graph_content{
+    background-color: white;
+    left: 4vw;
+    top: 4vw;
+    height: 12vw;
+    width: 60vw;
+}
+
 .modal{
     border-radius: 10px;
     border-color: black;
 }
-/*
+
 #settingsBtn {
-    position: absolute;
+    /*position: absolute;
     left: 1vw;
-    top: 21vw;
+    top: 21vw;*/
     display: block;
-    background-color: white;
-    color: black;
+    background-color: #484848;
+    color: white;
     padding: 22px 16px;
-    width: 17%;
     border: none;
     border-radius: 12px;
     outline: none;
     text-align: center;
     transition: 0.3s;
-}*/
+}
 
 #settingsBtn:hover {
     background-color: lightgray;
@@ -317,15 +320,17 @@ center {
 #reliable_labels {
     font-family: 'Open Sans', sans-serif;
     position: absolute;
-    left: 1vw;
-    top: calc(53vw + var(--popup_height));
+    left: 10vw;
+    top: 39vw;
     background-color: white;
-    border-radius: 12px;
+    border-radius: 8px;
+    /*border-color: black;
+    border: 2px ridge maroon;*/
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     padding-left: .5%;
     padding-top: .2%;
     padding-bottom: .2%;
-    width: 32vw;
+    width: 47.5vw;
     height: 6vw;
 }
 
@@ -348,7 +353,7 @@ select {
     list-style: none;
     position: absolute;
     left: 48.25vw;
-    top: calc(4vw + var(--popup_height));
+    top: 4vw;
     font-family: 'Open Sans', sans-serif;
     font-size: 15px;
     background-color: white;
@@ -444,9 +449,10 @@ li a:hover {
 
 .tab_holder {
     position: absolute;
-    left: 1vw;
-    top: calc(12vw + var(--popup_height));
+    /*left: 1vw;*/
+    top: 12;
     width: 60vw;
+    height: 52vw;
     background-color: white;
     border-radius: 12px;
 }
@@ -460,7 +466,7 @@ li a:hover {
 }*/
 .tab {
     all: unset;
-    height: 650px;
+    height: 700px;
     width: 15%;
     float: left;
     overflow-y: scroll;
@@ -521,15 +527,14 @@ li a:hover {
 }
 
 
-
-#settings_holder {
+#settingsModal {
     position: absolute;
     left: 10vw;
-    top: 12vw;
+    top: 15vw;
     width: 55vw;
-    height: 23vw;
+    border: 2px solid #484848;
+    height: 35vw;
     border-radius: 10px;
-    border-color: black;
     padding-left: .5%;
     padding-top: .2%;
     padding-bottom: .2%;

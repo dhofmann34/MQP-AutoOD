@@ -264,21 +264,7 @@
 
 <!-- <div id="dataviz_axisZoom"></div> -->
 
-<div id="filter">
-    <div id="filtertitle">Filtering:</div>
-    <div id="pred_but">
-        <label for="metric">Metric:</label>
-        <select id="metric"></select>
-    </div>
-    <div id="label_but">
-        <label for="selectButton_label">Label:</label>
-        <select id="selectButton_label"></select>
-    </div>
-    <div id="correct_but">
-        <label for="selectButton_correct">Correct Prediction?:</label>
-        <select id="selectButton_correct"></select>
-    </div>
-</div>
+
 
 
 
@@ -296,28 +282,47 @@
     </div>
 </div>
 
-<div id="summary">
-    <div id=""summary_Title><b>Results Summary</b></div>
-    <form enctype=multipart/form-data>
-        <table>
-            <tr>
-                <td>F-1 of AutoOD</td>
-                <td> </td>
-                <td>{{ autood_f1 }}</td>
-            </tr>
-            <tr>
-                <td>F-1 of Best Unsupervised Detector</td>
-                <td> </td>
-                <td>{{ best_f1 }}</td>
-            </tr>
-            <tr>
-                <td>Best Unsupervised Detector</td>
-                <td> </td>
-                <td>{{best_method}}</td>
-            </tr>
-        </table>
-    </form>
+<div id="above_graph_content">
+    <div id="summary">
+        <div id="summary_Title"><b>Metrics on Run Performance</b></div>
+        <form enctype=multipart/form-data>
+            <table>
+                <tr>
+                    <td>F-1 of AutoOD</td>
+                    <td> </td>
+                    <td>{{ autood_f1 }}</td>
+                </tr>
+                <tr>
+                    <td>F-1 of Best Unsupervised Detector</td>
+                    <td> </td>
+                    <td>{{ best_f1 }}</td>
+                </tr>
+                <tr>
+                    <td>Best Unsupervised Detector</td>
+                    <td> </td>
+                    <td>{{best_method}}</td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    
+    <div id="filter">
+        <div id="filtertitle">Filtering:</div>
+        <div id="pred_but">
+            <label for="metric">Metric:</label>
+            <select id="metric"></select>
+        </div>
+        <div id="label_but">
+            <label for="selectButton_label">Label:</label>
+            <select id="selectButton_label"></select>
+        </div>
+        <div id="correct_but">
+            <label for="selectButton_correct">Correct Prediction?:</label>
+            <select id="selectButton_correct"></select>
+        </div>
+    </div>
 </div>
+
 
 <div id="loader"></div>
 
@@ -325,6 +330,7 @@
     <div class="runlist_holder">
         <ul class="tab" id="tab">
             <li><button id="settingsBtn" onclick="openReRunSettings()">Rerun Settings</button></li>
+            <br>
             <li><button class="tablinks" onclick="updateTabContent(event, 'Run1')" id="defaultOpen">Run1
                 <form enctype=multipart/form-data>
                     <table>
@@ -349,28 +355,25 @@
             <div id="dataviz_axisZoom"></div>
         </div>
     </div>
-    <div>
-        <!--<button id="settingsBtn" onclick="openReRunSettings()">Re-Run Settings</button>-->
-         <!--onclick="setTimeout(window.location.reload(), 3000)"-->
+    <div id="reliable_labels">
+        <div id="reliable_inout_div">
+            <label for="reliable_inout">Reliable Label:</label>
+            <select id="reliable_inout"></select>
+        </div>
+        <p id="reliable_output"> </p>
+        <div class="row align-items-center">
+            <div class="col-sm-2">
+                <p id="value-step"></p>
+            </div>
+            <label for="slider-step">Reliable labels by iteration </label>
+            <div class="col-sm">
+                <div id="slider-step"></div>
+            </div>
+        </div>
     </div>
 </div>
 
-<div id="reliable_labels">
-    <div id="reliable_inout_div">
-        <label for="reliable_inout">Reliable Label:</label>
-        <select id="reliable_inout"></select>
-    </div>
-    <p id="reliable_output"> </p>
-    <div class="row align-items-center">
-        <div class="col-sm-2">
-            <p id="value-step"></p>
-        </div>
-        <label for="slider-step">Reliable labels by iteration </label>
-        <div class="col-sm">
-            <div id="slider-step"></div>
-        </div>
-    </div>
-</div>
+
 
 <div id=popup_chart>
     <div id="barplot"></div>
@@ -381,45 +384,66 @@
     <div id="settingsModal" class="modal">
         <div class="modal-content">
             <span class="close1" onclick="closeReRunSettings()">&times;</span>
-            <h3>Re-Run Settings</h3>
+            <h3>Rerun Settings</h3>
 
-            <label for="globalMinOutlier">Global Minimum Outlier</label>
-            <input type="text" id="globalMinOutlier" name="globalMinOutlier" placeholder="5" onfocusout="updateOutlierData()">
-            <p></p>
-            <label for="globalMaxOutlier">Global Maximum Outlier</label>
-            <input type="text" id="globalMaxOutlier" name="globalMaxOutlier" placeholder="15" onfocusout="updateOutlierData()">
-            
-            <p></p>
-            <p></p>
-            
-            <form action="/action_page.php">
-                <label for="lofKRange">Enter K-Range for LOF:</label>
-                <input type="text" id="lofKRange" name="lofKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateLOFData()">
-                <input type="checkbox" checked="true" id="lofCB"/>
-            </form>
+            <table>
+                <tr>
+                    <td>
+                        <label for="globalMinOutlier">Global Minimum Outlier</label>
+                        <input type="text" id="globalMinOutlier" name="globalMinOutlier" placeholder="5" onfocusout="updateOutlierData()">
+                    </td>
 
-            <p></p>
+                </tr>
 
-            <form action="/action_page.php">
-                <label for="knnKRange">Enter K-Range for KNN:</label>
-                <input type="text" id="knnKRange" name="knnKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateKNNData()">
-                <input type="checkbox" checked="true" id="knnCB"/>
-            </form>
+                <tr>
+                    <td>
+                        <label for="globalMaxOutlier">Global Maximum Outlier</label>
+                        <input type="text" id="globalMaxOutlier" name="globalMaxOutlier" placeholder="15" onfocusout="updateOutlierData()">
+                    </td>
+                </tr>
 
-            <p></p>
+                <tr>
+                    <td>
+                        <form action="/action_page.php">
+                            <input type="checkbox" checked="true" id="lofCB"/>
+                            <label for="lofKRange">Enter K-Range for LOF:</label>
+                            <input type="text" id="lofKRange" name="lofKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateLOFData()">
+                        </form>
+                    </td>
+                </tr>
 
-            <form action="/action_page.php">
-                <label for="ifRange">Enter IF-Range for Isloation Forest:</label>
-                <input type="text" id="ifRange" name="ifRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateIFData()">
-                <input type="checkbox" checked="true" id="ifCB"/>
-            </form>
+                <tr>
+                    <td>
+                        <form action="/action_page.php">
+                            <input type="checkbox" checked="true" id="knnCB"/>
+                            <label for="knnKRange">Enter K-Range for KNN:</label>
+                            <input type="text" id="knnKRange" name="knnKRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateKNNData()">
+                        </form>
+                    </td>
+                </tr>
 
-            <p></p>
-            
-            <label for="ifmCB">Mahalanobis</label>
-            <input type="checkbox" checked="true" id="mCB"/>
+                <tr>
+                    <td>
+                        <form action="/action_page.php">
+                            <input type="checkbox" checked="true" id="ifCB"/>
+                            <label for="ifRange">Enter IF-Range for Isloation Forest:</label>
+                            <input type="text" id="ifRange" name="ifRange" placeholder="[10,20,30,40,50,60,70,80,90,100]" onfocusout="updateIFData()">
+                        </form>
+                    </td>
+                </tr>
 
-            <button id="submitBtn" onclick="sendJSONData()"><b>Start the Rerun</b></button>
+                <tr>
+                    <td>
+                        <input type="checkbox" checked="true" id="mCB"/>
+                        <label for="ifmCB">Mahalanobis</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><button id="submitBtn" onclick="sendJSONData()"><b>Update settings and initiate new run</b></button></td>
+                </tr>
+
+            </table>
         </div>
     </div>
 </div>
