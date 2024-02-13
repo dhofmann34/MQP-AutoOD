@@ -54,7 +54,7 @@
         var currentRun = 1;
         async function updateRunNumber() {
             try {
-                const response = await fetch('http://localhost:8081/getRunCount');
+                const response = await fetch('http://localhost:8080/getRunCount');
                 const runCount = await response.text();
                 currentRun = runCount;
                 return runCount;
@@ -100,7 +100,7 @@
                 .then(response => response.text())
                 .then(session_id => {
                     var tabIndex = parseInt(runHistory.replace("Run", ""));
-                    var local_data_path = `http://localhost:8081/data/${session_id}/${tabIndex}`;
+                    var local_data_path = `http://localhost:8080/data/${session_id}/${tabIndex}`;
                     console.log(local_data_path)
                     fetchDataAndUpdateVisualization(local_data_path);
                 })
