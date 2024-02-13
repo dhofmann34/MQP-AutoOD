@@ -273,10 +273,68 @@
             console.log("JSON file has been sent");
         }
 
+        document.addEventListener("DOMContentLoaded", function() {
+            const inputs = {
+            'globalMinOutlier': {positive: true},
+            'globalMaxOutlier': {positive: true},
+            'lofKRange': {commaSeparatedPositiveIntegers: true},
+            'knnKRange': {commaSeparatedPositiveIntegers: true},
+            'ifRange': {commaSeparatedPositiveIntegers: true}
+            };
+
+            const submitBtn = document.getElementById('submitBtn');
+            const toaster = document.getElementById('toaster');
+
+            function updateSubmitButton() {
+            const hasError = Object.keys(inputs).some(inputId => {
+                const inputElement = document.getElementById(inputId);
+                return inputElement.classList.contains('form_error');
+            });
+            submitBtn.disabled = hasError;
+            toaster.style.display = hasError ? 'block' : 'none';
+            }
+
+            Object.keys(inputs).forEach(inputId => {
+            const inputElement = document.getElementById(inputId);
+
+            inputElement.addEventListener("input", function() {
+                const inputValue = inputElement.value.trim();
+                const config = inputs[inputId];
+
+                if (inputValue === "") {
+                inputElement.classList.remove("form_error");
+                updateSubmitButton();
+                return; // Skip validation if input is empty
+                }
+
+                if (config.positive) {
+                const numericValue = parseFloat(inputValue);
+                if (isNaN(numericValue) || numericValue <= 0) {
+                    inputElement.classList.add("form_error");
+                } else {
+                    inputElement.classList.remove("form_error");
+                }
+                } else if (config.commaSeparatedPositiveIntegers) {
+                const numbers = inputValue.split(",").map(num => parseInt(num.trim(), 10));
+                const isInvalid = numbers.some(num => isNaN(num) || num <= 0);
+                if (isInvalid) {
+                    inputElement.classList.add("form_error");
+                } else {
+                    inputElement.classList.remove("form_error");
+                }
+                }
+
+                updateSubmitButton();
+            });
+            });
+        });
+
     </script>
 </head>
 
 <!-- <div id="dataviz_axisZoom"></div> -->
+
+<div id="toaster">Please correct the errors in the Rerun Settings.</div>
 
 <div id="reliable_labels">
     <div id="reliable_inout_div">
