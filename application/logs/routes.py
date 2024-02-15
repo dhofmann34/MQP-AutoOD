@@ -1,6 +1,6 @@
 import time
 
-from flask import render_template, Response, current_app, send_from_directory, abort, send_file, request
+from flask import render_template, Response, current_app, send_from_directory, abort, send_file, request, session
 from application.logs import logs_bp
 
 import os
@@ -23,7 +23,8 @@ def allowed_file(filename):
 @logs_bp.route('/autood/logs', methods=['GET'])
 def autood_logs():
     files_directory = current_app.config['DOWNLOAD_FOLDER']
-    file_names = [f for f in os.listdir(files_directory) if allowed_file(f) and os.path.isfile(os.path.join(files_directory, f))]
+    user_id = session.get('user_id')
+    file_names = [f for f in os.listdir(files_directory) if os.path.isfile(os.path.join(files_directory, f)) and user_id in f]
     return render_template('running_logs.html', files=file_names)
 
 @logs_bp.route('/view/<filename>')
@@ -31,7 +32,7 @@ def view_file(filename):
     files_directory = current_app.config['DOWNLOAD_FOLDER']
     file_path = os.path.join(files_directory, filename)
 
-    if os.path.exists(file_path) and allowed_file(filename):
+    if os.path.exists(file_path):
         with open(file_path, 'r') as file:
             file_content = file.read()
         return render_template('view_file.html', file_content=file_content, filename=filename)

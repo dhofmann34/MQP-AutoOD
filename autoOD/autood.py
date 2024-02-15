@@ -978,7 +978,7 @@ class AutoOD:
             insert_input("predictions", final_df)
         # Download results
         result_filename = f"results_{dataset}_{int(time.time())}.csv"
-        pd.DataFrame(prediction_results).to_csv(current_app.config['DOWNLOAD_FOLDER'] + f"/{result_filename}")
+        #pd.DataFrame(prediction_results).to_csv(current_app.config['DOWNLOAD_FOLDER'] + f"/{result_filename}")
         self.logger.info(f"Length of prediction results = {len(prediction_results)}")
 
         end_time = time.time()
