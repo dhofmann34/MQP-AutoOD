@@ -1,0 +1,11 @@
+#error_holder{
+    width: 400px;
+    height: 100px;
+    padding: 1rem;
+    margin: auto;
+    background-color: lightgray;
+    color: red;
+    border-radius: 10px;
+    font-family: 'Open Sans', sans-serif;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}

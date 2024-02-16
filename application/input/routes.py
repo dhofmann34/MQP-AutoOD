@@ -1,6 +1,8 @@
 import os
 import time
 from shutil import copyfile
+
+import werkzeug.exceptions
 from flask import render_template, request, flash, redirect, session, current_app
 from werkzeug.utils import secure_filename
 from application.input import input_bp

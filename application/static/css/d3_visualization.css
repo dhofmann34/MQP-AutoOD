@@ -252,6 +252,11 @@ center {
     color: rgb(255, 255, 255);
 }
 
+#submitBtn:disabled {
+    background-color: darkgray;
+    color: rgb(255, 255, 255);
+}
+
 /* Loader animation - START*/
 
 #loader {
@@ -542,4 +547,25 @@ li a:hover {
     vertical-align: baseline;
 }
 
+#toaster {
+    display: none;
+    position: fixed;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: slideIn 0.5s forwards;
+    background-color: #800000;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 999;
+}
 
+@keyframes slideIn {
+    from {
+        top: -100%;
+      }
+      to {
+        top: 60px;
+      }
+  }
