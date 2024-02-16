@@ -1,5 +1,7 @@
+import logging
 import os
-from flask import current_app
+import time
+from flask import current_app, session
 from loguru import logger
 from autoOD.autood import prepare_autood_run_from_params
 from autoOD.autood_parameters import get_detection_parameters
@@ -18,7 +20,12 @@ def get_detection_methods(methods: list):
     Arguments:
         methods -- the list sent from the input page's form
     """
-    logger.info(f"selected methods = {methods}")
+    #logs
+    user_id = session.get('user_id')
+    session_logger = logging.getLogger(f"session_{user_id}")
+    session_logger.setLevel(logging.INFO)
+
+    session_logger.info(f"selected methods = {methods}")
     name_to_method_map = {
         "lof": OutlierDetectionMethod.LOF,
         "knn": OutlierDetectionMethod.KNN,
@@ -46,7 +53,10 @@ def get_default_run_configuration(run_configuration, detection_methods, outlier_
         run_configuration["ifRange"] = ""
     if OutlierDetectionMethod.Mahalanobis in detection_methods:
         run_configuration["runMahalanobis"] = True
-    logger.info(
+    #logs
+    user_id = session.get('user_id')
+    session_logger = logging.getLogger(f"session_{user_id}")
+    session_logger.info(
          f"Parameters: outlier_percentage_min = {outlier_range_min}%, outlier_percentage_max = {outlier_range_max}%")
     return get_detection_parameters(run_configuration, detection_methods, outlier_range_min, outlier_range_max)
 
@@ -55,6 +65,14 @@ def get_default_run_configuration(run_configuration, detection_methods, outlier_
 def call_autood_from_params(filename, run_configuration, detection_methods):
     """Call autood.py with required arguments."""
     filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-    logger.info(f"Start calling autood with file {filename}...indexColName = " +
+    #logs
+    user_id = session.get('user_id')
+    session_logger = logging.getLogger(f"session_{user_id}")
+    formatter = logging.Formatter("%(asctime)s | %(levelname)s - %(message)s")
+    outputpath = f'output/{user_id}_{int(time.time())}_{filename}.log'
+    file_handler = logging.FileHandler(outputpath)
+    file_handler.setFormatter(formatter)
+    session_logger.addHandler(file_handler)
+    session_logger.info(f"Start calling autood with file {filename}...indexColName = " +
                 f"{run_configuration['index_col_name']}, labelColName = {run_configuration['label_col_name']}")
-    return prepare_autood_run_from_params(filepath, logger, run_configuration, detection_methods, get_db_config())
+    return prepare_autood_run_from_params(filepath, session_logger, run_configuration, detection_methods, get_db_config())
