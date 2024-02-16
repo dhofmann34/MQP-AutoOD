@@ -113,6 +113,14 @@ input {
   border: 2px solid black;
 }
 
+.form_error {
+  border: 2px solid red;
+}
+
+input[type=checkbox]:checked {
+  accent-color: #800000;
+}
+
 .home-container {
   width: 100%;
   overflow: auto;
@@ -344,4 +352,5 @@ input {
 #settingsModal {
   height: 500px;
   width: 800px;
+  z-index: 30;
 }

@@ -1,7 +1,3 @@
-:root {
-    --popup_height: 0px;
-  }
-
 #body_results {
     background-color: #EFEEF1;
     z-index: 100;
@@ -52,7 +48,6 @@ center {
 
 #pred_but {
     position: absolute;
-    left: 22px;
     bottom: 50px;
     font-size: 17px;
 }
@@ -70,7 +65,7 @@ center {
 
 #correct_but {
     position: absolute;
-    left: 576px;
+    left: 23.5vw;
     bottom: 50px;
     font-size: 17px;
 }
@@ -88,7 +83,7 @@ center {
 
 #label_but {
     position: absolute;
-    left: 298px;
+    left: 12vw;
     bottom: 50px;
     font-size: 17px;
 }
@@ -164,37 +159,45 @@ center {
 }
 
 /* Control panel (filter dropdowns) */
+
 #filter {
     position: absolute;
-    left: 15px;
-    top: 150px;
+    left: 21vw;
+    top: 4vw;
     background-color: white;
-    width: 760px;
-    height: 100px;
-    border-radius: 10px;
+    width: 38.5vw;
+    height: 7vw;
+    border-radius: 8px;
     padding-left: .5%;
     padding-top: .2%;
     padding-bottom: .2%;
     font-family: 'Open Sans', sans-serif;
     vertical-align: baseline;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-
 }
 
 #summary {
     position: absolute;
-    left: 450px;
-    top: 8%;
+    /*left: 1vw;*/
+    top: 4vw;
     background-color: white;
-    width: 400px;
-    height: 80px;
-    border-radius: 10px;
+    width: 19vw;
+    height: 7vw;
+    border-radius: 8px;
     padding-left: .5%;
     padding-top: .2%;
     padding-bottom: .2%;
     font-family: 'Open Sans', sans-serif;
     vertical-align: baseline;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+#above_graph_content{
+    background-color: white;
+    left: 4vw;
+    top: 4vw;
+    height: 12vw;
+    width: 60vw;
 }
 
 .modal{
@@ -203,14 +206,13 @@ center {
 }
 
 #settingsBtn {
-    position: absolute;
-    left: 15px;
-    top: 275px;
+    /*position: absolute;
+    left: 1vw;
+    top: 21vw;*/
     display: block;
-    background-color: white;
-    color: black;
+    background-color: #484848;
+    color: white;
     padding: 22px 16px;
-    width: 17%;
     border: none;
     border-radius: 12px;
     outline: none;
@@ -247,6 +249,11 @@ center {
 
 #submitBtn:active {
     background-color: #800000;
+    color: rgb(255, 255, 255);
+}
+
+#submitBtn:disabled {
+    background-color: darkgray;
     color: rgb(255, 255, 255);
 }
 
@@ -318,16 +325,18 @@ center {
 #reliable_labels {
     font-family: 'Open Sans', sans-serif;
     position: absolute;
-    left: 15px;
-    top: 8%;
+    left: 10vw;
+    top: 39vw;
     background-color: white;
-    border-radius: 12px;
+    border-radius: 8px;
+    /*border-color: black;
+    border: 2px ridge maroon;*/
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     padding-left: .5%;
     padding-top: .2%;
     padding-bottom: .2%;
-    height: 80px;
-    width: 400px;
+    width: 47.5vw;
+    height: 6vw;
 }
 
 select {
@@ -348,13 +357,13 @@ select {
 .legend {
     list-style: none;
     position: absolute;
-    left: 850px;
-    top: calc(375px + var(--popup_height));
+    left: 48.25vw;
+    top: 4vw;
     font-family: 'Open Sans', sans-serif;
     font-size: 15px;
     background-color: white;
-    width: 112px;
-    height: 50px;
+    width: 9vw;
+    height: 4vw;
     border-radius: 12px;
     padding-left: .5%;
     padding-top: .2%;
@@ -445,16 +454,24 @@ li a:hover {
 
 .tab_holder {
     position: absolute;
-    left: 15px;
-    top: calc(350px + var(--popup_height));
-    width: 1000px;
+    /*left: 1vw;*/
+    top: 12;
+    width: 60vw;
+    height: 52vw;
     background-color: white;
     border-radius: 12px;
 }
-
+/*
+.runlist_holder {
+    position: absolute;
+    top: 5vw;
+    width: 60vw;
+    background-color: white;
+    border-radius: 12px;
+}*/
 .tab {
     all: unset;
-    height: 650px;
+    height: 700px;
     width: 15%;
     float: left;
     overflow-y: scroll;
@@ -494,8 +511,8 @@ li a:hover {
     padding: 0px 12px;
     border-radius: 12px;
     border: 1px black;
-    width: 800px;
-    height: 650px;
+    width: 63vw;
+    height: 40vw;
 }
 
 #rerun_holder {
@@ -515,15 +532,14 @@ li a:hover {
 }
 
 
-
-#settings_holder {
+#settingsModal {
     position: absolute;
-    left: 300px;
-    top: 275px;
-    width: 700px;
-    height: 290px;
+    left: 10vw;
+    top: 15vw;
+    width: 55vw;
+    border: 2px solid #484848;
+    height: 35vw;
     border-radius: 10px;
-    border-color: black;
     padding-left: .5%;
     padding-top: .2%;
     padding-bottom: .2%;
@@ -531,4 +547,25 @@ li a:hover {
     vertical-align: baseline;
 }
 
+#toaster {
+    display: none;
+    position: fixed;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: slideIn 0.5s forwards;
+    background-color: #800000;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 999;
+}
 
+@keyframes slideIn {
+    from {
+        top: -100%;
+      }
+      to {
+        top: 60px;
+      }
+  }

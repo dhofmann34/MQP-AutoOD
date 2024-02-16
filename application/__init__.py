@@ -43,4 +43,7 @@ def create_app(config_file="configurations.ini"):
         from application.logs import logs_bp
         app.register_blueprint(logs_bp, url_prefix='/')
 
+        from application.errors import errors_bp
+        app.register_blueprint(errors_bp)
+
         return app
