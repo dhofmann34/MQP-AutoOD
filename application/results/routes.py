@@ -18,6 +18,7 @@ global results_global, final_log_filename_global
 
 @results_bp.route('/autood/result', methods=['GET'])
 def result_index():
+    session['tab_index'] = 1
     """If results exist, returns the results."""
     try:
         results = results_global
@@ -34,11 +35,13 @@ def result_index():
 def autood_rerun():
     """Re-runs AutoOD with dataset from original run and any new input parameters."""
     rerun_params = request.get_json()
+    print(rerun_params)
     outlier_min = rerun_params['globalMinOutlier']
     outlier_max = rerun_params['globalMaxOutlier']
 
     # Get run configuration for the first run for filename, index, and label
-    first_run_config = get_first_run_info()
+    tab_index = session.get('tab_index')
+    first_run_config = get_first_run_info(tab_index)
     filename = first_run_config['filename']
     index_col_name = first_run_config['index_col_name']
     label_col_name = first_run_config['label_col_name']
@@ -59,8 +62,9 @@ def autood_rerun():
             return redirect(request.url)
         else:
             # Create empty job.log, old logging will be deleted
-            final_log_filename = f"log_{filename.replace('.', '_')}_{int(time.time())}"
-            output_dir = os.path.join(current_app.config['DOWNLOAD_FOLDER'] + final_log_filename)
+            user_id = session.get('user_id')
+            final_log_filename = f"log_{filename.replace('.', '_')}_{int(time.time())}_{user_id}"
+            output_dir = os.path.join(current_app.config['DOWNLOAD_FOLDER'], final_log_filename)
             copyfile(current_app.config['LOGGING_PATH'], output_dir)
             open(current_app.config['LOGGING_PATH'], 'w').close()
             global results_global, final_log_filename_global
@@ -97,6 +101,7 @@ def get_session_id():
 @results_bp.route('/data/<string:session_id>/<int:tab_index>', methods=['GET'])  # get data from DB as json
 def send_data(session_id, tab_index):
     """Returns the run data for specified tab as a json file."""
+    session['tab_index'] = tab_index
     conn = psycopg2.connect(**get_db_config())
     cur = conn.cursor()
     sql_query = sql_queries.get_json(session_id, tab_index)
