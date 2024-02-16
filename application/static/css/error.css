@@ -1,11 +1,16 @@
-#error_holder{
-    width: 400px;
-    height: 100px;
-    padding: 1rem;
+.container {
     margin: auto;
-    background-color: lightgray;
-    color: red;
-    border-radius: 10px;
-    font-family: 'Open Sans', sans-serif;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 50%;
+    padding: 10px;
+}
+
+#link_holder {
+    height: 100px;
+    width: 70px;
+    margin-top: 3rem;
+    padding: 0.75rem;
+    border-radius: 5px;
+    background-color: maroon;
+    color: white;
 }
