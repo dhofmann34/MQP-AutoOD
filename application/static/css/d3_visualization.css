@@ -539,8 +539,9 @@ li a:hover {
 #toaster {
     display: none;
     position: fixed;
-    top: 50px;
-    right: -100%;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
     animation: slideIn 0.5s forwards;
     background-color: #800000;
     color: white;
@@ -551,9 +552,9 @@ li a:hover {
 
 @keyframes slideIn {
     from {
-      right: -100%;
-    }
-    to {
-      right: 10px; /* Adjust as needed */
-    }
+        top: -100%;
+      }
+      to {
+        top: 60px;
+      }
   }
