@@ -9,7 +9,7 @@ def home():
     """Create a user ID tied to the user's browser session.
     User will use pre-existing ID if one exists.
     """
-    create_session_run_tables()
+    create_session_run_tables
     if 'user_id' in session:
         user_id = session['user_id']
         return redirect('/autood/index')
