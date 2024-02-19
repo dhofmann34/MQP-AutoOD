@@ -69,7 +69,7 @@ def call_autood_from_params(filename, run_configuration, detection_methods):
     user_id = session.get('user_id')
     session_logger = logging.getLogger(f"session_{user_id}")
     formatter = logging.Formatter("%(asctime)s | %(levelname)s - %(message)s")
-    outputpath = f'output/{user_id}_{int(time.time())}_{filename}.log'
+    outputpath = f'{current_app.config["DOWNLOAD_FOLDER"]}/{user_id}_{int(time.time())}_{filename}.log'
     file_handler = logging.FileHandler(outputpath)
     file_handler.setFormatter(formatter)
     session_logger.addHandler(file_handler)

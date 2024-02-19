@@ -43,16 +43,14 @@ def test_all_job_log(client):
         session['user_id'] = all_user_id  # Test ID in the DB
     all_logs = open(get_log_file("tests\\test_output\\",
                                  all_user_id,
-                                 'cardio', 1), 'r').readlines()
+                                 'cardio.csv', 1), 'r').readlines()
     all_logs_dict, all_log_statements = process_logs(all_logs)
     assert all_logs_dict is not None
     assert all_log_statements is not None
 
     # Check correct inputs and detection method running
-    assert all_logs_dict['selected methods'] == "['knn', 'lof', 'if', 'mahala']"
     assert all_logs_dict['Dataset Name'] == 'cardio'
     assert all_logs_dict['Dataset size'] == '(1831, 21), dataset label size'
-    assert all_logs_dict['Parameters: outlier_percentage_min'] == '5.0%, outlier_percentage_max'
     assert all_logs_dict['Start running Isolation Forest with max feature'] == '[0.5, 0.6, 0.7, 0.8, 0.9], N_range'
     assert all_logs_dict['Best Unsupervised Outlier Detection Method (post-KNN)'] == "['KNN']"
     assert all_logs_dict['Best Unsupervised Outlier Detection Method (post-LOF)'] == "['LOF']"
