@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import traceback
 from shutil import copyfile
 import psycopg2
 from flask import session, jsonify, render_template, request, flash, redirect, current_app
@@ -21,13 +22,15 @@ def result_index():
     session['tab_index'] = 1
     """If results exist, returns the results."""
     try:
-        results = results_global
-        final_log_filename = final_log_filename_global
-        return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
-                               autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
-                               best_method=",".join(results.best_unsupervised_methods),
-                               final_results=results.results_file_name, training_log=final_log_filename)
+        results = json.loads(get_results(session.get('user_id'), 1).get_json())
+        best_f1_rounded = "{:.3f}".format(results['best_unsupervised_f1_score'])
+        autood_f1_rounded = "{:.3f}".format(results['autood_f1_score'])
+        mv_f1_rounded = "{:.3f}".format(results['mv_f1_score'])
+        return render_template('index.html', best_f1=best_f1_rounded,
+                               autood_f1=autood_f1_rounded, mv_f1=mv_f1_rounded,
+                               best_method=",".join(results['best_unsupervised_methods']))
     except:
+        traceback.print_exc()
         return render_template('index.html')
 
 
