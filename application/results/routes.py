@@ -61,19 +61,10 @@ def autood_rerun():
             flash(results.error_message)
             return redirect(request.url)
         else:
-            # Create empty job.log, old logging will be deleted
-            user_id = session.get('user_id')
-            final_log_filename = f"log_{filename.replace('.', '_')}_{int(time.time())}_{user_id}"
-            output_dir = os.path.join(current_app.config['DOWNLOAD_FOLDER'], final_log_filename)
-            copyfile(current_app.config['LOGGING_PATH'], output_dir)
-            open(current_app.config['LOGGING_PATH'], 'w').close()
-            global results_global, final_log_filename_global
-            results_global = results
-            final_log_filename_global = final_log_filename
             return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
                                    autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
                                    best_method=",".join(results.best_unsupervised_methods),
-                                   final_results=results.results_file_name, training_log=final_log_filename)
+                                   final_results=results.results_file_name)
     else:
         return redirect(request.url)
 

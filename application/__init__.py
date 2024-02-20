@@ -28,7 +28,7 @@ def create_app(config_file="configurations.ini"):
         ])
 
         # Set up the logger
-        logger.add(app.config['LOGGING_PATH'], format="{time} - {message}")
+        #logger.add(app.config['LOGGING_PATH'], format="{time} - {message}")
 
         # Blueprints
         from application.home import home_bp
