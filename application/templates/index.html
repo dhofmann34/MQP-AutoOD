@@ -93,7 +93,11 @@
         // Updates button activation and tabcontent header
         function updateTabContent(evt, runHistory) {
 
-            const f1_immutable = 0;
+            if(currentRun == 1){
+                const f1_immutable = 0;
+            } else {
+                var f1_immutable = 0;
+            }
 
             var i, tablinks;
 
