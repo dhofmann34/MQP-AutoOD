@@ -22,7 +22,8 @@ def result_index():
     session['tab_index'] = 1
     """If results exist, returns the results."""
     try:
-        results = json.loads(get_results(session.get('user_id'), 1).get_json())
+        id_ = session.get('user_id')
+        results = json.loads(get_results(id_, 1).get_json())
         best_f1_rounded = "{:.3f}".format(results['best_unsupervised_f1_score'])
         autood_f1_rounded = "{:.3f}".format(results['autood_f1_score'])
         mv_f1_rounded = "{:.3f}".format(results['mv_f1_score'])

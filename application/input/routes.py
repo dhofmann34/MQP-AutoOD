@@ -75,5 +75,5 @@ def autood_input():
                        'autood_f1_score': results.autood_f1_score}
         # Update the DB with the new run results
         user_id = session.get('user_id')
-        new_run(user_id, json.dumps(run_configuration), json.dumps(run_results))
+        new_run(user_id, json.dumps(run_configuration), run_results)
         return redirect('/autood/result')
