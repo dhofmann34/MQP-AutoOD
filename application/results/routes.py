@@ -73,8 +73,7 @@ def autood_rerun():
             new_run(user_id, json.dumps(run_configuration), run_results)
             return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
                                    autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
-                                   best_method=",".join(results.best_unsupervised_methods),
-                                   final_results=results.results_file_name)
+                                   best_method=",".join(results.best_unsupervised_methods))
     else:
         return redirect(request.url)
 
