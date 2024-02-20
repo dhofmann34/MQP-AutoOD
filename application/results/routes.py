@@ -124,5 +124,5 @@ def get_results(session_id, tab_index):
     result = cur.fetchone()[0]
     cur.close()
     conn.close()
-    logger.info("Database connection closed successfully.")
+    logger.info(f"Run results for session {session_id}, run {tab_index} returned successfully.")
     return jsonify(result)

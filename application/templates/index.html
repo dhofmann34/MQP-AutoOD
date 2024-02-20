@@ -32,6 +32,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/rerun.css') }}">
 
     <script>
+        var autood_f1, best_f1, best_method;
         // Functions that need to be run when the page loads
         window.onload = function () {
             defaultClick();
@@ -92,7 +93,7 @@
         }
         // Updates button activation and tabcontent header
         function updateTabContent(evt, runHistory) {
-            var i, tablinks, run_summary_path;
+            var i, tablinks;
 
             tablinks = document.getElementsByClassName("tablinks");
             for (i = 0; i < tablinks.length; i++) {
@@ -105,16 +106,22 @@
                 .then(session_id => {
                     var tabIndex = parseInt(runHistory.replace("Run", ""));
                     var local_data_path = `http://localhost:8080/data/${session_id}/${tabIndex}`;
-                    var run_summary_path = 'http://localhost:8080/getRunResults/${session_id}/${tabIndex}';
+                    fetch(`http://localhost:8080/getRunResults/${session_id}/${tabIndex}`)
+                        .then(response => response.json())
+                        .then(json => {
+                            autood_f1 = parseFloat(json.autood_f1_score);
+                            best_f1 = parseFloat(json.best_unsupervised_f1_score);
+                            best_method = json.best_unsupervised_methods;
+                            document.getElementById('autood_f1').innerHTML = autood_f1.toFixed(3);
+                            document.getElementById('best_f1').innerHTML = best_f1.toFixed(3);
+                            document.getElementById('best_method').innerHTML = best_method;
+                            console.log(json);
+                        })
+                    .catch(error => console.error('Error updating run results: ', error));
                     fetchDataAndUpdateVisualization(local_data_path);
                 })
                 .catch(error => console.error('Error fetching session_id:', error));
-            fetch(run_summary_path)
-                .then(response => response.json())
-                .then(results => {
-                    console.log(results)
-                })
-                .catch(error => console.error('Error updating run results: ', error));
+
         }
         // Get the modal
         var modal1 = document.getElementById("myModal1");
@@ -361,17 +368,17 @@
                 <tr>
                     <td>F-1 of AutoOD</td>
                     <td> </td>
-                    <td>{{ autood_f1 }}</td>
+                    <td id="autood_f1">{{ autood_f1 }}</td>
                 </tr>
                 <tr>
                     <td>F-1 of Best Unsupervised Detector</td>
                     <td> </td>
-                    <td>{{ best_f1 }}</td>
+                    <td id="best_f1">{{ best_f1 }}</td>
                 </tr>
                 <tr>
                     <td>Best Unsupervised Detector</td>
                     <td> </td>
-                    <td>{{best_method}}</td>
+                    <td id="best_method">{{best_method}}</td>
                 </tr>
             </table>
         </form>
