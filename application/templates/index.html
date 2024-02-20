@@ -92,6 +92,9 @@
         }
         // Updates button activation and tabcontent header
         function updateTabContent(evt, runHistory) {
+
+            const f1_immutable = 0;
+
             var i, tablinks;
 
             tablinks = document.getElementsByClassName("tablinks");
@@ -109,9 +112,10 @@
                         .then(response => response.json())
                         .then(json => {
                             autood_f1 = parseFloat(json.autood_f1_score);
+                            f1_immutable = autood_f1;
                             best_f1 = parseFloat(json.best_unsupervised_f1_score);
                             best_method = json.best_unsupervised_methods;
-                            document.getElementById('autood_f1').innerHTML = autood_f1.toFixed(3);
+                            document.getElementById('autood_f1').innerHTML = f1_immutable.toFixed(3);
                             document.getElementById('best_f1').innerHTML = best_f1.toFixed(3);
                             document.getElementById('best_method').innerHTML = best_method;
                             console.log(json);
