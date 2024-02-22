@@ -58,7 +58,7 @@
         var currentRun = 1;
         async function updateRunNumber() {
             try {
-                const response = await fetch('http://localhost:8080/getRunCount');
+                const response = await fetch('http://localhost:8081/getRunCount');
                 const runCount = await response.text();
                 currentRun = runCount;
                 return runCount;
@@ -100,66 +100,23 @@
             }
             evt.currentTarget.className += " active";
             document.getElementById("history_header").innerHTML = runHistory;
-            fetch('http://localhost:8080/getSessionID')
+            fetch('http://localhost:8081/getSessionID')
                 .then(response => response.text())
                 .then(session_id => {
                     var tabIndex = parseInt(runHistory.replace("Run", ""));
-                    var local_data_path = `http://localhost:8080/data/${session_id}/${tabIndex}`;
+                    var local_data_path = `http://localhost:8081/data/${session_id}/${tabIndex}`;
                     console.log(local_data_path)
                     fetchDataAndUpdateVisualization(local_data_path);
                 })
                 .catch(error => console.error('Error fetching session_id:', error));
 
         }
-        // Get the modal
-        var modal1 = document.getElementById("myModal1");
-        var modal2 = document.getElementById("myModal2");
-        var modal3 = document.getElementById("myModal3");
-        var modal4 = document.getElementById("myModal4");
-
-        function closeAllModals(){
-            closeModal1();
-            closeModal2();
-            closeModal3();
-            closeModal4();
-        }
-
-        function displayModal1(){
-            document.getElementById("myModal1").style.display = "block";
-            closeModal2();
-            closeModal3();
-        }
-        function displayModal2(){
-            document.getElementById("myModal2").style.display = "block";
-            closeModal1();
-            closeModal3();
-        }
-        function displayModal3(){
-            document.getElementById("myModal3").style.display = "block";
-            closeModal1();
-            closeModal2();
-        }
-        function closeModal1() {
-            document.getElementById("myModal1").style.display = "none";
-            updateLOFData();
-        }
-        function closeModal2() {
-            document.getElementById("myModal2").style.display = "none";
-            updateKNNData();
-        }
-        function closeModal3() {
-            document.getElementById("myModal3").style.display = "none";
-            updateIFData()
-        }
+        
         function openReRunSettings(){
             document.getElementById("settingsModal").style.display = "block";
-            var r = document.querySelector(':root');
-            r.style.setProperty('--popup_height', '27vw');
         }
         function closeReRunSettings(){
             document.getElementById("settingsModal").style.display = "none";
-            var r = document.querySelector(':root');
-            r.style.setProperty('--popup_height', '0vw');
         }
 
         //Getting submit button
@@ -443,12 +400,11 @@
     <div id="barplot2"></div>
 </div>
 
-<div id="settings_holder">
+
     <div id="settingsModal" class="modal">
         <div class="modal-content">
             <span class="close1" onclick="closeReRunSettings()">&times;</span>
             <h3>Rerun Settings</h3>
-
             <table>
                 <tr>
                     <td>
@@ -509,7 +465,7 @@
             </table>
         </div>
     </div>
-</div>
+
 
 
 
