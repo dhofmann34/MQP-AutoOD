@@ -25,24 +25,32 @@ img {
 
 .grid-container {
     display: grid;
-    grid-template-columns: auto auto auto;
     padding: 10px;
-  }
+}
 
-  .grid-item {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 20px;
-    text-align: center;
-  }
+.original-container {
+  grid-template-columns: repeat(3, 1fr);
+}
 
-  .grid-item > img {
-    width: 250px;
-    height: 250px;
-    object-fit: cover;
-    margin-bottom: 1rem;
-  }
+.student-container {
+  padding-inline: 10rem;
+  grid-template-columns: repeat(2, 1fr);
+}
 
-  .title {
-    color: maroon;
-    font-weight: 700;
-  }
+.grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  text-align: center;
+}
+
+.grid-item > img {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.title {
+  color: maroon;
+  font-weight: 700;
+}

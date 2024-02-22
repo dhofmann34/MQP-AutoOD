@@ -127,44 +127,9 @@
         });
     });
 
-
-    function updateProgressBar() {
-        var progressBarCount = 0;
-        if (progressBarCount == 0) {
-            progressBarCount = 1;
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', "{{ url_for('logs.running_logs') }}", true);
-            xhr.send();
-            var elem = document.getElementById("myBar");
-            var width = 1;
-            var id = setInterval(frame, 10);
-            function frame() {
-                if (width >= 100) {
-                    clearInterval(id);
-                    i = 0;
-                } else {
-                    if (xhr.responseText.includes("Dataset Name")) {
-                        width = 5;
-                    }
-                    if (xhr.responseText.includes("Dataset size")) {
-                        width = 15;
-                    }
-                    if (xhr.responseText.includes("Best Unsupervised F-1 Score")) {
-                        width = 30;
-                    }
-                    if (xhr.responseText.includes("Start First-round AutoOD training")) {
-                        width = 35;
-                    }
-                    if (xhr.responseText.includes("Start Second-round AutoOD training")) {
-                        width = 70;
-                    }
-                    if (xhr.responseText.includes("Database connection closed successfully.")) {
-                        width = 90;
-                    }
-                    elem.style.width = width + "%";
-                }
-            }
-        }
+    function showLoadingLogo(){
+        var loadingLogo = document.getElementById('loadingLogo');
+        loadingLogo.style.display = 'block';
     }
 
 </script>
@@ -178,7 +143,7 @@
         <form action="/autood/index" method="post" enctype=multipart/form-data>
             <table border="0">
                 <tr>
-                    <td>Input File</td>
+                    <td style="width: 30%;">Input File</td>
                     <td>
                         <form action="/action_page.php">
                             <p>Enter your own:</p>
@@ -206,6 +171,42 @@
                         </form>
                     </td>
                 </tr>
+                <tr>
+                    <td>Detection Methods</td>
+                    <td><select id="multiple-checkboxes" name="detectionMethods" multiple="multiple">
+                            <option value="lof" selected>LOF</option>
+                            <option value="knn" selected>KNN</option>
+                            <option value="if" selected>Isolation Forest</option>
+                            <option value="mahala" selected>Mahalanobis</option>
+                        </select></td>
+                </tr>
+                <tr>
+                    <td>Index Column Name</td>
+                    <td><input name="indexColName" value="id" type="text" /></td>
+                </tr>
+                <tr>
+                    <td>Label Column Name</td>
+                    <td><input name="labelColName" value="label" type="text" /></td>
+                </tr>
+                <tr>
+                    <td>Percentage of Outliers: Min (%)</td>
+                    <td><input name="outlierRangeMin" value="5" type="number" /></td>
+                </tr>
+                <tr>
+                    <td>Percentage of Outliers: Max (%)</td>
+                    <td><input name="outlierRangeMax" value="15" type="number" /></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div>
+                            <input class="button" type="submit" value="Submit" id="SubmitButton" style="float: left;" onclick="showLoadingLogo()"/>
+                            <div class="loader" id="loadingImg" style="float: left;"></div>
+                        </div>
+                    </td>
+                </tr>
+
+
                 <!-- <tr>  THIS PART WAS USED TO CREATE THE CUSTOM DETECTOR FILE INPUT
 <div class="header" style="text-align:center">
     <h1>AutoOD: Automatic Outlier Detection</h1>
@@ -256,42 +257,11 @@
                     </div>
                 </td>
             </tr> -->
-                <tr>
-                    <td>Detection Methods</td>
-                    <td><select id="multiple-checkboxes" name="detectionMethods" multiple="multiple">
-                            <option value="lof" selected>LOF</option>
-                            <option value="knn" selected>KNN</option>
-                            <option value="if" selected>Isolation Forest</option>
-                            <option value="mahala" selected>Mahalanobis</option>
-                        </select></td>
-                </tr>
-                <tr>
-                    <td>Index Column Name</td>
-                    <td><input name="indexColName" value="id" type="text" /></td>
-                </tr>
-                <tr>
-                    <td>Label Column Name</td>
-                    <td><input name="labelColName" value="label" type="text" /></td>
-                </tr>
-                <tr>
-                    <td>Percentage of Outliers: Min (%)</td>
-                    <td><input name="outlierRangeMin" value="5" type="number" /></td>
-                </tr>
-                <tr>
-                    <td>Percentage of Outliers: Max (%)</td>
-                    <td><input name="outlierRangeMax" value="15" type="number" /></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>
-                        <div>
-                            <input class="button" type="submit" value="Submit" id="SubmitButton" style="float: left;"
-                                onclick="updateProgressBar()" />
-                            <div class="loader" id="loadingImg" style="float: left;"></div>
-                        </div>
-                    </td>
-                </tr>
+
+                
+
             </table>
+
         </form>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -302,11 +272,11 @@
         </ul>
         {% endif %}
         {% endwith %}
-        <!-- Progress Bar -->
-        <div id="myProgress">
-            <div id="myBar"></div>
+
+        <div id="loadingLogo">
+            <img src="../static/img/loading.gif" alt="Loading">
         </div>
-        <!-- Progress Bar -->
+
         <div class="row">
             <h3 align="center">Log Messages:</h3>
             <div class="logging_window">
