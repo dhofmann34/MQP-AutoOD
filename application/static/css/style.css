@@ -413,17 +413,14 @@ p.copyright {
     margin: auto;
 }
 
-#myProgress {
-    width: 500px;
-    height: 30px;
-    background-color: #ddd;
+#loadingLogo {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
 }
 
-#myBar {
-    height: 100%;
-    width: 0%;
-    background-color: #990000;
-    float: left;
+#loadingLogo img {
+    width: 50px;
 }
 
 /*!* -------------------- Select Box Styles: stackoverflow.com Method *!*/
