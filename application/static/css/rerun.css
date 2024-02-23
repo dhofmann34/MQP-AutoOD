@@ -351,8 +351,8 @@ input[type=checkbox]:checked {
 
 #settingsModal {
   position: absolute;
-  /* left: 10vw;
-  top: 15vw;     */
+  left: 10vw;
+  /* top: 15vw;     */
   font-family: 'Open Sans', sans-serif;
   width: 800px;
   height: min-content;
@@ -366,4 +366,10 @@ input[type=checkbox]:checked {
   width: 40%;
   height: 10px;
   background-color: lightgray;
+}
+
+#loadingLogo {
+  display: none;
+  text-align: center;
+  margin-top: 20px;
 }

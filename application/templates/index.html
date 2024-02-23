@@ -43,18 +43,6 @@
             document.getElementById("defaultOpen").click();
         }
 
-        // Loader animation
-        $(function () {
-            $('#submitBtn').click(function () {
-                e1 = $('#loader');
-                e1.addClass('animate');
-                e1.one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
-                    function (e) {
-                        e1.removeClass('animate');
-                    });
-            });
-        });
-
         var currentRun = 1;
         async function updateRunNumber() {
             try {
@@ -154,6 +142,8 @@
             console.log("IFData updated");
         }
         function sendJSONData() {
+            showLoadingLogo();
+
             var lofJSON = "";
             var knnJSON = "";
             var ifJSON = "";
@@ -329,6 +319,11 @@
             document.onmouseup = null;
             document.onmousemove = null;
         }
+
+        function showLoadingLogo(){
+        var loadingLogo = document.getElementById('loadingLogo');
+        loadingLogo.style.display = 'block';
+    }
 
     </script>
 </head>
@@ -508,6 +503,10 @@
                 </tr>
 
             </table>
+
+            <div id="loadingLogo">
+                <img src="../static/img/loading.gif" alt="Loading">
+            </div>
         </div>
     </div>
 
