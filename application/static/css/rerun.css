@@ -350,7 +350,20 @@ input[type=checkbox]:checked {
 }
 
 #settingsModal {
-  height: 500px;
+  position: absolute;
+  /* left: 10vw;
+  top: 15vw;     */
+  font-family: 'Open Sans', sans-serif;
   width: 800px;
+  height: min-content;
   z-index: 30;
+}
+
+#settingsModalheader{
+  cursor: move;
+  z-index: 31;
+  margin-inline: auto;
+  width: 40%;
+  height: 10px;
+  background-color: lightgray;
 }

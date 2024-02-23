@@ -512,18 +512,11 @@ li a:hover {
 }
 
 #settingsModal {
-    position: absolute;
+    /* position: absolute;
     left: 10vw;
     top: 15vw;
-    width: 55vw;
-    height: 35vw;
-    /*border: 2px solid #484848;
-    border-radius: 5px;
-    padding-left: 0.5vw;
-    padding-top: 0.5vw%;
-    padding-bottom: .1%;*/
     font-family: 'Open Sans', sans-serif;
-    vertical-align: baseline;
+    vertical-align: baseline; */
 }
 .modal-content{
     border: 2px solid #484848;
