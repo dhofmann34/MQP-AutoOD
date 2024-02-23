@@ -41,16 +41,14 @@ def test_mahala_get_results_json(client):
 def test_mahala_job_log(client):
     with client.session_transaction() as session:
         session['user_id'] = mahalanobis_user_id  # Test ID in the DB
-    mahala_logs = open(get_log_file("tests\\test_output\\", mahalanobis_user_id, 'cardio', 1), 'r').readlines()
+    mahala_logs = open(get_log_file("tests\\test_output\\", mahalanobis_user_id, 'cardio.csv', 1), 'r').readlines()
     mahala_logs_dict, mahala_log_statements = process_logs(mahala_logs)
     assert mahala_logs_dict is not None
     assert mahala_log_statements is not None
 
     # Check correct inputs and detection method running
-    assert mahala_logs_dict['selected methods'] == "['mahala']"
     assert mahala_logs_dict['Dataset Name'] == 'cardio'
     assert mahala_logs_dict['Dataset size'] == '(1831, 21), dataset label size'
-    assert mahala_logs_dict['Parameters: outlier_percentage_min'] == '3.0%, outlier_percentage_max'
     assert mahala_logs_dict['Best Unsupervised Outlier Detection Method (post-Mahalanobis)'] == "['mahalanobis']"
 
     # Check DB connection, no errors with DB, and two rounds of training

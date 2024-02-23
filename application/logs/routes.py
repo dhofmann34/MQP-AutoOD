@@ -43,7 +43,7 @@ def view_file(filename):
 def running_logs():
     """returns logging information"""
     user_id = session.get('user_id')
-    outputpath = f'static/{user_id}.log'
+    outputpath = f'{current_app.config["LOGGING_PATH"]}/{user_id}.log'
     if not os.path.exists(outputpath):
         with open(outputpath, 'w'):
             pass

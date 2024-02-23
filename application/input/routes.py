@@ -64,11 +64,16 @@ def autood_input():
 
     results = call_autood_from_params(filename, run_configuration, detection_methods)
 
-    # Update the DB with the new run results
-    user_id = session.get('user_id')
-    new_run(user_id, json.dumps(run_configuration))
     if results.error_message:
         flash(results.error_message)
         return redirect(request.url)
     else:
+        # Storing run results in the DB
+        run_results = {'best_unsupervised_f1_score': results.best_unsupervised_f1_score,
+                       'best_unsupervised_methods': results.best_unsupervised_methods,
+                       'mv_f1_score': results.mv_f1_score,
+                       'autood_f1_score': results.autood_f1_score}
+        # Update the DB with the new run results
+        user_id = session.get('user_id')
+        new_run(user_id, json.dumps(run_configuration), run_results)
         return redirect('/autood/result')
