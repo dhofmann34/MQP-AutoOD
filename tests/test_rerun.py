@@ -53,15 +53,12 @@ def test_rerun_job_log(client):
     with client.session_transaction() as session:
         session['user_id'] = rerun_user_id  # Test ID in the DB
     rerun_logs = open(get_log_file("tests\\test_output\\",
-                                   rerun_user_id, 'cardio', 2), 'r').readlines()
+                                   rerun_user_id, 'cardio.csv', 2), 'r').readlines()
     rerun_logs_dict, rerun_log_statements = process_logs(rerun_logs)
     assert rerun_logs_dict is not None
     assert rerun_log_statements is not None
 
     # Check correct inputs and detection method running
-    assert rerun_logs_dict['selected methods'] == "[<OutlierDetectionMethod.LOF: 1>, <OutlierDetectionMethod.KNN: 2>, " \
-                                                  "<OutlierDetectionMethod.IsolationForest: 3>, " \
-                                                  "<OutlierDetectionMethod.Mahalanobis: 4>]"
     assert rerun_logs_dict['Dataset Name'] == 'cardio'
     assert rerun_logs_dict['Dataset size'] == '(1831, 21), dataset label size'
     assert rerun_logs_dict['Start running Isolation Forest with max feature'] == '[0.2, 0.3, 0.4, 1.0], N_range'

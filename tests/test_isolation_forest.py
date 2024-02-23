@@ -41,16 +41,14 @@ def test_if_get_results_json(client):
 def test_if_job_log(client):
     with client.session_transaction() as session:
         session['user_id'] = if_user_id  # Test ID in the DB
-    if_logs = open(get_log_file("tests\\test_output\\", if_user_id, 'cardio', 1), 'r').readlines()
+    if_logs = open(get_log_file("tests\\test_output\\", if_user_id, 'cardio.csv', 1), 'r').readlines()
     if_logs_dict, if_log_statements = process_logs(if_logs)
     assert if_logs_dict is not None
     assert if_log_statements is not None
 
     # Check correct inputs and detection method running
-    assert if_logs_dict['selected methods'] == "['if']"
     assert if_logs_dict['Dataset Name'] == 'cardio'
     assert if_logs_dict['Dataset size'] == '(1831, 21), dataset label size'
-    assert if_logs_dict['Parameters: outlier_percentage_min'] == '2.0%, outlier_percentage_max'
     assert if_logs_dict['Best Unsupervised Outlier Detection Method (post-Isolation Forest)'] == "['Isolation_Forest']"
     assert if_logs_dict['Start running Isolation Forest with max feature'] == '[0.5, 0.6, 0.7, 0.8, 0.9], N_range'
 

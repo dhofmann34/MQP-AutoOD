@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import traceback
 from shutil import copyfile
 import psycopg2
 from flask import session, jsonify, render_template, request, flash, redirect, current_app
@@ -21,13 +22,16 @@ def result_index():
     session['tab_index'] = 1
     """If results exist, returns the results."""
     try:
-        results = results_global
-        final_log_filename = final_log_filename_global
-        return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
-                               autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
-                               best_method=",".join(results.best_unsupervised_methods),
-                               final_results=results.results_file_name, training_log=final_log_filename)
+        id_ = session.get('user_id')
+        results = json.loads(get_results(id_, 1).get_json())
+        best_f1_rounded = "{:.3f}".format(results['best_unsupervised_f1_score'])
+        autood_f1_rounded = "{:.3f}".format(results['autood_f1_score'])
+        mv_f1_rounded = "{:.3f}".format(results['mv_f1_score'])
+        return render_template('index.html', best_f1=best_f1_rounded,
+                               autood_f1=autood_f1_rounded, mv_f1=mv_f1_rounded,
+                               best_method=",".join(results['best_unsupervised_methods']))
     except:
+        traceback.print_exc()
         return render_template('index.html')
 
 
@@ -54,17 +58,22 @@ def autood_rerun():
         run_configuration['filename'] = filename
         results = call_autood_from_params(filename, run_configuration, detection_methods)
 
-        # Update the DB with the new run results
-        user_id = session.get('user_id')
-        new_run(user_id, json.dumps(run_configuration))
         if results.error_message:
             flash(results.error_message)
             return redirect(request.url)
         else:
+            # Storing run results in the DB
+            run_results = {'best_unsupervised_f1_score': results.best_unsupervised_f1_score,
+                           'best_unsupervised_methods': results.best_unsupervised_methods,
+                           'mv_f1_score': results.mv_f1_score,
+                           'autood_f1_score': results.autood_f1_score}
+
+            # Update the DB with the new run results
+            user_id = session.get('user_id')
+            new_run(user_id, json.dumps(run_configuration), run_results)
             return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
                                    autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
-                                   best_method=",".join(results.best_unsupervised_methods),
-                                   final_results=results.results_file_name)
+                                   best_method=",".join(results.best_unsupervised_methods))
     else:
         return redirect(request.url)
 
@@ -101,4 +110,19 @@ def send_data(session_id, tab_index):
     cur.close()
     conn.close()
     logger.info("Database connection closed successfully.")
+    return jsonify(result)
+
+
+@results_bp.route('/getRunResults/<string:session_id>/<int:tab_index>', methods=['GET'])
+def get_results(session_id, tab_index):
+    """Returns the run results for specified tab as a json file."""
+    session['tab_index'] = tab_index
+    conn = psycopg2.connect(**get_db_config())
+    cur = conn.cursor()
+    sql_query = sql_queries.get_run_results(session_id, tab_index)
+    cur.execute(sql_query)
+    result = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+    logger.info(f"Run results for session {session_id}, run {tab_index} returned successfully.")
     return jsonify(result)

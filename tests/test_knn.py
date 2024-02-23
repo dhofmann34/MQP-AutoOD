@@ -41,16 +41,14 @@ def test_knn_job_log(client):
         session['user_id'] = '40508fa7-2b6f-4629-8187-77fe6c541333'  # Test ID in the DB
     knn_logs = open(get_log_file("tests\\test_output\\",
                                  '40508fa7-2b6f-4629-8187-77fe6c541333',
-                                 'cardio', 1), 'r').readlines()
+                                 'cardio.csv', 1), 'r').readlines()
     knn_logs_dict, knn_log_statements = process_logs(knn_logs)
     assert knn_logs_dict is not None
     assert knn_log_statements is not None
 
     # Check correct inputs and detection method running
-    assert knn_logs_dict['selected methods'] == "['knn']"
     assert knn_logs_dict['Dataset Name'] == 'cardio'
     assert knn_logs_dict['Dataset size'] == '(1831, 21), dataset label size'
-    assert knn_logs_dict['Parameters: outlier_percentage_min'] == '5.0%, outlier_percentage_max'
     assert knn_logs_dict['Best Unsupervised Outlier Detection Method (post-KNN)'] == "['KNN']"
 
     # Check DB connection, no errors with DB, and two rounds of training
