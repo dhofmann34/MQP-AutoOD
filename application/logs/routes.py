@@ -44,10 +44,6 @@ def running_logs():
     """returns logging information"""
     user_id = session.get('user_id')
     outputpath = f'{current_app.config["LOGGING_PATH"]}/{user_id}.log'
-    if not os.path.exists(outputpath):
-        with open(outputpath, 'w'):
-            pass
-    else:
-        with open(outputpath, 'w'):
-            pass
+    with open(outputpath, 'w'):
+        pass
     return Response(flask_logger(outputpath), mimetype="text/plain", content_type="text/event-stream")
