@@ -58,7 +58,7 @@
         var currentRun = 1;
         async function updateRunNumber() {
             try {
-                const response = await fetch('http://localhost:8081/getRunCount');
+                const response = await fetch('http://localhost:8080/getRunCount');
                 const runCount = await response.text();
                 currentRun = runCount;
                 return runCount;
@@ -92,6 +92,13 @@
         }
         // Updates button activation and tabcontent header
         function updateTabContent(evt, runHistory) {
+
+            if(currentRun == 1){
+                const f1_immutable = 0;
+            } else {
+                var f1_immutable = 0;
+            }
+
             var i, tablinks;
 
             tablinks = document.getElementsByClassName("tablinks");
@@ -100,11 +107,11 @@
             }
             evt.currentTarget.className += " active";
             document.getElementById("history_header").innerHTML = runHistory;
-            fetch('http://localhost:8081/getSessionID')
+            fetch('http://localhost:8080/getSessionID')
                 .then(response => response.text())
                 .then(session_id => {
                     var tabIndex = parseInt(runHistory.replace("Run", ""));
-                    var local_data_path = `http://localhost:8081/data/${session_id}/${tabIndex}`;
+                    var local_data_path = `http://localhost:8080/data/${session_id}/${tabIndex}`;
                     console.log(local_data_path)
                     fetchDataAndUpdateVisualization(local_data_path);
                 })
@@ -313,17 +320,17 @@
                 <tr>
                     <td>F-1 of AutoOD</td>
                     <td> </td>
-                    <td>{{ autood_f1 }}</td>
+                    <td id="autood_f1">{{ autood_f1 }}</td>
                 </tr>
                 <tr>
                     <td>F-1 of Best Unsupervised Detector</td>
                     <td> </td>
-                    <td>{{ best_f1 }}</td>
+                    <td id="best_f1">{{ best_f1 }}</td>
                 </tr>
                 <tr>
                     <td>Best Unsupervised Detector</td>
                     <td> </td>
-                    <td>{{best_method}}</td>
+                    <td id="best_method">{{best_method}}</td>
                 </tr>
             </table>
         </form>
@@ -355,9 +362,9 @@
                 <form enctype=multipart/form-data>
                     <table>
                         <tr>
-                            <td>F-1 = </td>
+                            <!--<td>F-1 = </td>
                             <td> </td>
-                            <td>{{ autood_f1 }}</td>
+                            <td id="tabF1">{{ autood_f1 }}</td> -->
                         </tr>
                     </table>
                 </form></button></li>
