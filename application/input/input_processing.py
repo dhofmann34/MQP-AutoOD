@@ -68,9 +68,16 @@ def call_autood_from_params(filename, run_configuration, detection_methods):
     #logs
     user_id = session.get('user_id')
     session_logger = logging.getLogger(f"session_{user_id}")
+    if (session_logger.hasHandlers()):
+        session_logger.handlers.clear()
     formatter = logging.Formatter("%(asctime)s | %(levelname)s - %(message)s")
-    outputpath = f'output/{user_id}_{int(time.time())}_{filename}.log'
+    outputpath = f'{current_app.config["DOWNLOAD_FOLDER"]}/{user_id}_{int(time.time())}_{filename}.log'
     file_handler = logging.FileHandler(outputpath)
+    file_handler.setFormatter(formatter)
+    session_logger.addHandler(file_handler)
+    #output for input screen logs
+    outputpath = f'{current_app.config["LOGGING_PATH"]}/{user_id}.log'
+    file_handler = logging.StreamHandler(open(outputpath, 'a'))
     file_handler.setFormatter(formatter)
     session_logger.addHandler(file_handler)
     session_logger.info(f"Start calling autood with file {filename}...indexColName = " +

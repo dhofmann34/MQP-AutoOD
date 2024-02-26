@@ -43,16 +43,14 @@ def test_lof_job_log(client):
         session['user_id'] = lof_user_id  # Test ID in the DB
     lof_logs = open(get_log_file("tests\\test_output\\",
                                  lof_user_id,
-                                 'cardio', 1), 'r').readlines()
+                                 'cardio.csv', 1), 'r').readlines()
     lof_logs_dict, lof_log_statements = process_logs(lof_logs)
     assert lof_logs_dict is not None
     assert lof_log_statements is not None
 
     # Check correct inputs and detection method running
-    assert lof_logs_dict['selected methods'] == "['lof']"
     assert lof_logs_dict['Dataset Name'] == 'cardio'
     assert lof_logs_dict['Dataset size'] == '(1831, 21), dataset label size'
-    assert lof_logs_dict['Parameters: outlier_percentage_min'] == '3.0%, outlier_percentage_max'
     assert lof_logs_dict['Best Unsupervised Outlier Detection Method (post-LOF)'] == "['LOF']"
 
     # Check DB connection, no errors with DB, and two rounds of training

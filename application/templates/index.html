@@ -80,6 +80,13 @@
         }
         // Updates button activation and tabcontent header
         function updateTabContent(evt, runHistory) {
+
+            if(currentRun == 1){
+                const f1_immutable = 0;
+            } else {
+                var f1_immutable = 0;
+            }
+
             var i, tablinks;
 
             tablinks = document.getElementsByClassName("tablinks");
@@ -92,8 +99,21 @@
                 .then(response => response.text())
                 .then(session_id => {
                     var tabIndex = parseInt(runHistory.replace("Run", ""));
-                    var local_data_path = `http://localhost:8081/data/${session_id}/${tabIndex}`;
-                    console.log(local_data_path)
+                    var local_data_path = `http://localhost:8080/data/${session_id}/${tabIndex}`;
+                    fetch(`http://localhost:8080/getRunResults/${session_id}/${tabIndex}`)
+                        .then(response => response.json())
+                        .then(json => {
+                            autood_f1 = parseFloat(json.autood_f1_score);
+                            f1_immutable = autood_f1;
+                            best_f1 = parseFloat(json.best_unsupervised_f1_score);
+                            best_method = json.best_unsupervised_methods;
+                            document.getElementById('autood_f1').innerHTML = f1_immutable.toFixed(3);
+                            document.getElementById('best_f1').innerHTML = best_f1.toFixed(3);
+                            document.getElementById('best_method').innerHTML = best_method;
+                            document.getElementById('tabF1').innerHTML = f1_immutable.toFixed(3);
+                            console.log(json);
+                        })
+                    .catch(error => console.error('Error updating run results: ', error));
                     fetchDataAndUpdateVisualization(local_data_path);
                 })
                 .catch(error => console.error('Error fetching session_id:', error));
@@ -352,17 +372,17 @@
                 <tr>
                     <td>F-1 of AutoOD</td>
                     <td> </td>
-                    <td>{{ autood_f1 }}</td>
+                    <td id="autood_f1">{{ autood_f1 }}</td>
                 </tr>
                 <tr>
                     <td>F-1 of Best Unsupervised Detector</td>
                     <td> </td>
-                    <td>{{ best_f1 }}</td>
+                    <td id="best_f1">{{ best_f1 }}</td>
                 </tr>
                 <tr>
                     <td>Best Unsupervised Detector</td>
                     <td> </td>
-                    <td>{{best_method}}</td>
+                    <td id="best_method">{{best_method}}</td>
                 </tr>
             </table>
         </form>
@@ -394,9 +414,9 @@
                 <form enctype=multipart/form-data>
                     <table>
                         <tr>
-                            <td>F-1 = </td>
+                            <!--<td>F-1 = </td>
                             <td> </td>
-                            <td>{{ autood_f1 }}</td>
+                            <td id="tabF1">{{ autood_f1 }}</td> -->
                         </tr>
                     </table>
                 </form></button></li>

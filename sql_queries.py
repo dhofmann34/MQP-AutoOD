@@ -20,6 +20,7 @@ CREATE_SESSION_RUN_TABLE = """
         id integer,
         json JSONB,
         run_configuration JSONB,
+        run_results JSONB,
         session_id uuid NOT NULL REFERENCES session(id) ON UPDATE CASCADE,
         PRIMARY KEY (id, session_id)
     );
@@ -46,9 +47,10 @@ CREATE_RUN_TABLE = """
     """
 
 NEW_RUN = """
-                INSERT INTO run (id, json, run_configuration, session_id)
+                INSERT INTO run (id, json, run_configuration, run_results, session_id)
                 VALUES (
                     (SELECT COUNT(*) FROM run WHERE session_id = %s) + 1,
+                    %s,
                     %s,
                     %s,
                     %s
@@ -58,6 +60,10 @@ NEW_RUN = """
 
 def get_json(session_id, run_id):
     query = f"SELECT json FROM run WHERE session_id = '{session_id}' AND id = {run_id};"
+    return query
+
+def get_run_results(session_id, run_id):
+    query = f"SELECT run_results FROM run WHERE session_id = '{session_id}' AND id = {run_id};"
     return query
 
 

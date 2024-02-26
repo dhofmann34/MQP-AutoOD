@@ -18,18 +18,16 @@ def process_logs(logs):
 # Find log file for a user's particular run with a particular dataset
 def get_log_file(path, user_id, dataset, run):
     # List index mappings (only for log files)
-    file_type = 0
-    dataset_found = 1
-    time = 3
-    user = 4
+    user = 0
+    time = 1
+    filename = 2
 
     logs_found = {}
     for root, directories, files in os.walk(path):
-        for filename in files:
-            name_data = filename.split("_")
-            if name_data[file_type] == 'log' and name_data[dataset_found] == dataset\
-                    and name_data[user] == user_id:
-                logs_found[int(name_data[time])] = filename
+        for file in files:
+            name_data = file.split("_")
+            if name_data[filename] == dataset + ".log" and name_data[user] == user_id:
+                logs_found[int(name_data[time])] = file
 
     if logs_found:
         sorted_logs = dict(sorted(logs_found.items()))
