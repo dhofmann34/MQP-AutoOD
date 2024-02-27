@@ -306,6 +306,12 @@
             });
         });
 
+        function showLoadingLogo(){
+            var loadingLogo = document.getElementById('loadingLogo');
+            loadingLogo.style.display = 'block';
+            sendJSONData();
+        }
+
     </script>
 </head>
 
@@ -479,8 +485,12 @@
                 </tr>
 
                 <tr>
-                    <td><button id="submitBtn" onclick="sendJSONData()"><b>Update settings and initiate new run</b></button></td>
+                    <td><button id="submitBtn" onclick="showLoadingLogo()"><b>Update settings and initiate new run</b></button></td>
                 </tr>
+
+                <div id="loadingLogo">
+                    <img src="../static/img/loading.gif" alt="Loading">
+                </div>
 
             </table>
         </div>
