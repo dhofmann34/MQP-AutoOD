@@ -280,7 +280,7 @@ function fetchDataAndUpdateVisualization(localDataPath) {
             d3.select("#barplot").select("svg").remove(); // reset the plot 
 
             var svg_bar = d3.select("#barplot")
-                .append("svg")
+                .insert("svg", ':first-child')
                 .attr("width", width + margin_bar.left + margin_bar.right)
                 .attr("height", height + margin_bar.top + margin_bar.bottom)
                 .append("g")
@@ -369,7 +369,7 @@ function fetchDataAndUpdateVisualization(localDataPath) {
             d3.select("#barplot2").select("svg").remove();  // reset the plot 
 
             var svg_bar = d3.select("#barplot2")
-                .append("svg")
+                .insert("svg", ':first-child')
                 .attr("width", width + margin_bar.left + margin_bar.right)
                 .attr("height", height + margin_bar.top + margin_bar.bottom)
                 .append("g")
