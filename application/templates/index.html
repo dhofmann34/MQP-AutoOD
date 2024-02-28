@@ -15,6 +15,47 @@
     </dialog> -->
 </body>
 
+<div id="above_graph_content">
+    <div id="summary">
+        <div id="summary_Title"><b>Metrics on Run Performance</b></div>
+        <form enctype=multipart/form-data>
+            <table>
+                <tr>
+                    <td>F-1 of AutoOD</td>
+                    <td> </td>
+                    <td id="autood_f1">{{ autood_f1 }}</td>
+                </tr>
+                <tr>
+                    <td>F-1 of Best Unsupervised Detector</td>
+                    <td> </td>
+                    <td id="best_f1">{{ best_f1 }}</td>
+                </tr>
+                <tr>
+                    <td>Best Unsupervised Detector</td>
+                    <td> </td>
+                    <td id="best_method">{{best_method}}</td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <div id="filter">
+        <div id="filtertitle">Filtering:</div>
+        <div id="pred_but">
+            <label for="metric">Metric:</label>
+            <select id="metric"></select>
+        </div>
+        <div id="label_but">
+            <label for="selectButton_label">Label:</label>
+            <select id="selectButton_label"></select>
+        </div>
+        <div id="correct_but">
+            <label for="selectButton_correct">Correct Prediction?:</label>
+            <select id="selectButton_correct"></select>
+        </div>
+    </div>
+</div>
+
 <head>
     <title>AutoOD Results</title>
     <!-- <h1 style="text-align:center">AutoOD Results</h1> -->
@@ -92,13 +133,6 @@
         }
         // Updates button activation and tabcontent header
         function updateTabContent(evt, runHistory) {
-
-            if(currentRun == 1){
-                const f1_immutable = 0;
-            } else {
-                var f1_immutable = 0;
-            }
-
             var i, tablinks;
 
             tablinks = document.getElementsByClassName("tablinks");
@@ -115,15 +149,13 @@
                     fetch(`http://localhost:8080/getRunResults/${session_id}/${tabIndex}`)
                         .then(response => response.json())
                         .then(json => {
-                            autood_f1 = parseFloat(json.autood_f1_score);
-                            f1_immutable = autood_f1;
-                            best_f1 = parseFloat(json.best_unsupervised_f1_score);
-                            best_method = json.best_unsupervised_methods;
-                            document.getElementById('autood_f1').innerHTML = f1_immutable.toFixed(3);
+                            parsed = JSON.parse(json)
+                            autood_f1 = parseFloat(parsed.autood_f1_score);
+                            best_f1 = parseFloat(parsed.best_unsupervised_f1_score);
+                            best_method = parsed.best_unsupervised_methods;
+                            document.getElementById('autood_f1').innerHTML = autood_f1.toFixed(3);
                             document.getElementById('best_f1').innerHTML = best_f1.toFixed(3);
                             document.getElementById('best_method').innerHTML = best_method;
-                            document.getElementById('tabF1').innerHTML = f1_immutable.toFixed(3);
-                            console.log(json);
                         })
                     .catch(error => console.error('Error updating run results: ', error));
                     fetchDataAndUpdateVisualization(local_data_path);
@@ -331,46 +363,7 @@
     </div>
 </div>
 
-<div id="above_graph_content">
-    <div id="summary">
-        <div id="summary_Title"><b>Metrics on Run Performance</b></div>
-        <form enctype=multipart/form-data>
-            <table>
-                <tr>
-                    <td>F-1 of AutoOD</td>
-                    <td> </td>
-                    <td id="autood_f1">{{ autood_f1 }}</td>
-                </tr>
-                <tr>
-                    <td>F-1 of Best Unsupervised Detector</td>
-                    <td> </td>
-                    <td id="best_f1">{{ best_f1 }}</td>
-                </tr>
-                <tr>
-                    <td>Best Unsupervised Detector</td>
-                    <td> </td>
-                    <td id="best_method">{{best_method}}</td>
-                </tr>
-            </table>
-        </form>
-    </div>
-    
-    <div id="filter">
-        <div id="filtertitle">Filtering:</div>
-        <div id="pred_but">
-            <label for="metric">Metric:</label>
-            <select id="metric"></select>
-        </div>
-        <div id="label_but">
-            <label for="selectButton_label">Label:</label>
-            <select id="selectButton_label"></select>
-        </div>
-        <div id="correct_but">
-            <label for="selectButton_correct">Correct Prediction?:</label>
-            <select id="selectButton_correct"></select>
-        </div>
-    </div>
-</div>
+
 
 <div class="tab_holder">
     <div class="runlist_holder">

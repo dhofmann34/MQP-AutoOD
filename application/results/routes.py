@@ -19,6 +19,7 @@ global results_global, final_log_filename_global
 
 @results_bp.route('/autood/result', methods=['GET'])
 def result_index():
+    # return render_template('index.html')
     session['tab_index'] = 1
     """If results exist, returns the results."""
     try:
@@ -69,7 +70,7 @@ def autood_rerun():
 
             # Update the DB with the new run results
             user_id = session.get('user_id')
-            new_run(user_id, json.dumps(run_configuration), run_results)
+            new_run(user_id, json.dumps(run_configuration), json.dumps(run_results))
             return render_template('index.html', best_f1=results.best_unsupervised_f1_score,
                                    autood_f1=results.autood_f1_score, mv_f1=results.mv_f1_score,
                                    best_method=",".join(results.best_unsupervised_methods))
