@@ -145,7 +145,7 @@ center {
 #table_wrapper {
     position: absolute;
     left: 1500px;
-    bottom: -790px;
+    bottom: -1000px;
     width: 15%;
     z-index: 10;
 }
@@ -153,7 +153,7 @@ center {
 #table2_wrapper {
     position: absolute;
     left: 1100px;
-    bottom: -790px;
+    bottom: -1000px;
     width: 15%;
     z-index: 10;
 }
@@ -552,3 +552,4 @@ li a:hover {
         top: 60px;
       }
   }
+
