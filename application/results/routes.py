@@ -39,7 +39,6 @@ def result_index():
 def autood_rerun():
     """Re-runs AutoOD with dataset from original run and any new input parameters."""
     rerun_params = request.get_json()
-    print(rerun_params)
     outlier_min = rerun_params['globalMinOutlier']
     outlier_max = rerun_params['globalMaxOutlier']
 

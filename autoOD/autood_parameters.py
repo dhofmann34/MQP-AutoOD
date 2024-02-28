@@ -45,7 +45,7 @@ def get_default_parameters(dataset):
 def get_detector_instances(detector: str, outlier_min, outlier_max, **kwargs):
     detector_instances = []
     N_range = default_N_range
-    if outlier_min is not None and outlier_max is not None:       # Use custom N range
+    if outlier_min is not None and outlier_max is not None:  # Use custom N range
         outlier_min_percent = float(outlier_min) * 0.01
         outlier_max_percent = float(outlier_max) * 0.01
         interval = (outlier_max_percent - outlier_min_percent) / 5
@@ -95,12 +95,25 @@ def get_detector_instances(detector: str, outlier_min, outlier_max, **kwargs):
 # Parse through input parameters and fill in missing values with defaults
 # Return a new dict that follows the correct JSON schema for the DB
 def get_detection_parameters(parameters, detection_methods: list, outlier_min=None, outlier_max=None):
-    global_N_range = default_N_range
-    if outlier_min is not None and outlier_max is not None:
-        outlier_min_percent = float(outlier_min) * 0.01
-        outlier_max_percent = float(outlier_max) * 0.01
-        interval = (outlier_max_percent - outlier_min_percent) / 5
-        global_N_range = [round(x, 5) for x in arange(outlier_min_percent, outlier_max_percent + interval, interval)]
+    valid_outlier_min = True if outlier_min is not None and outlier_min != '' else False
+    valid_outlier_max = True if outlier_max is not None and outlier_max != '' else False
+
+    if not valid_outlier_min:
+        if valid_outlier_max and default_outlier_min >= int(outlier_max):
+            outlier_min = int(int(outlier_max) / 2)
+        else:
+            outlier_min = default_outlier_min
+    if not valid_outlier_max:
+        if valid_outlier_min and default_outlier_max <= int(outlier_min):
+            outlier_max = int(int(outlier_min) * 2)
+        else:
+            outlier_max = default_outlier_max
+
+    outlier_min_percent = float(outlier_min) * 0.01
+    outlier_max_percent = float(outlier_max) * 0.01
+    interval = (outlier_max_percent - outlier_min_percent) / 5
+    global_N_range = [round(x, 5) for x in arange(outlier_min_percent, outlier_max_percent + interval, interval)]
+
     detection_parameters = {"global_N_range": global_N_range,
                             "index_col_name": parameters['index_col_name'],
                             "label_col_name": parameters['label_col_name']}
@@ -110,7 +123,7 @@ def get_detection_parameters(parameters, detection_methods: list, outlier_min=No
                                                                  k_range=parameters['knnKRange'])
         elif method == OutlierDetectionMethod.LOF:
             detection_parameters['local_outlier_factor'] = get_detector_instances("LOF", outlier_min,
-                                                                                 outlier_max,
+                                                                                  outlier_max,
                                                                                   k_range=parameters['lofKRange'])
         elif method == OutlierDetectionMethod.IsolationForest:
             detection_parameters['isolation_forest'] = get_detector_instances("IF", outlier_min,
