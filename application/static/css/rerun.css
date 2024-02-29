@@ -348,9 +348,3 @@ input[type=checkbox]:checked {
   padding-right: var(--dl-space-space-unit);
   padding-bottom: var(--dl-space-space-halfunit);
 }
-
-#settingsModal {
-  height: 500px;
-  width: 800px;
-  z-index: 30;
-}
