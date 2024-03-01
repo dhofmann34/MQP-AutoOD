@@ -99,7 +99,7 @@
         var currentRun = 1;
         async function updateRunNumber() {
             try {
-                const response = await fetch('http://localhost:8080/getRunCount');
+                const response = await fetch('http://localhost:8081/getRunCount');
                 const runCount = await response.text();
                 currentRun = runCount;
                 return runCount;
@@ -141,12 +141,12 @@
             }
             evt.currentTarget.className += " active";
             document.getElementById("history_header").innerHTML = runHistory;
-            fetch('http://localhost:8080/getSessionID')
+            fetch('http://localhost:8081/getSessionID')
                 .then(response => response.text())
                 .then(session_id => {
                     var tabIndex = parseInt(runHistory.replace("Run", ""));
-                    var local_data_path = `http://localhost:8080/data/${session_id}/${tabIndex}`;
-                    fetch(`http://localhost:8080/getRunResults/${session_id}/${tabIndex}`)
+                    var local_data_path = `http://localhost:8081/data/${session_id}/${tabIndex}`;
+                    fetch(`http://localhost:8081/getRunResults/${session_id}/${tabIndex}`)
                         .then(response => response.json())
                         .then(json => {
                             parsed = JSON.parse(json)
