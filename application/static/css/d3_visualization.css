@@ -144,19 +144,21 @@ center {
 
 /* table for each data point att. */
 #table_wrapper {
-    position: absolute;
+    /* position: absolute;
     left: 1500px;
-    bottom: -790px;
-    width: 15%;
+    bottom: -1000px;
+    width: 15%; */
     z-index: 10;
+    padding-inline: 2rem;
 }
 
 #table2_wrapper {
-    position: absolute;
+    /* position: absolute;
     left: 1100px;
-    bottom: -790px;
-    width: 15%;
+    bottom: -1000px;
+    width: 15%; */
     z-index: 10;
+    padding-inline: 2rem;
 }
 
 /* Control panel (filter dropdowns) */
@@ -556,3 +558,4 @@ li a:hover {
         top: 60px;
       }
   }
+

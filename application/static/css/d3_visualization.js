@@ -95,9 +95,25 @@ function fetchDataAndUpdateVisualization(localDataPath) {
                 .style("z-index", "2")
                 .style("width", "200px")
         
-        var mouseover = function(d) {
+        var mouseenter = function(d) {
             tooltip
             .style("opacity", 1)
+            tooltip
+                .html(
+                    "Correct Prediction?:" + " " + y_n_int2str(d.correct) + "<br>" + 
+                    "Ground Truth Label:" + " " + tooltip_int2str(d.label) + "<br>" + 
+                    "AutoOD Prediction:" + " " + tooltip_int2str(d.prediction) + "<br>" +
+                    "LOF:" + " " + tooltip_int2str(d.prediction_lof) + "<br>" +
+                    "KNN:" + " " + tooltip_int2str(d.prediction_knn) + "<br>" +
+                    "IF:" + " " + tooltip_int2str(d.prediction_if) + "<br>" +
+                    "Mahalanobis:" + " " + tooltip_int2str(d.prediction_mahalanobis) + "<br>" +
+                    "Reliable Label?:" + " " + y_n_int2str(d.reliable_31) + "<br>"
+                
+                ) 
+                // location of the tooltip
+                .style("left", (d3.mouse(this)[0]+70) + "px")
+                .style("top", (d3.mouse(this)[1]+30) + "px")
+                .style("pointer-events", "none");
         }
         
         function tooltip_int2str(col){
@@ -166,8 +182,8 @@ function fetchDataAndUpdateVisualization(localDataPath) {
                 .style("opacity", 0.5)
                 //.style("stroke", function (d){return stroke(d.correct)})
             // for tooltip
-            .on("mouseover", mouseover)
-            .on("mousemove", mousemove)
+            .on("mouseenter", mouseenter)
+            //.on("mousemove", mousemove)
             .on("mouseleave", mouseleave)
             .on("click", function(d, i) {  // click on data point will highlight
                 clicks_highlight = 1 + clicks_highlight
@@ -264,7 +280,7 @@ function fetchDataAndUpdateVisualization(localDataPath) {
             d3.select("#barplot").select("svg").remove(); // reset the plot 
 
             var svg_bar = d3.select("#barplot")
-                .append("svg")
+                .insert("svg", ':first-child')
                 .attr("width", width + margin_bar.left + margin_bar.right)
                 .attr("height", height + margin_bar.top + margin_bar.bottom)
                 .append("g")
@@ -353,7 +369,7 @@ function fetchDataAndUpdateVisualization(localDataPath) {
             d3.select("#barplot2").select("svg").remove();  // reset the plot 
 
             var svg_bar = d3.select("#barplot2")
-                .append("svg")
+                .insert("svg", ':first-child')
                 .attr("width", width + margin_bar.left + margin_bar.right)
                 .attr("height", height + margin_bar.top + margin_bar.bottom)
                 .append("g")

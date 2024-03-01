@@ -42,4 +42,8 @@ def view_file(filename):
 @logs_bp.route("/running_logs", methods=["GET"])
 def running_logs():
     """returns logging information"""
-    return Response(flask_logger(current_app.config['LOGGING_PATH']), mimetype="text/plain", content_type="text/event-stream")
+    user_id = session.get('user_id')
+    outputpath = f'{current_app.config["LOGGING_PATH"]}/{user_id}.log'
+    with open(outputpath, 'w'):
+        pass
+    return Response(flask_logger(outputpath), mimetype="text/plain", content_type="text/event-stream")
