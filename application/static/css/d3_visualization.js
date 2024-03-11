@@ -814,7 +814,7 @@ function fetchDataAndUpdateVisualization(localDataPath) {
         var gStep = d3
             .select('div#slider-step')
             .append('svg')
-            .attr('width', 1000)
+            .attr('width', 10000)
             .attr('height', 100)
             .append('g')
             .attr('transform', 'translate(30,30)');
