@@ -9,8 +9,14 @@ const {
 
 // set dimensions/ margins of the graph
 var margin = {top: 20, right: 20, bottom: 40, left: 50}
-const width = 700;
-const height = 500;  // 500 for monitor, 325 for laptop
+const screenWidth = window.innerWidth;
+const screenHeight = window.innerHeight;
+
+const widthPercentage = 45;
+const heightPercentage = 50; 
+
+const width = (screenWidth * widthPercentage) / 100;
+const height = (screenHeight * heightPercentage) / 100;
 
 var click_count = 0
 
@@ -111,8 +117,8 @@ function fetchDataAndUpdateVisualization(localDataPath) {
                 
                 ) 
                 // location of the tooltip
-                .style("left", (d3.mouse(this)[0]+70) + "px")
-                .style("top", (d3.mouse(this)[1]+30) + "px")
+                .style("left", (d3.mouse(this)[0]) + "px")
+                .style("top", (d3.mouse(this)[1]) + "px")
                 .style("pointer-events", "none");
         }
         

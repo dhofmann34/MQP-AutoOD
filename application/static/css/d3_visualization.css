@@ -110,9 +110,9 @@ center {
 
 #popup_chart {
     position: relative;
-    left: 62vw;
+    left: 60.5vw;
     
-    width: 760px;
+    width: 730px;
 }
 
 /* barplot for param. */
@@ -335,7 +335,7 @@ center {
     padding-left: .5%;
     padding-top: .2%;
     padding-bottom: .2%;
-    width: 40vw;
+    width: 48.5vw;
     height: 16vh;
 }
 
@@ -357,13 +357,13 @@ select {
 .legend {
     list-style: none;
     position: absolute;
-    left: 50.25vw;
+    left: 53vw;
     top: 4vw;
     font-family: 'Open Sans', sans-serif;
     font-size: 15px;
-    background-color: white;
+    background-color: transparent;
     width: 9vw;
-    height: 4vh;
+    height: auto;
     border-radius: 12px;
     padding-left: .5%;
     padding-top: .2%;
@@ -372,12 +372,11 @@ select {
     opacity: 0.9;
     /* box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); */
     vertical-align: baseline;
-
+    
 }
 
 .legend li {
-    float: left;
-    margin-right: 10px;
+    display: block;
 }
 
 .legend span {
@@ -385,13 +384,15 @@ select {
     float: left;
     width: 12px;
     height: 12px;
-    margin: 5px;
 }
 
 .legend .inlier {
     background-color: SteelBlue;
     width: 10px;
     height: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top:5px;
     border-radius: 50px;
 }
 
@@ -399,6 +400,9 @@ select {
     background-color: #FFA500;
     width: 10px;
     height: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top:5px;
     border-radius: 50px;
 }
 
