@@ -5,6 +5,11 @@
 
 html {
     /* font-family: 'Open Sans', sans-serif; */
+    font-size: 0.9375vw;
+}
+
+body, * {
+    font-size: 0.875vw;
 }
 
 
@@ -49,7 +54,7 @@ center {
 #pred_but {
     position: absolute;
     bottom: 50px;
-    font-size: 17px;
+    font-size: 1.0625vw;
 }
 
 /* autoOD pred filter button */
@@ -60,7 +65,7 @@ center {
     border-radius: 5px;
     left: 0px;
     bottom: -30px;
-    font-size: 15px;
+    font-size: 0.9375vw; 
 }
 
 #correct_but {
@@ -78,14 +83,14 @@ center {
     width: 175px;
     height: 30px;
     border-radius: 5px;
-    font-size: 15px;
+    font-size: 0.9375vw; 
 }
 
 #label_but {
     position: absolute;
     left: 12vw;
     bottom: 50px;
-    font-size: 17px;
+    font-size: 1.0625vw;
 }
 
 /* Ground truth filter button */
@@ -96,7 +101,7 @@ center {
     border-radius: 5px;
     left: 0px;
     bottom: -30px;
-    font-size: 15px;
+    font-size: 0.9375vw; 
 }
 
 /* round relibale labels filter button */
@@ -306,19 +311,19 @@ center {
 }
 
 #reliable_inout {
-    width: 140px;
+    width: 7vw;
     border-radius: 5px;
 }
 
 #filtertitle {
-    font-size: 21px;
+    font-size: 1.3125vw;
     font-family: 'Open Sans', sans-serif;
 
 }
 
 #reliable_output {
     position: absolute;
-    left: 485px;
+    left: 70%;
     top: 12%;
 }
 
@@ -336,7 +341,7 @@ center {
     padding-top: .2%;
     padding-bottom: .2%;
     width: 48.5vw;
-    height: 16vh;
+    height: 17vh;
 }
 
 select {
@@ -360,7 +365,7 @@ select {
     left: 53vw;
     top: 4vw;
     font-family: 'Open Sans', sans-serif;
-    font-size: 15px;
+    font-size: 0.9375vw;
     background-color: transparent;
     width: 9vw;
     height: auto;
@@ -414,7 +419,7 @@ select {
 }
 
 /* li{
-    font-size: 15px;
+    font-size: 0.9375vw;
 } */
 
 ul {
@@ -429,7 +434,7 @@ ul {
     padding-bottom: .5%;
     padding-top: .5%;
     font-family: 'Open Sans', sans-serif;
-    font-size: 20px;
+    font-size: 1.25vw;
     z-index: 3
 }
 
