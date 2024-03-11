@@ -232,12 +232,6 @@
     
             }
 
-            //If user wants to run Mahalanobis, create JSON object for it
-            if(document.getElementById("mCB").checked == false){
-                mJSON = {runMahalanobis: "false"};
-    
-            }
-
             //Creates base JSON objects with global min and max outliers
             var data = {globalMinOutlier: globalMinOutlier, globalMaxOutlier: globalMaxOutlier,
                         ReRun_Run: currentRun};
