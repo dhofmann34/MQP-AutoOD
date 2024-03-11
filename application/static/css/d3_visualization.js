@@ -279,6 +279,8 @@ function fetchDataAndUpdateVisualization(localDataPath) {
             
             d3.select("#barplot").select("svg").remove(); // reset the plot 
 
+            document.getElementById("barplot").style.display = "block";
+
             var svg_bar = d3.select("#barplot")
                 .insert("svg", ':first-child')
                 .attr("width", width + margin_bar.left + margin_bar.right)
@@ -367,6 +369,8 @@ function fetchDataAndUpdateVisualization(localDataPath) {
                 height = 300 - margin_bar.top - margin_bar.bottom;
 
             d3.select("#barplot2").select("svg").remove();  // reset the plot 
+
+            document.getElementById("barplot2").style.display = "block";
 
             var svg_bar = d3.select("#barplot2")
                 .insert("svg", ':first-child')
