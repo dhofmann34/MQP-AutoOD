@@ -5,13 +5,7 @@
 
 html {
     /* font-family: 'Open Sans', sans-serif; */
-    font-size: 0.9375vw;
 }
-
-body, * {
-    font-size: 0.875vw;
-}
-
 
 h1 {
     position: absolute;
@@ -207,6 +201,7 @@ center {
     top: 4vw;
     height: 25vh;
     width: 60vw;
+    font-size: 0.875vw; 
 }
 
 
