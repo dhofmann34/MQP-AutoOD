@@ -9,8 +9,14 @@ const {
 
 // set dimensions/ margins of the graph
 var margin = {top: 20, right: 20, bottom: 40, left: 50}
-const width = 700;
-const height = 500;  // 500 for monitor, 325 for laptop
+const screenWidth = window.innerWidth;
+const screenHeight = window.innerHeight;
+
+const widthPercentage = 45;
+const heightPercentage = 50; 
+
+const width = (screenWidth * widthPercentage) / 100;
+const height = (screenHeight * heightPercentage) / 100;
 
 var click_count = 0
 
@@ -111,8 +117,8 @@ function fetchDataAndUpdateVisualization(localDataPath) {
                 
                 ) 
                 // location of the tooltip
-                .style("left", (d3.mouse(this)[0]+70) + "px")
-                .style("top", (d3.mouse(this)[1]+30) + "px")
+                .style("left", (d3.mouse(this)[0]) + "px")
+                .style("top", (d3.mouse(this)[1]) + "px")
                 .style("pointer-events", "none");
         }
         
@@ -279,6 +285,8 @@ function fetchDataAndUpdateVisualization(localDataPath) {
             
             d3.select("#barplot").select("svg").remove(); // reset the plot 
 
+            document.getElementById("barplot").style.display = "block";
+
             var svg_bar = d3.select("#barplot")
                 .insert("svg", ':first-child')
                 .attr("width", width + margin_bar.left + margin_bar.right)
@@ -367,6 +375,8 @@ function fetchDataAndUpdateVisualization(localDataPath) {
                 height = 300 - margin_bar.top - margin_bar.bottom;
 
             d3.select("#barplot2").select("svg").remove();  // reset the plot 
+
+            document.getElementById("barplot2").style.display = "block";
 
             var svg_bar = d3.select("#barplot2")
                 .insert("svg", ':first-child')
@@ -804,7 +814,7 @@ function fetchDataAndUpdateVisualization(localDataPath) {
         var gStep = d3
             .select('div#slider-step')
             .append('svg')
-            .attr('width', 1000)
+            .attr('width', 10000)
             .attr('height', 100)
             .append('g')
             .attr('transform', 'translate(30,30)');

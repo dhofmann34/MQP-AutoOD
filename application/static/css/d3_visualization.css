@@ -7,7 +7,6 @@ html {
     /* font-family: 'Open Sans', sans-serif; */
 }
 
-
 h1 {
     position: absolute;
     left: 0;
@@ -43,13 +42,13 @@ center {
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-    height: 550px;
+    height: 60vh;
 }
 
 #pred_but {
     position: absolute;
     bottom: 50px;
-    font-size: 17px;
+    font-size: 1.0625vw;
 }
 
 /* autoOD pred filter button */
@@ -60,7 +59,7 @@ center {
     border-radius: 5px;
     left: 0px;
     bottom: -30px;
-    font-size: 15px;
+    font-size: 0.9375vw; 
 }
 
 #correct_but {
@@ -78,14 +77,14 @@ center {
     width: 175px;
     height: 30px;
     border-radius: 5px;
-    font-size: 15px;
+    font-size: 0.9375vw; 
 }
 
 #label_but {
     position: absolute;
     left: 12vw;
     bottom: 50px;
-    font-size: 17px;
+    font-size: 1.0625vw;
 }
 
 /* Ground truth filter button */
@@ -96,7 +95,7 @@ center {
     border-radius: 5px;
     left: 0px;
     bottom: -30px;
-    font-size: 15px;
+    font-size: 0.9375vw; 
 }
 
 /* round relibale labels filter button */
@@ -110,9 +109,9 @@ center {
 
 #popup_chart {
     position: relative;
-    left: 1040px;
-    bottom: -145px;
-    width: 760px;
+    left: 60.5vw;
+    
+    width: 730px;
 }
 
 /* barplot for param. */
@@ -124,6 +123,7 @@ center {
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    display: none;
 }
 
 #barplot2 {
@@ -132,6 +132,7 @@ center {
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    display: none;
 }
 
 #temp {
@@ -168,7 +169,7 @@ center {
     top: 4vw;
     background-color: white;
     width: 38.5vw;
-    height: 7vw;
+    height: 15vh;
     border-radius: 8px;
     padding-left: .5%;
     padding-top: .2%;
@@ -184,7 +185,7 @@ center {
     top: 4vw;
     background-color: white;
     width: 19vw;
-    height: 7vw;
+    height: 15vh;
     border-radius: 8px;
     padding-left: .5%;
     padding-top: .2%;
@@ -198,8 +199,9 @@ center {
     background-color: white;
     left: 4vw;
     top: 4vw;
-    height: 12vw;
+    height: 25vh;
     width: 60vw;
+    font-size: 0.875vw; 
 }
 
 
@@ -304,27 +306,27 @@ center {
 }
 
 #reliable_inout {
-    width: 140px;
+    width: 7vw;
     border-radius: 5px;
 }
 
 #filtertitle {
-    font-size: 21px;
+    font-size: 1.3125vw;
     font-family: 'Open Sans', sans-serif;
 
 }
 
 #reliable_output {
     position: absolute;
-    left: 485px;
+    left: 70%;
     top: 12%;
 }
 
 #reliable_labels {
     font-family: 'Open Sans', sans-serif;
     position: absolute;
-    left: 10vw;
-    top: 39vw;
+    left: 9.5vw;
+    top: 70vh;
     background-color: white;
     border-radius: 8px;
     /*border-color: black;
@@ -333,8 +335,8 @@ center {
     padding-left: .5%;
     padding-top: .2%;
     padding-bottom: .2%;
-    width: 47.5vw;
-    height: 6vw;
+    width: 48.5vw;
+    height: 17vh;
 }
 
 select {
@@ -355,13 +357,13 @@ select {
 .legend {
     list-style: none;
     position: absolute;
-    left: 48.25vw;
+    left: 53vw;
     top: 4vw;
     font-family: 'Open Sans', sans-serif;
-    font-size: 15px;
-    background-color: white;
+    font-size: 0.9375vw;
+    background-color: transparent;
     width: 9vw;
-    height: 4vw;
+    height: auto;
     border-radius: 12px;
     padding-left: .5%;
     padding-top: .2%;
@@ -370,12 +372,11 @@ select {
     opacity: 0.9;
     /* box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); */
     vertical-align: baseline;
-
+    
 }
 
 .legend li {
-    float: left;
-    margin-right: 10px;
+    display: block;
 }
 
 .legend span {
@@ -383,13 +384,15 @@ select {
     float: left;
     width: 12px;
     height: 12px;
-    margin: 5px;
 }
 
 .legend .inlier {
     background-color: SteelBlue;
     width: 10px;
     height: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top:5px;
     border-radius: 50px;
 }
 
@@ -397,6 +400,9 @@ select {
     background-color: #FFA500;
     width: 10px;
     height: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top:5px;
     border-radius: 50px;
 }
 
@@ -408,7 +414,7 @@ select {
 }
 
 /* li{
-    font-size: 15px;
+    font-size: 0.9375vw;
 } */
 
 ul {
@@ -423,7 +429,7 @@ ul {
     padding-bottom: .5%;
     padding-top: .5%;
     font-family: 'Open Sans', sans-serif;
-    font-size: 20px;
+    font-size: 1.25vw;
     z-index: 3
 }
 
