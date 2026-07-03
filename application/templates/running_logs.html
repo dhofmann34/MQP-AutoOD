@@ -3,8 +3,8 @@
   <body id=body_results> 
     <ul id="ul_nav">
         {% for item in nav.top %}
-        <li id = "nav" class="{{ 'active' if item.is_active else '' }}">
-            <a id="li_a_nav" href="{{ item.url }}">{{ item.label }}</a>
+        <li id = "nav" class="nav-item {{ 'active' if item.is_active else '' }}">
+            <a id="li_a_nav" class="nav-link" href="{{ item.url }}">{{ item.label }}</a>
         </li>
         {% endfor %}
     </ul>
@@ -14,6 +14,76 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome-4.7.0/css/font-awesome.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/d3_visualization.css') }}"> 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/logs.css') }}"/>
+
+    <!-- Nav-only styling: matches the Input / About / Results pages. Nothing
+         else on this page is touched — no other ids/classes/markup were
+         changed, only class="nav-item"/"nav-link" added alongside the
+         existing id="nav"/id="li_a_nav" for styling hooks. -->
+    <style>
+      #ul_nav {
+        list-style: none !important;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        margin: 0 !important;
+        padding: 10px 24px !important;
+        background-color: rgba(255,255,255,0.85);
+        backdrop-filter: saturate(180%) blur(10px);
+        border-bottom: 1px solid #e2e4e9 !important;
+        box-shadow: none !important;
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+
+      #ul_nav li.nav-item {
+        list-style: none !important;
+        display: flex;
+        align-items: stretch;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+      }
+
+      #ul_nav li.nav-item a.nav-link {
+        display: flex;
+        align-items: center;
+        height: 36px;
+        padding: 0 16px !important;
+        margin: 0 !important;
+        border: none !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+        outline: none !important;
+        background-color: transparent !important;
+        background-image: none !important;
+        color: #6b7280;
+        text-decoration: none !important;
+        font-weight: 500;
+        font-size: 0.9rem;
+        letter-spacing: 0.01em;
+        line-height: 1;
+        transition: background-color 0.15s ease, color 0.15s ease;
+      }
+
+      #ul_nav li.nav-item a.nav-link:hover {
+        background-color: #f4f5f7 !important;
+        color: #1f2328;
+      }
+
+      #ul_nav li.nav-item.active a.nav-link {
+        background-color: #7a1f2b !important;
+        color: #fff !important;
+        font-weight: 600;
+      }
+
+      #ul_nav li.nav-item.active a.nav-link:hover {
+        background-color: #5c161f !important;
+      }
+    </style>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
@@ -54,7 +124,7 @@
 
   </script>
 
-  <title>AutoOD: Automatic Outlier Detection</title>
+  <title>STAND: Self-Tuning Anomaly Detection</title>
 
   </head>
   <body>
@@ -104,4 +174,4 @@
       </div>
       <button id="download-btn" onclick="download_file()">Download Active File</button>
   </body>
-</html> 
+</html>

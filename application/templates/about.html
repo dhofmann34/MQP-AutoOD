@@ -1,127 +1,598 @@
-<!DOCTYPE html>
-<html>
-    <body id=body_results> 
-        <ul id="ul_nav">
-            {% for item in nav.top %}
-            <li id = "nav" class="{{ 'active' if item.is_active else '' }}">
-                <a id="li_a_nav" href="{{ item.url }}">{{ item.label }}</a>
-            </li>
-            {% endfor %}
-        </ul>
-    </body>
+<!doctype html>
+<html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>About — STAND: A Self-Tuning Anomaly Detection System</title>
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/d3_visualization.css') }}"> 
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/d3_visualization.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/about.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Modernization styles: purely visual, does not touch any ids/names used elsewhere -->
+    <style>
+        :root {
+            --stand-primary: #7a1f2b;
+            --stand-primary-dark: #5c161f;
+            --stand-primary-light: #a94454;
+            --stand-primary-wash: #fbeeef;
+            --stand-bg: #f4f5f7;
+            --stand-card-bg: #ffffff;
+            --stand-border: #e2e4e9;
+            --stand-border-strong: #cfd3db;
+            --stand-text: #1f2328;
+            --stand-text-muted: #6b7280;
+            --stand-text-faint: #9aa0ab;
+            --stand-radius: 14px;
+            --stand-radius-sm: 8px;
+            --stand-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
+            --stand-shadow-lg: 0 2px 4px rgba(20,20,30,0.04), 0 16px 40px rgba(20,20,30,0.07);
+            --stand-mono: 'JetBrains Mono', 'Courier New', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--stand-bg);
+            background-image: radial-gradient(circle at 1px 1px, rgba(31,35,40,0.05) 1px, transparent 0);
+            background-size: 22px 22px;
+            color: var(--stand-text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Top nav — reset first to defeat external #nav / li styling, then rebuild off classes */
+        #ul_nav {
+            list-style: none !important;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin: 0 !important;
+            padding: 10px 24px !important;
+            background-color: rgba(255,255,255,0.85);
+            backdrop-filter: saturate(180%) blur(10px);
+            border-bottom: 1px solid var(--stand-border) !important;
+            box-shadow: none !important;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        #ul_nav li#nav {
+            list-style: none !important;
+            display: flex;
+            align-items: stretch;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        #ul_nav li#nav a#li_a_nav {
+            display: flex;
+            align-items: center;
+            height: 36px;
+            padding: 0 16px !important;
+            margin: 0 !important;
+            border: none !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+            outline: none !important;
+            background-color: transparent !important;
+            background-image: none !important;
+            color: var(--stand-text-muted);
+            text-decoration: none !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.01em;
+            line-height: 1;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        #ul_nav li#nav a#li_a_nav:hover {
+            background-color: var(--stand-bg) !important;
+            color: var(--stand-text);
+        }
+
+        #ul_nav li#nav.active a#li_a_nav {
+            background-color: var(--stand-primary) !important;
+            color: #fff !important;
+            font-weight: 600;
+        }
+
+        #ul_nav li#nav.active a#li_a_nav:hover {
+            background-color: var(--stand-primary-dark) !important;
+        }
+
+        /* Hero */
+        .about-hero {
+            text-align: center;
+            padding: 52px 20px 36px;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0) 100%);
+            border-bottom: 1px solid var(--stand-border);
+        }
+
+        .about-hero .eyebrow {
+            display: block;
+            font-family: var(--stand-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--stand-primary);
+            margin: 0 0 10px;
+        }
+
+        h1#header.reset {
+            all: unset;
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-size: 2.15rem;
+            font-weight: 800;
+            color: var(--stand-text);
+            letter-spacing: -0.025em;
+            line-height: 1.22;
+            max-width: 640px;
+            margin: 0 auto 10px;
+        }
+
+        .about-hero .lead {
+            max-width: 620px;
+            margin: 0 auto;
+            color: var(--stand-text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Layout */
+        #desc_holder {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 44px 20px 64px;
+        }
+
+        .about-section {
+            background-color: var(--stand-card-bg);
+            border: 1px solid var(--stand-border);
+            border-radius: var(--stand-radius);
+            box-shadow: var(--stand-shadow-lg);
+            padding: 32px 40px;
+            margin-bottom: 24px;
+        }
+
+        .about-section p {
+            font-size: 0.94rem;
+            line-height: 1.7;
+            color: var(--stand-text);
+            margin: 0 0 14px;
+        }
+
+        .about-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-eyebrow {
+            display: block;
+            font-family: var(--stand-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--stand-primary);
+            margin: 0 0 8px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--stand-text);
+            margin: 0 0 18px;
+        }
+
+        /* Resource links */
+        .resource-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .resource-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 16px;
+            border: 1px solid var(--stand-border);
+            border-radius: 999px;
+            background-color: #fbfbfc;
+            color: var(--stand-text);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .resource-links a:hover {
+            border-color: var(--stand-primary);
+            background-color: var(--stand-primary-wash);
+            color: var(--stand-primary-dark);
+        }
+
+        /* Getting started steps */
+        .steps {
+            padding-top: 6px;
+        }
+
+        .step {
+            display: flex;
+            gap: 18px;
+            position: relative;
+        }
+
+        .step .step-marker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .step .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--stand-primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            font-family: var(--stand-mono);
+            flex-shrink: 0;
+        }
+
+        .step .step-line {
+            width: 2px;
+            flex: 1;
+            min-height: 20px;
+            background: var(--stand-border);
+            margin-top: 6px;
+        }
+
+        .step:last-child .step-line {
+            display: none;
+        }
+
+        .step .step-content {
+            flex: 1;
+            min-width: 0;
+            padding-bottom: 26px;
+        }
+
+        .step:last-child .step-content {
+            padding-bottom: 4px;
+        }
+
+        .step-title {
+            font-weight: 650;
+            font-size: 0.95rem;
+            color: var(--stand-text);
+            margin: 3px 0 4px;
+        }
+
+        .step-desc {
+            font-size: 0.88rem;
+            color: var(--stand-text-muted);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* Figures */
+        .about-figure {
+            margin-top: 6px;
+        }
+
+        .about-figure img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border: 1px solid var(--stand-border);
+            border-radius: var(--stand-radius-sm);
+        }
+
+        .about-figure figcaption {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: var(--stand-text-faint);
+            text-align: center;
+        }
+
+        /* Team grid */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 0;
+        }
+
+        .grid-container + .grid-container {
+            margin-top: 20px;
+        }
+
+        .grid-item {
+            text-align: center;
+        }
+
+        .grid-item img {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--stand-primary-wash);
+            margin: 0 auto 12px;
+            display: block;
+        }
+
+        .grid-item .title {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: var(--stand-text);
+            margin-bottom: 4px;
+        }
+
+        .grid-item span:not(.title) {
+            display: block;
+            font-size: 0.78rem;
+            color: var(--stand-text-muted);
+            line-height: 1.45;
+        }
+
+        .team-group-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--stand-text-faint);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin: 0 0 14px;
+        }
+
+        .team-group-label.second {
+            margin-top: 28px;
+        }
+
+        /* Citations */
+        .citation {
+            border-left: 3px solid var(--stand-primary-wash);
+            padding: 4px 0 4px 16px;
+            margin-bottom: 14px;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: var(--stand-text-muted);
+        }
+
+        .citation:last-child {
+            margin-bottom: 0;
+        }
+
+        .citation a {
+            color: var(--stand-primary);
+            text-decoration: none;
+            font-family: var(--stand-mono);
+            font-size: 0.82rem;
+        }
+
+        .citation a:hover {
+            text-decoration: underline;
+        }
+
+        /* Acknowledgments */
+        .acknowledgments p {
+            color: var(--stand-text-muted);
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
-<body>
-        <div id="desc_holder">
-            <h1 id="header" class="reset">AutoOD: A Self-Tuning Anomaly Detection System</h1>
+<body id="body_results">
+    <ul id="ul_nav">
+        {% for item in nav.top %}
+        <li id="nav" class="{{ 'active' if item.is_active else '' }}">
+            <a id="li_a_nav" href="{{ item.url }}">{{ item.label }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <div class="about-hero">
+        <span class="eyebrow">About the project</span>
+        <h1 id="header" class="reset">STAND: A Self-Tuning Anomaly Detection System</h1>
+        <p class="lead">A self-tuning, unsupervised anomaly detection system that removes the tedious manual tuning process, with a responsive visual interface into how it operates.</p>
+    </div>
+
+    <div id="desc_holder">
+
+        <div class="about-section">
+            <span class="section-eyebrow">Overview</span>
             <p>
-                AutoOD is a self-tuning anomaly detection system designed to addressthe challenges of method selection and hyper-parameter tuning while
-                remaining unsupervised. AutoOD frees users from the tedious manual
-                tuning process often required for anomaly detection by intelligently
-                identifying high likelihood inliers and outliers. AutoOD features a
-                responsive visual interface allowing for seamless interaction
-                providing the user with insightful knowledge of how AutoOD operates.
-                AutoOD outperforms the best unsupervised anomaly detection methods,
-                yielding results similar to supervised methods that have access to
-                ground truth labels.
+                STAND is a self-tuning anomaly detection system designed to address the challenges of method selection and hyper-parameter tuning while
+                remaining unsupervised. STAND frees users from the tedious manual tuning process often required for anomaly detection by intelligently
+                identifying high likelihood inliers and outliers. STAND features a responsive visual interface allowing for seamless interaction, providing
+                the user with insightful knowledge of how STAND operates. STAND outperforms the best unsupervised anomaly detection methods, yielding
+                results similar to supervised methods that have access to ground truth labels.
             </p>
             <p>
-                This work has been accepted for publication at VLDB 2022 (48th
-                    International Conference on Very Large Databases) one of the most
-                    prestigious conferences in database systems.Getting Started: First,
-                    upload the dataset you are interested in examining. AutoOD currently
-                    accepts CSV and ARFF files. Next, select the unsupervised outlier
-                    detection methods you want to run AutoOD with, and provide the column
-                    names for the id column and label column from your dataset. Lastly,
-                    input the minimum and maximum percentage range for the number of
-                    outliers you expect are contained within your dataset.This work has
-                    been accepted for publication at VLDB 2022 (48th International
-                    Conference on Very Large Databases) one of the most prestigious
-                    conferences in database systems.
+                Recently, we modernized and substantially expanded the STAND web platform to improve its usability, scalability, and maintainability.
+                Specifically, we redesigned the user interface through an iterative, user-centered design process, added support for rerunning experiments
+                with customizable detector parameters, implemented run history, downloadable logs, and robust error handling, and enabled multiple
+                concurrent users through session-based management. On the backend, we refactored the application into a layered architecture using Flask
+                blueprints and the factory design pattern, restructured the database to support multi-user execution, developed comprehensive automated
+                test suites, and optimized performance by improving SQL queries and batch-processing datasets.
             </p>
-            <br/>
-            <span style="font-weight: 700; color: maroon; font-size: 24px;">Getting Started: </span>
-            <p>
-                First, upload the dataset you are interested in examining. AutoOD
-                    currently accepts CSV and ARFF files. Next, select the unsupervised
-                    outlier detection methods you want to run AutoOD with, and provide the
-                    column names for the id column and label column from your dataset.
-                    Lastly, input the minimum and maximum percentage range for the number
-                    of outliers you expect are contained within your dataset.
-            </p>
-            <br/>
-            <img alt="architecture" src="https://raw.githubusercontent.com/dhofmann34/AutoOD_Demo/main/screenshots/architecture.jpg"/>
-            <br/>
-            <span style="font-weight: 700; color: maroon; font-size: 24px;">Our Team:</span>
+            <div class="resource-links">
+                <a href="https://davis.wpi.edu/dsrg/PROJECTS/AnomalyDetection/" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i> Project website</a>
+                <a href="https://github.com/yizhouyan/AutoOD" target="_blank"><i class="fa fa-github" aria-hidden="true"></i> Original algorithm implementation</a>
+                <a href="https://github.com/dhofmann34/AutoOD_Demo" target="_blank"><i class="fa fa-github" aria-hidden="true"></i> Original demo source code</a>
+                <a href="https://github.com/dhofmann34/AutoOD-web" target="_blank"><i class="fa fa-github" aria-hidden="true"></i> Current system repository</a>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <span class="section-eyebrow">How it works</span>
+            <h2 class="section-title">Getting started</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-marker">
+                        <div class="step-number">1</div>
+                        <div class="step-line"></div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-title">Upload your dataset</div>
+                        <p class="step-desc">STAND currently accepts CSV and ARFF files.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-marker">
+                        <div class="step-number">2</div>
+                        <div class="step-line"></div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-title">Choose your methods and columns</div>
+                        <p class="step-desc">Select the unsupervised outlier detection methods to run, then provide the id and label column names from your dataset.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-marker">
+                        <div class="step-number">3</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-title">Set your expected outlier range</div>
+                        <p class="step-desc">Input the minimum and maximum percentage of outliers you expect are contained within your dataset.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <span class="section-eyebrow">System design</span>
+            <h2 class="section-title">STAND architecture</h2>
+            <figure class="about-figure">
+                <img alt="architecture" src="https://raw.githubusercontent.com/dhofmann34/AutoOD_Demo/main/screenshots/architecture.jpg"/>
+            </figure>
+        </div>
+
+        <div class="about-section">
+            <span class="section-eyebrow">Sample run</span>
+            <h2 class="section-title">Example output on the Thyroid dataset</h2>
+            <figure class="about-figure">
+                <img alt="results_screenshot" src="../static/img/results_screenshot.png"/>
+            </figure>
+        </div>
+
+        <div class="about-section">
+            <span class="section-eyebrow">People</span>
+            <h2 class="section-title">Our team</h2>
+
+            <p class="team-group-label">Faculty &amp; researchers</p>
             <div class="grid-container original-container">
                 <div class="grid-item">
                     <img src="https://davis.wpi.edu/dsrg/PROJECTS/AnomalyDetection/assets/img/team-small/elke_rundensteiner.jpg"/>
-                    <span class="title">DR. ELKE RUNDENSTEINER</span>
-                    <br/>
-                    <span>Professor of Computer Science Worcester Polytechnic Institute</span>
+                    <span class="title">Dr. Elke Rundensteiner</span>
+                    <span>Professor of Computer Science, Worcester Polytechnic Institute</span>
                 </div>
-
+                <div class="grid-item">
+                    <img src="https://davis.wpi.edu/dsrg/PROJECTS/AnomalyDetection/assets/img/team-small/sam_madden.png"/>
+                    <span class="title">Dr. Samuel Madden</span>
+                    <span>Professor of Computer Science, Massachusetts Institute of Technology</span>
+                </div>
+                <div class="grid-item">
+                    <img src="https://davis.wpi.edu/dsrg/PROJECTS/AnomalyDetection/assets/img/team-small/lei_cao.jpeg"/>
+                    <span class="title">Dr. Lei Cao</span>
+                    <span>Assistant Professor of Computer Science, University of Arizona</span>
+                </div>
+                <div class="grid-item">
+                    <img src="https://davis.wpi.edu/dsrg/PROJECTS/AnomalyDetection/assets/img/team-small/lei_ma.jpg"/>
+                    <span class="title">Lei Ma</span>
+                    <span>PhD Student in Data Science, Worcester Polytechnic Institute</span>
+                </div>
                 <div class="grid-item">
                     <img src="https://davis.wpi.edu/dsrg/PROJECTS/AnomalyDetection/assets/img/team-small/dennis_hofmann.jpg"/>
-                    <span class="title">DENNIS HOFMANN</span>
-                    <br/>
-                    <span>PhD Student in Data Science Worcester Polytechnic Institute</span>
+                    <span class="title">Dennis Hofmann</span>
+                    <span>PhD Student in Data Science, Worcester Polytechnic Institute</span>
                 </div>
-
                 <div class="grid-item">
                     <img src="https://davis.wpi.edu/dsrg/PROJECTS/AnomalyDetection/assets/img/team-small/peter_vannostrand.png"/>
-                    <span class="title">PETER VANNOSTRAND</span>
-                    <br/>
-                    <span>PhD Student in Data Science Worcester Polytechnic Institute</span>
+                    <span class="title">Peter VanNostrand</span>
+                    <span>PhD Student in Data Science, Worcester Polytechnic Institute</span>
+                </div>
+                <div class="grid-item">
+                    <img src="https://daisy.wpi.edu/assets/img/team-small/josh_deoliveira.jpg"/>
+                    <span class="title">Josh DeOliveira</span>
+                    <span>PhD Student in Data Science, Worcester Polytechnic Institute</span>
                 </div>
             </div>
-            <br/>
+
+            <p class="team-group-label second">Student contributors</p>
             <div class="grid-container student-container">
                 <div class="grid-item">
                     <img src="../static/img/pic_talia.jpg"/>
-                    <span class="title">TALIA ANDREWS</span>
-                    <br/>
-                    <span>MS Student in Computer Science Worcester Polytechnic Institute</span>
+                    <span class="title">Talia Andrews</span>
+                    <span>MS Student in Computer Science, Worcester Polytechnic Institute</span>
                 </div>
-
                 <div class="grid-item">
                     <img src="../static/img/pic_tristan.jpg"/>
-                    <span class="title">TRISTAN SHARICH</span>
-                    <br/>
-                    <span>BS Student in Computer Science Worcester Polytechnic Institute</span>
+                    <span class="title">Tristan Sharich</span>
+                    <span>BS Student in Computer Science, Worcester Polytechnic Institute</span>
                 </div>
-
                 <div class="grid-item">
                     <img src="../static/img/pic_james.jpg"/>
-                    <span class="title">JAMES YI</span>
-                    <br/>
-                    <span>BS Student in Computer Science Worcester Polytechnic Institute</span>
+                    <span class="title">James Yi</span>
+                    <span>BS Student in Computer Science, Worcester Polytechnic Institute</span>
                 </div>
-
                 <div class="grid-item">
                     <img src="../static/img/pic_ishayu.jpg"/>
-                    <span class="title">ISHAYU DAS</span>
-                    <br/>
-                    <span>MS Student in Computer Science Worcester Polytechnic Institute</span>
+                    <span class="title">Ishayu Das</span>
+                    <span>MS Student in Computer Science, Worcester Polytechnic Institute</span>
                 </div>
             </div>
-            <br/>
-            <span style="font-weight: 700; color: maroon; font-size: 24px;">Original Work:</span>
-            <div>
-                <p>
-                    AutoOD Demo: Hofmann, Dennis, Peter VanNostrand, Huayi Zhang, Yizhou Yan, Lei Cao, Samuel Madden, and Elke Rundensteiner.
-                    "A demonstration of AutoOD: a self-tuning anomaly detection system."
-                    Proceedings of the VLDB Endowment 15, no. 12 (2022): 3706-3709.
-                </p>
-                <p>
-                    AutoOD: Cao, Lei, Yizhou Yan, Yu Wang, Samuel Madden, and Elke A. Rundensteiner.
-                    "AutoOD: Automatic Outlier Detection."
-                    Proceedings of the ACM on Management of Data 1, no. 1 (2023): 1-27.
-                </p>
+        </div>
+
+        <div class="about-section">
+            <span class="section-eyebrow">Citations</span>
+            <h2 class="section-title">Original work</h2>
+            <div class="citation">
+                AutoOD Demo: Hofmann, Dennis, Peter VanNostrand, Huayi Zhang, Yizhou Yan, Lei Cao, Samuel Madden, and Elke Rundensteiner.
+                "A demonstration of AutoOD: a self-tuning anomaly detection system."
+                Proceedings of the VLDB Endowment 15, no. 12 (2022): 3706-3709.
+                <br/><a href="https://github.com/dhofmann34/AutoOD_Demo" target="_blank">github.com/dhofmann34/AutoOD_Demo</a>
+            </div>
+            <div class="citation">
+                AutoOD: Cao, Lei, Yizhou Yan, Yu Wang, Samuel Madden, and Elke A. Rundensteiner.
+                "AutoOD: Automatic Outlier Detection."
+                Proceedings of the ACM on Management of Data 1, no. 1 (2023): 1-27.
+                <br/><a href="https://github.com/yizhouyan/AutoOD" target="_blank">github.com/yizhouyan/AutoOD</a>
             </div>
         </div>
+
+        <div class="about-section acknowledgments">
+            <span class="section-eyebrow">Funding</span>
+            <h2 class="section-title">Acknowledgments</h2>
+            <p>
+                This work was supported in part by NSF under grants IIS1910880, CSSI-2103832, CNS-1852498, NRT-HDR-1815866
+                and by the U.S. Dept. of Education under grant P200A180088.
+            </p>
+        </div>
+
+    </div>
 </body>
 </html>

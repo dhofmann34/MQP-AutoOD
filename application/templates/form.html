@@ -1,287 +1,862 @@
 <!doctype html>
-
+<html lang="en">
 <head>
-    <title>AutoOD: Automatic Outlier Detection</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>STAND: A Self-Tuning Anomaly Detection System</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/multiselect.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome-4.7.0/css/font-awesome.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/d3_visualization.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Modernization styles: purely visual, does not touch any ids/names used by JS -->
+    <style>
+        :root {
+            --stand-primary: #7a1f2b;
+            --stand-primary-dark: #5c161f;
+            --stand-primary-light: #a94454;
+            --stand-primary-wash: #fbeeef;
+            --stand-bg: #f4f5f7;
+            --stand-card-bg: #ffffff;
+            --stand-border: #e2e4e9;
+            --stand-border-strong: #cfd3db;
+            --stand-text: #1f2328;
+            --stand-text-muted: #6b7280;
+            --stand-text-faint: #9aa0ab;
+            --stand-radius: 14px;
+            --stand-radius-sm: 8px;
+            --stand-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
+            --stand-shadow-lg: 0 2px 4px rgba(20,20,30,0.04), 0 16px 40px rgba(20,20,30,0.07);
+            --stand-mono: 'JetBrains Mono', 'Courier New', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--stand-bg);
+            background-image:
+                radial-gradient(circle at 1px 1px, rgba(31,35,40,0.05) 1px, transparent 0);
+            background-size: 22px 22px;
+            color: var(--stand-text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Top nav
+           Note: the external stylesheets (style.css/bootstrap.css) define
+           rules keyed on #nav / list items that were bleeding through as a
+           chunky bordered box. Everything below is reset with !important
+           and re-styled off .nav-item / .nav-link instead of the id, so it
+           can't be clobbered again. */
+        .top-nav {
+            list-style: none !important;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin: 0 !important;
+            padding: 10px 24px !important;
+            background-color: rgba(255,255,255,0.85);
+            backdrop-filter: saturate(180%) blur(10px);
+            border-bottom: 1px solid var(--stand-border) !important;
+            border-top: none !important;
+            box-shadow: none !important;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .top-nav li#nav,
+        .top-nav li.nav-item {
+            list-style: none !important;
+            display: flex;
+            align-items: stretch;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        .top-nav li#nav a,
+        .top-nav li.nav-item .nav-link {
+            display: flex;
+            align-items: center;
+            height: 36px;
+            padding: 0 16px !important;
+            margin: 0 !important;
+            border: none !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+            outline: none !important;
+            background-color: transparent !important;
+            background-image: none !important;
+            color: var(--stand-text-muted);
+            text-decoration: none !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.01em;
+            line-height: 1;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .top-nav li#nav a:hover,
+        .top-nav li.nav-item .nav-link:hover {
+            background-color: var(--stand-bg) !important;
+            color: var(--stand-text);
+        }
+
+        .top-nav li#nav a:visited,
+        .top-nav li#nav a:focus,
+        .top-nav li#nav a:active {
+            color: inherit;
+        }
+
+        .top-nav li#nav.active a,
+        .top-nav li.nav-item.active .nav-link {
+            background-color: var(--stand-primary) !important;
+            color: #fff !important;
+            font-weight: 600;
+        }
+
+        .top-nav li#nav.active a:hover,
+        .top-nav li.nav-item.active .nav-link:hover {
+            background-color: var(--stand-primary-dark) !important;
+            color: #fff;
+        }
+
+        /* Hero / header
+           Note: intentionally NOT named .header — that class name is already
+           used by an external stylesheet (style.css/bootstrap.css) linked
+           above, and it was overriding/clipping this block. */
+        .stand-hero {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            box-sizing: border-box;
+            overflow: visible;
+            height: auto;
+            text-align: center;
+            padding: 52px 20px 36px;
+            margin: 0;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0) 100%);
+            border-bottom: 1px solid var(--stand-border);
+        }
+
+        .stand-hero .hero-mark {
+            display: block;
+            margin: 0 0 14px;
+        }
+
+        .stand-hero .eyebrow {
+            display: block;
+            font-family: var(--stand-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--stand-primary);
+            margin: 0 0 10px;
+        }
+
+        .stand-hero h1 {
+            display: block;
+            float: none;
+            clear: both;
+            position: static;
+            width: auto;
+            max-width: 560px;
+            font-size: 2.15rem;
+            font-weight: 800;
+            color: var(--stand-text);
+            margin: 0 auto 10px;
+            letter-spacing: -0.025em;
+            line-height: 1.22;
+            white-space: normal;
+            overflow: visible;
+            text-align: center;
+        }
+
+        .stand-hero p.subtitle {
+            display: block;
+            float: none;
+            clear: both;
+            position: static;
+            width: auto;
+            max-width: 460px;
+            margin: 0 auto;
+            color: var(--stand-text-muted);
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .page-content {
+            position: relative;
+            z-index: 0;
+            padding: 44px 20px 60px;
+        }
+
+        h3 {
+            font-weight: 600;
+            color: var(--stand-text);
+        }
+
+        /* Card container wrapping the form */
+        .stand-card {
+            max-width: 660px;
+            margin: 0 auto 32px;
+            background-color: var(--stand-card-bg);
+            border: 1px solid var(--stand-border);
+            border-radius: var(--stand-radius);
+            box-shadow: var(--stand-shadow-lg);
+            padding: 8px 40px 32px;
+            text-align: left;
+        }
+
+        .stand-card > h3.card-title {
+            text-align: left;
+            margin: 0;
+            padding: 24px 0 20px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border-bottom: 1px solid var(--stand-border);
+        }
+
+        /* Stepper layout */
+        .steps {
+            padding-top: 24px;
+        }
+
+        .step {
+            display: flex;
+            gap: 18px;
+            position: relative;
+        }
+
+        .step .step-marker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .step .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--stand-primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            font-family: var(--stand-mono);
+            flex-shrink: 0;
+        }
+
+        .step .step-line {
+            width: 2px;
+            flex: 1;
+            min-height: 24px;
+            background: var(--stand-border);
+            margin-top: 6px;
+        }
+
+        .step:last-child .step-line {
+            display: none;
+        }
+
+        .step .step-content {
+            flex: 1;
+            min-width: 0;
+            padding-bottom: 34px;
+        }
+
+        .step:last-child .step-content {
+            padding-bottom: 8px;
+        }
+
+        .step-title {
+            font-weight: 650;
+            font-size: 1rem;
+            color: var(--stand-text);
+            margin: 3px 0 3px;
+        }
+
+        .step-desc {
+            font-size: 0.85rem;
+            color: var(--stand-text-muted);
+            margin: 0 0 16px;
+            line-height: 1.5;
+        }
+
+        .field-hint {
+            font-size: 0.78rem;
+            color: var(--stand-text-faint);
+            margin: 6px 2px 0;
+        }
+
+        /* Field labels */
+        label.field-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--stand-text);
+            margin-bottom: 6px;
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 18px;
+        }
+
+        .field-grid .field-group.full {
+            grid-column: 1 / -1;
+        }
+
+        /* Inputs */
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 9px 12px;
+            border: 1px solid var(--stand-border);
+            border-radius: var(--stand-radius-sm);
+            font-family: inherit;
+            font-size: 0.9rem;
+            background-color: #fbfbfc;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--stand-primary);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(122, 31, 43, 0.12);
+        }
+
+        select#multiple-checkboxes {
+            width: 100%;
+        }
+
+        /* Buttons */
+        .actions-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 30px;
+            padding-top: 24px;
+            border-top: 1px solid var(--stand-border);
+        }
+
+        input.button,
+        input#SubmitButton {
+            background-color: var(--stand-primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--stand-radius-sm);
+            padding: 11px 26px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+            box-shadow: 0 1px 2px rgba(122,31,43,0.25);
+        }
+
+        input.button:hover,
+        input#SubmitButton:hover {
+            background-color: var(--stand-primary-dark);
+        }
+
+        input.button:active,
+        input#SubmitButton:active {
+            transform: translateY(1px);
+        }
+
+        input#ClearButtonRadio {
+            background-color: transparent;
+            color: var(--stand-text-muted);
+            border: 1px solid var(--stand-border);
+            border-radius: var(--stand-radius-sm);
+            padding: 8px 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
+        }
+
+        input#ClearButtonRadio:hover {
+            background-color: var(--stand-bg);
+            border-color: var(--stand-border-strong);
+        }
+
+        /* File upload section */
+        .upload-section p.upload-label {
+            margin: 0 0 8px;
+            font-size: 0.8rem;
+            color: var(--stand-text);
+            font-weight: 600;
+        }
+
+        .inputfile-box {
+            margin-bottom: 18px;
+        }
+
+        .inputfile-box input[type="file"] {
+            display: none;
+        }
+
+        .dropzone {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 1.5px dashed var(--stand-border-strong);
+            border-radius: var(--stand-radius-sm);
+            padding: 16px 18px;
+            background-color: #fbfbfc;
+            cursor: pointer;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+
+        .dropzone:hover {
+            border-color: var(--stand-primary-light);
+            background-color: var(--stand-primary-wash);
+        }
+
+        .dropzone .dz-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--stand-primary-wash);
+            color: var(--stand-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.95rem;
+        }
+
+        .dropzone .dz-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .dropzone .dz-title {
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--stand-text);
+        }
+
+        .file-box {
+            font-size: 0.78rem;
+            color: var(--stand-text-muted);
+            font-family: var(--stand-mono);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .divider-or {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 16px 0 12px;
+            color: var(--stand-text-faint);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .divider-or::before,
+        .divider-or::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--stand-border);
+        }
+
+        .dataset-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 0 0 6px;
+        }
+
+        .dataset-option {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--stand-border);
+            border-radius: var(--stand-radius-sm);
+            padding: 9px 10px;
+            background-color: #fbfbfc;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+
+        .dataset-option:has(input:checked) {
+            border-color: var(--stand-primary);
+            background-color: var(--stand-primary-wash);
+        }
+
+        .dataset-option:hover {
+            border-color: var(--stand-primary-light);
+        }
+
+        .dataset-option label {
+            font-size: 0.85rem;
+            color: var(--stand-text);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* Radio group */
+        input[type="radio"] {
+            accent-color: var(--stand-primary);
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        /* Flash messages */
+        ul.flashes {
+            max-width: 660px;
+            margin: 0 auto 16px;
+            padding: 12px 16px;
+            list-style: none;
+            background-color: #fdeeee;
+            border: 1px solid #f3c9c9;
+            border-radius: var(--stand-radius-sm);
+        }
+
+        ul.flashes h4 {
+            margin: 4px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Loading logo */
+        #loadingLogo {
+            display: none;
+            text-align: left;
+            margin-top: 0;
+        }
+
+        #loadingLogo img {
+            height: 22px;
+            vertical-align: middle;
+        }
+
+        /* Logging window */
+        .row {
+            max-width: 660px;
+            margin: 0 auto 48px;
+        }
+
+        .row h3 {
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .logging_window {
+            background-color: #1b1b1f;
+            border-radius: var(--stand-radius);
+            padding: 0 0 16px;
+            text-align: left;
+            box-shadow: var(--stand-shadow-lg);
+            max-height: 320px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logging_window .term-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .logging_window .term-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .logging_window .term-dot.red { background: #ff5f57; }
+        .logging_window .term-dot.yellow { background: #febc2e; }
+        .logging_window .term-dot.green { background: #28c840; }
+
+        .logging_window pre#output {
+            color: #d4d4d4;
+            font-family: var(--stand-mono);
+            font-size: 0.82rem;
+            margin: 0;
+            padding: 14px 18px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+        }
+    </style>
 </head>
 
-<!-- DH -->
-
 <body>
-    <ul>
+    <ul class="top-nav">
         {% for item in nav.top %}
-        <li id="nav" class="{{ 'active' if item.is_active else '' }}">
-            <a href="{{ item.url }}">{{ item.label }}</a>
+        <li id="nav" class="nav-item {{ 'active' if item.is_active else '' }}">
+            <a class="nav-link" href="{{ item.url }}">{{ item.label }}</a>
         </li>
         {% endfor %}
     </ul>
-</body>
-<!-- DH -->
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#example-getting-started').multiselect();
-    });
-</script>
-<script>
-    $(document).ready(function () {
-        $('.clickable').click(function () {
-            $(this).nextUntil('h3').slideToggle(1000);
-        });
-    });
-    $("#SubmitButton").on("click", function (e) {
-        e.preventDefault();
-        return false;
-    });
-
-    $(document).ready(function () {
-        var output = document.getElementById('output');
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', "{{ url_for('logs.running_logs') }}", true);
-        xhr.send();
-        setInterval(function () {
-            output.textContent = xhr.responseText;
-        }, 500);
-    });
-
-    function uploadFile(target) {
-        document.getElementById("file-name").innerHTML = document
-            .getElementById("file").files[0].name;
-    }
-
-    $(document).ready(function () {
-        $('#multiple-checkboxes').multiselect({
-            includeSelectAllOption: true,
-        });
-    });
-
-    // Disable inputs - START
-    // const form = document.querySelector('form');
-
-    // function disableInputs(exception) {
-    //     for (const input of form.elements) {
-    //         if (input !== exception) {
-    //         input.disabled = true;
-    //         }
-    //     }
-    // }
-
-    // function enableInputs() {
-    //     for (const input of form.elements) {
-    //         input.disabled = false;
-    //     }
-    // }
-
-    // form.addEventListener('input', event => {
-    //     const { target } = event;
-
-    //     if (
-    //         (target.type === 'file' && target.value !== '') ||
-    //         (target.type === 'radio' && target.checked === true)
-    //     ) {
-    //         disableInputs(target);
-    //     } else {
-    //         enableInputs();
-    //     }
-    // });
-    // Disable inputs - END
-
-    // Clear button for file - START
-    function clearInputFile(){
-        //const file =
-        //    document.querySelector('.file');
-        //    file.value = '';
-
-        document.getElementById('selectedDataset').value = '';
-    }
-    // Clear button for file - END
-
-    function sendRadioValue(target) {
-        var ele = document.getElementsByName('dataset');
-
-        for (i = 0; i < ele.length; i++) {
-            if (ele[i].checked)
-                document.getElementById("file-name").innerHTML
-                    = ele[i].value;
-        }
-    }
-
-    window.addEventListener("DOMContentLoaded", (event) => {
-        document.getElementById('radioButton1').addEventListener('click', function () {
-            document.getElementById('selectedDataset').value = 'thyroid.csv';
-        });
-
-        document.getElementById('radioButton2').addEventListener('click', function () {
-            document.getElementById('selectedDataset').value = 'cardio.csv';
-        });
-
-        document.getElementById('radioButton3').addEventListener('click', function () {
-            document.getElementById('selectedDataset').value = 'musk.csv';
-        });
-    });
-
-    function showLoadingLogo(){
-        var loadingLogo = document.getElementById('loadingLogo');
-        loadingLogo.style.display = 'block';
-    }
-
-</script>
-
-<body>
-    <div class="header" style="text-align:center">
-        <h1>AutoOD: Automatic Outlier Detection</h1>
+    <div class="stand-hero">
+        <svg class="hero-mark" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="28" cy="28" r="19" stroke="#dfe2e8" stroke-width="1.5" stroke-dasharray="3 4"/>
+            <circle cx="21" cy="24" r="2.5" fill="#c7cbd3"/>
+            <circle cx="30" cy="20" r="2.5" fill="#c7cbd3"/>
+            <circle cx="33" cy="31" r="2.5" fill="#c7cbd3"/>
+            <circle cx="22" cy="33" r="2.5" fill="#c7cbd3"/>
+            <circle cx="26" cy="27" r="2.5" fill="#c7cbd3"/>
+            <circle cx="45" cy="12" r="4" fill="#7a1f2b"/>
+        </svg>
+        <span class="eyebrow">STAND Pipeline</span>
+        <h1>STAND: A Self-Tuning Anomaly Detection System</h1>
+        <p class="subtitle">Upload a dataset, choose your detection methods, and let STAND tune itself.</p>
     </div>
-    <center>
-        <h3>Enter Input File and Parameters</h3>
-        <form action="/autood/index" method="post" enctype=multipart/form-data>
-            <table border="0">
-                <tr>
-                    <td style="width: 30%;">Input File</td>
-                    <td>
-                        <form action="/action_page.php">
-                            <p>Enter your own:</p>
-                            <div class="inputfile-box">
-                                <input class="button" type="file" id="file" name="file" class="inputfile"
-                                    onchange='uploadFile()'>
-                                <label for="file" value="{{file}}">
-                                    <span id="file-name" value="{{file}}" class="file-box"></span>
-                                    <span class="file-button">
-                                        <i class="fa fa-upload" aria-hidden="true"></i> Select File
-                                    </span>
-                                </label>
+
+    <div class="page-content">
+        <center>
+            <div class="stand-card">
+                <h3 class="card-title">Enter Input File and Parameters</h3>
+                <form action="/autood/index" method="post" enctype="multipart/form-data">
+                    <div class="steps">
+
+                        <!-- Step 1 -->
+                        <div class="step">
+                            <div class="step-marker">
+                                <div class="step-number">1</div>
+                                <div class="step-line"></div>
                             </div>
-                            <div>
-                                <p>Or select one of ours:</p>
-                                <input type="radio" id="radioButton1" name="dataset">
-                                <label for="thyroid">Thyroid</label><br>
-                                <input type="radio" id="radioButton2" name="dataset">
-                                <label for="cardio">Cardio</label><br>
-                                <input type="radio" id="radioButton3" name="dataset">
-                                <label for="musk">Musk</label>
-                                <input type="hidden" id="selectedDataset" name="selectedDataset" value="">
+                            <div class="step-content">
+                                <div class="step-title">Provide a dataset</div>
+                                <p class="step-desc">Upload a CSV of your own, or start quickly with one of the built-in sample datasets.</p>
+
+                                <div class="upload-section">
+                                    <p class="upload-label">Upload your own</p>
+                                    <div class="inputfile-box">
+                                        <input type="file" id="file" name="file" class="inputfile" onchange="uploadFile()">
+                                        <label for="file">
+                                            <div class="dropzone">
+                                                <span class="dz-icon"><i class="fa fa-upload" aria-hidden="true"></i></span>
+                                                <span class="dz-text">
+                                                    <span class="dz-title">Click to select a CSV file</span>
+                                                    <span id="file-name" class="file-box">No file selected</span>
+                                                </span>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <div class="divider-or">or use a sample dataset</div>
+
+                                    <div class="dataset-options">
+                                        <div class="dataset-option">
+                                            <input type="radio" id="radioButton1" name="dataset">
+                                            <label for="radioButton1">Thyroid</label>
+                                        </div>
+                                        <div class="dataset-option">
+                                            <input type="radio" id="radioButton2" name="dataset">
+                                            <label for="radioButton2">Cardio</label>
+                                        </div>
+                                        <div class="dataset-option">
+                                            <input type="radio" id="radioButton3" name="dataset">
+                                            <label for="radioButton3">Musk</label>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="selectedDataset" name="selectedDataset" value="">
+                                    <input type="reset" id="ClearButtonRadio" value="Clear selection" onclick="clearInputFile()">
+                                </div>
                             </div>
-                            <input type="reset" id="ClearButtonRadio" value="Clear" onclick="clearInputFile()">
-                        </form>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Detection Methods</td>
-                    <td><select id="multiple-checkboxes" name="detectionMethods" multiple="multiple">
-                            <option value="lof" selected>LOF</option>
-                            <option value="knn" selected>KNN</option>
-                            <option value="if" selected>Isolation Forest</option>
-                            <option value="mahala" selected>Mahalanobis</option>
-                        </select></td>
-                </tr>
-                <tr>
-                    <td>Index Column Name</td>
-                    <td><input name="indexColName" value="id" type="text" /></td>
-                </tr>
-                <tr>
-                    <td>Label Column Name</td>
-                    <td><input name="labelColName" value="label" type="text" /></td>
-                </tr>
-                <tr>
-                    <td>Percentage of Outliers: Min (%)</td>
-                    <td><input name="outlierRangeMin" value="5" type="number" /></td>
-                </tr>
-                <tr>
-                    <td>Percentage of Outliers: Max (%)</td>
-                    <td><input name="outlierRangeMax" value="15" type="number" /></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>
-                        <div>
-                            <input class="button" type="submit" value="Submit" id="SubmitButton" style="float: left;" onclick="showLoadingLogo()"/>
-                            <div class="loader" id="loadingImg" style="float: left;"></div>
                         </div>
-                    </td>
-                </tr>
 
+                        <!-- Step 2 -->
+                        <div class="step">
+                            <div class="step-marker">
+                                <div class="step-number">2</div>
+                                <div class="step-line"></div>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-title">Select detection methods</div>
+                                <p class="step-desc">STAND will run each selected method and automatically tune their thresholds.</p>
+                                <select id="multiple-checkboxes" name="detectionMethods" multiple="multiple">
+                                    <option value="lof" selected>LOF</option>
+                                    <option value="knn" selected>KNN</option>
+                                    <option value="if" selected>Isolation Forest</option>
+                                    <option value="mahala" selected>Mahalanobis</option>
+                                </select>
+                            </div>
+                        </div>
 
-                <!-- <tr>  THIS PART WAS USED TO CREATE THE CUSTOM DETECTOR FILE INPUT
-<div class="header" style="text-align:center">
-    <h1>AutoOD: Automatic Outlier Detection</h1>
-</div>
-<center>
-    <h3>Enter Input File and Parameters</h3>
-    <form action="/autood/index" method="post" enctype=multipart/form-data>
-        <table border="0">
-            <tr>
-                <td>Input File</td>
-                <td>
-                    <form action="/action_page.php">
-                    <p>Enter your own:</p>
-                    <div class="inputfile-box">
-                        <input class = "button" type="file" id="file" name="file" class="inputfile" onchange='uploadFile()'>
-                        <label for="file" value="{{file}}">
-                            <span id="file-name" value="{{file}}" class="file-box"></span>
-                            <span class="file-button">
-								<i class="fa fa-upload" aria-hidden="true"></i> Select File
-						    </span>
-                        </label>
+                        <!-- Step 3 -->
+                        <div class="step">
+                            <div class="step-marker">
+                                <div class="step-number">3</div>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-title">Describe your dataset</div>
+                                <p class="step-desc">Tell STAND which columns to use and the outlier rate it should tune toward.</p>
+
+                                <div class="field-grid">
+                                    <div class="field-group">
+                                        <label class="field-label" for="indexColName_input">Index column name</label>
+                                        <input id="indexColName_input" name="indexColName" value="id" type="text" />
+                                        <p class="field-hint">Column that uniquely identifies each row.</p>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label" for="labelColName_input">Label column name</label>
+                                        <input id="labelColName_input" name="labelColName" value="label" type="text" />
+                                        <p class="field-hint">Ground-truth column, if available.</p>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label" for="outlierRangeMin_input">Outlier percentage — min</label>
+                                        <input id="outlierRangeMin_input" name="outlierRangeMin" value="5" type="number" />
+                                        <p class="field-hint">Lower bound of expected outlier rate.</p>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label" for="outlierRangeMax_input">Outlier percentage — max</label>
+                                        <input id="outlierRangeMax_input" name="outlierRangeMax" value="15" type="number" />
+                                        <p class="field-hint">Upper bound of expected outlier rate.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
-                    <div>
-                        <p>Or select one of ours:</p>
-                        <input type="radio" id="radioButton1" name="dataset" value="thyroid.csv">
-                        <label for="thyroid">Thyroid</label><br>
-                        <input type="radio" id="radioButton2" name="dataset" value="cardio.csv">
-                        <label for="cardio">Cardio</label><br>
-                        <input type="radio" id="radioButton3" name="dataset" value="musk.csv">
-                        <label for="musk">Musk</label>
-                        <input type="hidden" id="selectedDataset" name="selectedDataset" value="">
+
+                    <div class="actions-row">
+                        <input class="button" type="submit" value="Run STAND" id="SubmitButton" onclick="showLoadingLogo()" />
+                        <div id="loadingLogo">
+                            <img src="../static/img/loading.gif" alt="Loading">
+                        </div>
                     </div>
-                    <input type="reset" id="ClearButtonRadio" value = "Clear" onclick="clearInputFile()">
                 </form>
-                </td>
-            </tr>
-            <!-- <tr>  THIS PART WAS USED TO CREATE THE CUSTOM DETECTOR FILE INPUT
-                <td>Custom Detector File</td>
-                <td>
-                    <div class="inputfile-box">
-                        <input type="file" id="file" name="file" class="inputfile" onchange='uploadFile()'>
-                        <label for="file" value="{{file}}">
-                            <span id="file-name" value="{{file}}" class="file-box"></span>
-                            <span class="file-button">
-								<i class="fa fa-upload" aria-hidden="true"></i> Select File
-						    </span>
-                        </label>
-                    </div>
-                </td>
-            </tr> -->
 
-                
-
-            </table>
-
-        </form>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul class=flashes>
-            {% for message in messages %}
-            <h4 style="color:#990000">{{ message }}</h4>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-
-        <div id="loadingLogo">
-            <img src="../static/img/loading.gif" alt="Loading">
-        </div>
-
-        <div class="row">
-            <h3 align="center">Log Messages:</h3>
-            <div class="logging_window">
-                <pre id="output" align="left" width="50%"></pre>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class="flashes">
+                    {% for message in messages %}
+                    <h4 style="color:#990000">{{ message }}</h4>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
             </div>
-        </div>
-    </center>
+
+            <div class="row">
+                <h3 align="center">Log Messages</h3>
+                <div class="logging_window">
+                    <div class="term-bar">
+                        <span class="term-dot red"></span>
+                        <span class="term-dot yellow"></span>
+                        <span class="term-dot green"></span>
+                    </div>
+                    <pre id="output" align="left" width="50%"></pre>
+                </div>
+            </div>
+        </center>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#example-getting-started').multiselect();
+        });
+
+        $(document).ready(function () {
+            $('.clickable').click(function () {
+                $(this).nextUntil('h3').slideToggle(1000);
+            });
+        });
+
+        $(document).ready(function () {
+            var output = document.getElementById('output');
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', "{{ url_for('logs.running_logs') }}", true);
+            xhr.send();
+            setInterval(function () {
+                output.textContent = xhr.responseText;
+            }, 500);
+        });
+
+        function uploadFile(target) {
+            document.getElementById("file-name").innerHTML = document
+                .getElementById("file").files[0].name;
+        }
+
+        $(document).ready(function () {
+            $('#multiple-checkboxes').multiselect({
+                includeSelectAllOption: true,
+            });
+        });
+
+        // Clear button for file - START
+        function clearInputFile(){
+            document.getElementById('selectedDataset').value = '';
+        }
+        // Clear button for file - END
+
+        function sendRadioValue(target) {
+            var ele = document.getElementsByName('dataset');
+
+            for (i = 0; i < ele.length; i++) {
+                if (ele[i].checked)
+                    document.getElementById("file-name").innerHTML
+                        = ele[i].value;
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", (event) => {
+            document.getElementById('radioButton1').addEventListener('click', function () {
+                document.getElementById('selectedDataset').value = 'thyroid.csv';
+            });
+
+            document.getElementById('radioButton2').addEventListener('click', function () {
+                document.getElementById('selectedDataset').value = 'cardio.csv';
+            });
+
+            document.getElementById('radioButton3').addEventListener('click', function () {
+                document.getElementById('selectedDataset').value = 'musk.csv';
+            });
+        });
+
+        function showLoadingLogo(){
+            var loadingLogo = document.getElementById('loadingLogo');
+            loadingLogo.style.display = 'block';
+        }
+    </script>
 </body>
+</html>

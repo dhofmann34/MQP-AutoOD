@@ -2,10 +2,10 @@
 <html lang="en">
 
 <body id=body_results>
-    <ul>
+    <ul class="top-nav">
         {% for item in nav.top %}
-        <li id="nav" class="{{ 'active' if item.is_active else '' }}">
-            <a href="{{ item.url }}">{{ item.label }}</a>
+        <li id="nav" class="nav-item {{ 'active' if item.is_active else '' }}">
+            <a class="nav-link" href="{{ item.url }}">{{ item.label }}</a>
         </li>
         {% endfor %}
     </ul>
@@ -21,7 +21,7 @@
         <form enctype=multipart/form-data>
             <table>
                 <tr>
-                    <td>F-1 of AutoOD</td>
+                    <td>F-1 of STAND</td>
                     <td> </td>
                     <td id="autood_f1">{{ autood_f1 }}</td>
                 </tr>
@@ -57,7 +57,7 @@
 </div>
 
 <head>
-    <title>AutoOD Results</title>
+    <title>STAND Results</title>
     <!-- <h1 style="text-align:center">AutoOD Results</h1> -->
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -71,6 +71,74 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/rerun.css') }}">
+
+    <!-- Nav-only styling: matches the Input / About pages. Nothing else on
+         this page is touched — no other ids/classes/markup were changed. -->
+    <style>
+        ul.top-nav {
+            list-style: none !important;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin: 0 !important;
+            padding: 10px 24px !important;
+            background-color: rgba(255,255,255,0.85);
+            backdrop-filter: saturate(180%) blur(10px);
+            border-bottom: 1px solid #e2e4e9 !important;
+            box-shadow: none !important;
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        ul.top-nav li.nav-item {
+            list-style: none !important;
+            display: flex;
+            align-items: stretch;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        ul.top-nav li.nav-item a.nav-link {
+            display: flex;
+            align-items: center;
+            height: 36px;
+            padding: 0 16px !important;
+            margin: 0 !important;
+            border: none !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+            outline: none !important;
+            background-color: transparent !important;
+            background-image: none !important;
+            color: #6b7280;
+            text-decoration: none !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.01em;
+            line-height: 1;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        ul.top-nav li.nav-item a.nav-link:hover {
+            background-color: #f4f5f7 !important;
+            color: #1f2328;
+        }
+
+        ul.top-nav li.nav-item.active a.nav-link {
+            background-color: #7a1f2b !important;
+            color: #fff !important;
+            font-weight: 600;
+        }
+
+        ul.top-nav li.nav-item.active a.nav-link:hover {
+            background-color: #5c161f !important;
+        }
+    </style>
 
     <script>
         // Functions that need to be run when the page loads
@@ -99,7 +167,7 @@
         var currentRun = 1;
         async function updateRunNumber() {
             try {
-                const response = await fetch('http://localhost:8080/getRunCount');
+                const response = await fetch('https://autood.wpi.edu/getRunCount');
                 const runCount = await response.text();
                 currentRun = runCount;
                 return runCount;
@@ -141,12 +209,12 @@
             }
             evt.currentTarget.className += " active";
             document.getElementById("history_header").innerHTML = runHistory;
-            fetch('http://localhost:8080/getSessionID')
+            fetch('https://autood.wpi.edu/getSessionID')
                 .then(response => response.text())
                 .then(session_id => {
                     var tabIndex = parseInt(runHistory.replace("Run", ""));
-                    var local_data_path = `http://localhost:8080/data/${session_id}/${tabIndex}`;
-                    fetch(`http://localhost:8080/getRunResults/${session_id}/${tabIndex}`)
+                    var local_data_path = `https://autood.wpi.edu/data/${session_id}/${tabIndex}`;
+                    fetch(`https://autood.wpi.edu/getRunResults/${session_id}/${tabIndex}`)
                         .then(response => response.json())
                         .then(json => {
                             parsed = JSON.parse(json)
