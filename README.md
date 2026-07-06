@@ -1,13 +1,14 @@
-# STAND: A Self-Tuning Anomaly Detection System
+# STAND: A Self-Tuning Anomaly Detection System (also referred to as AutoOD)
 
 ## About STAND:
-STAND is a self-tuning anomaly detection system to address the challenges of method selection and hyper-parameter tuning while remaining unsupervised. STAND frees users from the tedious manual tuning process often required for anomaly detection by intelligently identifying high likelihood inliers and outliers. STAND features a responsive visual interface allowing for seamless user interaction providing the user with insightful knowledge of how STAND operates.
+STAND is a self-tuning anomaly detection system built upon the original AutoOD methodology. STAND is designed to address the challenges of method selection and hyper-parameter tuning while remaining unsupervised. STAND frees users from the tedious manual tuning process often required for anomaly detection by intelligently identifying high likelihood inliers and outliers. STAND features a responsive visual interface allowing for seamless interaction, providing the user with insightful knowledge of how STAND operates. STAND outperforms the best unsupervised anomaly detection methods, yielding results similar to supervised methods that have access to ground truth labels.
 
-STAND outperforms the best unsupervised anomaly detection methods, yielding results similar to supervised methods that have access to ground truth labels. 
+Beyond the original AutoOD methodology, STAND introduces a rich collection of services and engineering innovations that significantly enhance usability, scalability, and maintainability. The platform features a modern, user-centered interface, support for rerunning experiments with customizable detector parameters, persistent run history, downloadable execution logs, robust error handling, and session-based management that enables multiple concurrent users. On the backend, STAND was redesigned using a layered architecture based on Flask blueprints and the factory design pattern, accompanied by a redesigned database schema to support multi-user execution. Comprehensive automated test suites, optimized SQL queries, and batch-processing improvements further increase reliability and performance, transforming the original research prototype into a robust, practical, and deployable anomaly detection platform.
 
-This work has been accepted for publication at VLDB 2022 (48th International Conference on Very Large Databases) one of the most prestigious conferences in database systems. https://dl.acm.org/doi/abs/10.14778/3554821.3554880
+The original AutoOD algorithm was published at the ACM SIGMOD/PODS International Conference on Management of Data (SIGMOD 2023): https://doi.org/10.1145/3588700
+and was demoed at VLDB 2022 (48th International Conference on Very Large Databases): https://dl.acm.org/doi/abs/10.14778/3554821.3554880
 
-Current hosted version: https://autood.wpi.edu/
+**STAND is hosted at: https://autood.wpi.edu/**
 
 This work was supported in part by NSF under grants IIS1910880, CSSI-2103832, CNS-1852498, NRT-HDR-1815866 and by
 the U.S. Dept. of Education under grant P200A180088.
